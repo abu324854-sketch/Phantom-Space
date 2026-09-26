@@ -1,194 +1,823 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phantom Space — Virtual P: Drive (Cloud)</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #03030c;
-            color: #ffffff;
-            min-height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            perspective: 1000px;
-        }
-        /* Orqa fondagi harakatlanuvchi kosmik nurlar */
-        .bg-glow {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(0, 242, 254, 0.25) 0%, rgba(138, 43, 226, 0.1) 50%, rgba(79, 70, 229, 0) 70%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: -1;
-            filter: blur(80px);
-            animation: bgFloat 8s ease-in-out infinite alternate;
-        }
-        @keyframes bgFloat {
-            0% { transform: translate(-50%, -50%) scale(0.9); }
-            100% { transform: translate(-50%, -50%) scale(1.1); }
-        }
-        .container {
-            text-align: center;
-            padding: 2rem;
-            z-index: 2;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
-        /* 3D Interaktiv Karta */
-        .card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(25px);
-            border-radius: 28px;
-            padding: 3.5rem 2.5rem;
-            max-width: 700px;
-            width: 100%;
-            box-shadow: 0 35px 60px rgba(0, 0, 0, 0.7), 
-                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            transition: transform 0.1s ease-out, box-shadow 0.3s ease;
-            transform-style: preserve-3d;
-            will-change: transform;
-        }
-        .card:hover {
-            box-shadow: 0 40px 80px rgba(0, 242, 254, 0.3), 
-                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-        h1 {
-            font-size: 3.2rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #8a2be2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 3px;
-            transform: translateZ(30px);
-        }
-        p {
-            color: #a0aec0;
-            font-size: 1.15rem;
-            margin-bottom: 2.5rem;
-            line-height: 1.6;
-            transform: translateZ(20px);
-        }
-        .features {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 2.5rem;
-            color: #cbd5e1;
-            font-size: 0.95rem;
-            transform: translateZ(25px);
-        }
-        .feature-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 0.7rem 1.2rem;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: 0.3s;
-        }
-        .feature-item:hover {
-            background: rgba(0, 242, 254, 0.1);
-            border-color: rgba(0, 242, 254, 0.3);
-        }
-        .btn {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            color: #03030c;
-            border: none;
-            padding: 1.15rem 3rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 35px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.4);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-decoration: none;
-            display: inline-block;
-            transform: translateZ(40px);
-        }
-        .btn:hover {
-            transform: translateZ(45px) translateY(-3px);
-            box-shadow: 0 20px 40px rgba(0, 242, 254, 0.6);
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-        .status {
-            margin-top: 2rem;
-            font-size: 0.9rem;
-            color: #4ade80;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transform: translateZ(15px);
-        }
-        .dot {
-            width: 9px;
-            height: 9px;
-            background-color: #4ade80;
-            border-radius: 50%;
-            box-shadow: 0 0 12px #4ade80;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.4); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
-        }
-    </style>
-</head>
-<body>
-    <div class="bg-glow"></div>
-    <div class="container">
-        <div class="card" id="card3d">
-            <h1>PHANTOM SPACE</h1>
-            <p>Windows kompyuteringizda <b>100,000,000 TB</b> cheksiz hajmli bulutli <b>P: diskingizni</b> yarating. Kompyuter xotirasini band qilmasdan onlayn boshqaring.</p>
-            
-            <div class="features">
-                <div class="feature-item">⚡ 0 MB Lokal Xotira</div>
-                <div class="feature-item">♾️ Cheksiz Bulut</div>
-                <div class="feature-item">🔒 Xavfsiz Shifrlash</div>
-            </div>
+{
+  "name": "phantom-space",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Phantom Space — cheksiz bulut xotira platformasi (Next.js + S3-compatible storage)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.658.1",
+    "@aws-sdk/s3-request-presigner": "^3.658.1",
+    "@prisma/client": "^5.20.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "next": "^14.2.13",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^20.16.5",
+    "@types/react": "^18.3.5",
+    "prisma": "^5.20.0",
+    "typescript": "^5.6.2"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}
+tsconfig.json
+json
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [{ "name": "next" }],
+    "paths": { "@/*": ["./*"] }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+next.config.js
+js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+};
 
-            <!-- O'zingiz logotip bilan tayyorlagan phantom-client.exe faylini GitHub'ga yuklaysiz -->
-            <a href="phantom-client.exe" download class="btn">Dasturni Yuklab Olish</a>
-            
-            <div class="status">
-                <span class="dot"></span>
-                <span>Bulutli serverga ulanish: Tayyor</span>
-            </div>
+module.exports = nextConfig;
+.env.example
+# --- Ma'lumotlar bazasi (masalan Neon yoki Supabase Postgres) ---
+DATABASE_URL="postgresql://user:password@host:5432/phantomspace"
+
+# --- Autentifikatsiya ---
+JWT_SECRET="o'zgartiring-tasodifiy-uzun-maxfiy-satr"
+
+# --- Bulut xotira (S3-mos: Cloudflare R2 / Backblaze B2 / AWS S3 / MinIO) ---
+STORAGE_ENDPOINT="https://<account-id>.r2.cloudflarestorage.com"
+STORAGE_REGION="auto"
+STORAGE_ACCESS_KEY_ID="..."
+STORAGE_SECRET_ACCESS_KEY="..."
+STORAGE_BUCKET="phantom-space-files"
+.gitignore
+node_modules
+.next
+.env
+.env.local
+*.log
+.DS_Store
+.vercel
+prisma/schema.prisma
+prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  files        FileObject[]
+  usedBytes    BigInt   @default(0)
+}
+
+model FileObject {
+  id          String   @id @default(cuid())
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name        String
+  path        String
+  storageKey  String   @unique
+  sizeBytes   BigInt
+  mimeType    String?
+  status      FileStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([ownerId, path])
+}
+
+enum FileStatus {
+  PENDING
+  READY
+}
+lib/db.ts
+ts
+import { PrismaClient } from "@prisma/client";
+
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
+
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+  });
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+lib/auth.ts
+ts
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import { NextRequest } from "next/server";
+
+const JWT_SECRET = process.env.JWT_SECRET!;
+
+export async function hashPassword(password: string) {
+  return bcrypt.hash(password, 12);
+}
+
+export async function verifyPassword(password: string, hash: string) {
+  return bcrypt.compare(password, hash);
+}
+
+export function signToken(userId: string, email: string) {
+  return jwt.sign({ sub: userId, email }, JWT_SECRET, { expiresIn: "30d" });
+}
+
+export function verifyToken(token: string): { sub: string; email: string } | null {
+  try {
+    return jwt.verify(token, JWT_SECRET) as { sub: string; email: string };
+  } catch {
+    return null;
+  }
+}
+
+export function getUserFromRequest(req: NextRequest) {
+  const header = req.headers.get("authorization");
+  const bearer = header?.startsWith("Bearer ") ? header.slice(7) : null;
+  const cookieToken = req.cookies.get("phantom_token")?.value;
+  const token = bearer || cookieToken;
+  if (!token) return null;
+  return verifyToken(token);
+}
+lib/storage.ts
+ts
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+const endpoint = process.env.STORAGE_ENDPOINT;
+const region = process.env.STORAGE_REGION || "auto";
+const accessKeyId = process.env.STORAGE_ACCESS_KEY_ID!;
+const secretAccessKey = process.env.STORAGE_SECRET_ACCESS_KEY!;
+export const BUCKET = process.env.STORAGE_BUCKET!;
+
+export const s3 = new S3Client({
+  endpoint,
+  region,
+  credentials: { accessKeyId, secretAccessKey },
+  forcePathStyle: true,
+});
+
+export async function createUploadUrl(storageKey: string, contentType?: string) {
+  const command = new PutObjectCommand({
+    Bucket: BUCKET,
+    Key: storageKey,
+    ContentType: contentType,
+  });
+  return getSignedUrl(s3, command, { expiresIn: 60 * 10 });
+}
+
+export async function createDownloadUrl(storageKey: string) {
+  const command = new GetObjectCommand({ Bucket: BUCKET, Key: storageKey });
+  return getSignedUrl(s3, command, { expiresIn: 60 * 10 });
+}
+
+export async function deleteObject(storageKey: string) {
+  await s3.send(new DeleteObjectCommand({ Bucket: BUCKET, Key: storageKey }));
+}
+app/api/auth/register/route.ts
+ts
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { hashPassword, signToken } from "@/lib/auth";
+
+export async function POST(req: NextRequest) {
+  const { email, password } = await req.json();
+
+  if (!email || !password || password.length < 8) {
+    return NextResponse.json(
+      { error: "Email va kamida 8 belgili parol kerak" },
+      { status: 400 }
+    );
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    return NextResponse.json(
+      { error: "Bu email allaqachon ro'yxatdan o'tgan" },
+      { status: 409 }
+    );
+  }
+
+  const passwordHash = await hashPassword(password);
+  const user = await prisma.user.create({
+    data: { email, passwordHash },
+  });
+
+  const token = signToken(user.id, user.email);
+  const res = NextResponse.json({ id: user.id, email: user.email });
+  res.cookies.set("phantom_token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30,
+    path: "/",
+  });
+  return res;
+}
+app/api/auth/login/route.ts
+ts
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { verifyPassword, signToken } from "@/lib/auth";
+
+export async function POST(req: NextRequest) {
+  const { email, password } = await req.json();
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    return NextResponse.json(
+      { error: "Email yoki parol noto'g'ri" },
+      { status: 401 }
+    );
+  }
+
+  const token = signToken(user.id, user.email);
+  const res = NextResponse.json({ id: user.id, email: user.email });
+  res.cookies.set("phantom_token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30,
+    path: "/",
+  });
+  return res;
+}
+app/api/files/route.ts
+ts
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { getUserFromRequest } from "@/lib/auth";
+
+export async function GET(req: NextRequest) {
+  const user = getUserFromRequest(req);
+  if (!user) return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 401 });
+
+  const path = req.nextUrl.searchParams.get("path") || "/";
+
+  const files = await prisma.fileObject.findMany({
+    where: { ownerId: user.sub, path, status: "READY" },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const serialized = files.map((f) => ({ ...f, sizeBytes: f.sizeBytes.toString() }));
+  return NextResponse.json({ files: serialized });
+}
+app/api/files/upload-url/route.ts
+ts
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { getUserFromRequest } from "@/lib/auth";
+import { createUploadUrl } from "@/lib/storage";
+import { randomUUID } from "crypto";
+
+export async function POST(req: NextRequest) {
+  const user = getUserFromRequest(req);
+  if (!user) return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 401 });
+
+  const { name, path = "/", sizeBytes, mimeType } = await req.json();
+  if (!name || sizeBytes === undefined) {
+    return NextResponse.json({ error: "name va sizeBytes shart" }, { status: 400 });
+  }
+
+  const storageKey = `${user.sub}/${randomUUID()}-${name}`;
+
+  const file = await prisma.fileObject.create({
+    data: {
+      ownerId: user.sub,
+      name,
+      path,
+      storageKey,
+      sizeBytes: BigInt(sizeBytes),
+      mimeType,
+      status: "PENDING",
+    },
+  });
+
+  const uploadUrl = await createUploadUrl(storageKey, mimeType);
+
+  return NextResponse.json({ fileId: file.id, uploadUrl });
+}
+app/api/files/[id]/complete/route.ts
+ts
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { getUserFromRequest } from "@/lib/auth";
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const user = getUserFromRequest(req);
+  if (!user) return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 401 });
+
+  const file = await prisma.fileObject.findUnique({ where: { id: params.id } });
+  if (!file || file.ownerId !== user.sub) {
+    return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  }
+
+  const updated = await prisma.fileObject.update({
+    where: { id: params.id },
+    data: { status: "READY" },
+  });
+
+  await prisma.user.update({
+    where: { id: user.sub },
+    data: { usedBytes: { increment: file.sizeBytes } },
+  });
+
+  return NextResponse.json({ ...updated, sizeBytes: updated.sizeBytes.toString() });
+}
+app/api/files/[id]/download-url/route.ts
+ts
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { getUserFromRequest } from "@/lib/auth";
+import { createDownloadUrl } from "@/lib/storage";
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const user = getUserFromRequest(req);
+  if (!user) return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 401 });
+
+  const file = await prisma.fileObject.findUnique({ where: { id: params.id } });
+  if (!file || file.ownerId !== user.sub || file.status !== "READY") {
+    return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  }
+
+  const downloadUrl = await createDownloadUrl(file.storageKey);
+  return NextResponse.json({ downloadUrl, name: file.name, sizeBytes: file.sizeBytes.toString() });
+}
+app/api/files/[id]/route.ts
+ts
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { getUserFromRequest } from "@/lib/auth";
+import { deleteObject } from "@/lib/storage";
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const user = getUserFromRequest(req);
+  if (!user) return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 401 });
+
+  const file = await prisma.fileObject.findUnique({ where: { id: params.id } });
+  if (!file || file.ownerId !== user.sub) {
+    return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+  }
+
+  await deleteObject(file.storageKey);
+  await prisma.fileObject.delete({ where: { id: params.id } });
+  await prisma.user.update({
+    where: { id: user.sub },
+    data: { usedBytes: { decrement: file.sizeBytes } },
+  });
+
+  return NextResponse.json({ ok: true });
+}
+app/layout.tsx
+tsx
+import "./globals.css";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Phantom Space — Cheksiz bulut xotira",
+  description: "Fayllaringiz kompyuteringizda emas, bulutda yashaydi.",
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="uz">
+      <body>{children}</body>
+    </html>
+  );
+}
+app/globals.css
+css
+:root {
+  --bg: #0a0a0f;
+  --panel: #13131c;
+  --border: #232333;
+  --text: #e8e8f0;
+  --muted: #8888a0;
+  --accent: #7c5cff;
+  --accent-glow: rgba(124, 92, 255, 0.35);
+  --danger: #ff5c7c;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at 50% -20%, #191926 0%, var(--bg) 60%);
+  color: var(--text);
+  font-family: -apple-system, "Segoe UI", Inter, sans-serif;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px 3px var(--accent-glow);
+}
+
+input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #0d0d14;
+  color: var(--text);
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  background: var(--accent);
+  color: white;
+  transition: opacity 0.15s;
+}
+
+button:hover { opacity: 0.85; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.error { color: var(--danger); font-size: 13px; margin-bottom: 10px; }
+
+.file-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.muted { color: var(--muted); font-size: 13px; }
+
+a { color: var(--accent); text-decoration: none; }
+app/page.tsx
+tsx
+import Link from "next/link";
+
+export default function Home() {
+  return (
+    <div className="container">
+      <div className="brand">
+        <span className="brand-dot" />
+        Phantom Space
+      </div>
+
+      <div style={{ marginTop: 60, maxWidth: 560 }}>
+        <h1 style={{ fontSize: 40, lineHeight: 1.15, margin: "0 0 16px" }}>
+          Fayllaringiz kompyuteringizda emas,
+          <br />
+          bulutda yashaydi.
+        </h1>
+        <p className="muted" style={{ fontSize: 16, marginBottom: 32 }}>
+          Cheksiz bulut xotira. Ro'yxatdan o'ting va veb-panel orqali fayllaringizni
+          boshqaring — desktop P: disk dasturi tez orada.
+        </p>
+        <div style={{ display: "flex", gap: 12 }}>
+          <Link href="/register"><button>Ro'yxatdan o'tish</button></Link>
+          <Link href="/login"><button style={{ background: "transparent", border: "1px solid var(--border)" }}>Kirish</button></Link>
         </div>
+      </div>
     </div>
+  );
+}
+app/register/page.tsx
+tsx
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-    <script>
-        const card = document.getElementById('card3d');
-        
-        document.addEventListener('mousemove', (e) => {
-            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
-            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
-        });
+export default function RegisterPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-        document.addEventListener('mouseleave', () => {
-            card.style.transform = `rotateY(0deg) rotateX(0deg)`;
-            card.style.transition = 'transform 0.5s ease';
-        });
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    setLoading(false);
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || "Xatolik yuz berdi");
+      return;
+    }
+    router.push("/dashboard");
+  }
 
-        document.addEventListener('mouseenter', () => {
-            card.style.transition = 'none';
-        });
-    </script>
-</body>
-</html>
+  return (
+    <div className="container" style={{ maxWidth: 400 }}>
+      <div className="brand" style={{ marginBottom: 32 }}>
+        <span className="brand-dot" />
+        Phantom Space
+      </div>
+      <div className="card">
+        <h2 style={{ marginTop: 0 }}>Ro'yxatdan o'tish</h2>
+        {error && <div className="error">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Parol (kamida 8 belgi)"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={8}
+          />
+          <button type="submit" disabled={loading} style={{ width: "100%" }}>
+            {loading ? "..." : "Ro'yxatdan o'tish"}
+          </button>
+        </form>
+        <p className="muted" style={{ marginTop: 16 }}>
+          Hisobingiz bormi? <a href="/login">Kirish</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+app/login/page.tsx
+tsx
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    setLoading(false);
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || "Xatolik yuz berdi");
+      return;
+    }
+    router.push("/dashboard");
+  }
+
+  return (
+    <div className="container" style={{ maxWidth: 400 }}>
+      <div className="brand" style={{ marginBottom: 32 }}>
+        <span className="brand-dot" />
+        Phantom Space
+      </div>
+      <div className="card">
+        <h2 style={{ marginTop: 0 }}>Kirish</h2>
+        {error && <div className="error">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Parol"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit" disabled={loading} style={{ width: "100%" }}>
+            {loading ? "..." : "Kirish"}
+          </button>
+        </form>
+        <p className="muted" style={{ marginTop: 16 }}>
+          Hisobingiz yo'qmi? <a href="/register">Ro'yxatdan o'tish</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+app/dashboard/page.tsx
+tsx
+"use client";
+import { useEffect, useRef, useState } from "react";
+
+type FileItem = {
+  id: string;
+  name: string;
+  sizeBytes: string;
+  createdAt: string;
+};
+
+function formatBytes(bytes: number) {
+  if (bytes === 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${units[i]}`;
+}
+
+export default function DashboardPage() {
+  const [files, setFiles] = useState<FileItem[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function loadFiles() {
+    const res = await fetch("/api/files?path=/");
+    if (res.ok) {
+      const data = await res.json();
+      setFiles(data.files);
+    }
+  }
+
+  useEffect(() => {
+    loadFiles();
+  }, []);
+
+  async function handleUpload(file: File) {
+    setUploading(true);
+    setProgress(0);
+    try {
+      const startRes = await fetch("/api/files/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: file.name,
+          path: "/",
+          sizeBytes: file.size,
+          mimeType: file.type,
+        }),
+      });
+      const { fileId, uploadUrl } = await startRes.json();
+
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", uploadUrl);
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100));
+        };
+        xhr.onload = () => (xhr.status < 300 ? resolve() : reject());
+        xhr.onerror = () => reject();
+        xhr.send(file);
+      });
+
+      await fetch(`/api/files/${fileId}/complete`, { method: "POST" });
+
+      await loadFiles();
+    } finally {
+      setUploading(false);
+      setProgress(0);
+    }
+  }
+
+  async function handleDownload(f: FileItem) {
+    const res = await fetch(`/api/files/${f.id}/download-url`);
+    const data = await res.json();
+    window.open(data.downloadUrl, "_blank");
+  }
+
+  async function handleDelete(id: string) {
+    await fetch(`/api/files/${id}`, { method: "DELETE" });
+    await loadFiles();
+  }
+
+  return (
+    <div className="container">
+      <div className="brand" style={{ marginBottom: 32 }}>
+        <span className="brand-dot" />
+        Phantom Space
+      </div>
+
+      <div className="card">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+          <h2 style={{ margin: 0 }}>Fayllarim</h2>
+          <div>
+            <input
+              ref={inputRef}
+              type="file"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleUpload(f);
+              }}
+            />
+            <button onClick={() => inputRef.current?.click()} disabled={uploading}>
+              {uploading ? `Yuklanmoqda... ${progress}%` : "+ Fayl yuklash"}
+            </button>
+          </div>
+        </div>
+
+        {files.length === 0 && <p className="muted">Hozircha fayl yo'q. Birinchisini yuklang.</p>}
+
+        {files.map((f) => (
+          <div key={f.id} className="file-row">
+            <div>
+              <div>{f.name}</div>
+              <div className="muted">{formatBytes(Number(f.sizeBytes))}</div>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => handleDownload(f)} style={{ background: "transparent", border: "1px solid var(--border)" }}>
+                Yuklab olish
+              </button>
+              <button onClick={() => handleDelete(f.id)} style={{ background: "var(--danger)" }}>
+                O'chirish
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
