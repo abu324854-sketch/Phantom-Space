@@ -15,52 +15,73 @@
             background-color: #03030c;
             color: #ffffff;
             min-height: 100vh;
-            overflow-x: hidden;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
+            perspective: 1000px;
         }
+        /* Orqa fondagi harakatlanuvchi kosmik nurlar */
         .bg-glow {
             position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(0, 242, 254, 0.2) 0%, rgba(79, 70, 229, 0) 70%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.25) 0%, rgba(138, 43, 226, 0.1) 50%, rgba(79, 70, 229, 0) 70%);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: -1;
-            filter: blur(70px);
+            filter: blur(80px);
+            animation: bgFloat 8s ease-in-out infinite alternate;
+        }
+        @keyframes bgFloat {
+            0% { transform: translate(-50%, -50%) scale(0.9); }
+            100% { transform: translate(-50%, -50%) scale(1.1); }
         }
         .container {
             text-align: center;
             padding: 2rem;
             z-index: 2;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
+        /* 3D Interaktiv Karta */
         .card {
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(25px);
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 3.5rem 2.5rem;
-            max-width: 680px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 
-                        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 35px 60px rgba(0, 0, 0, 0.7), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+        .card:hover {
+            box-shadow: 0 40px 80px rgba(0, 242, 254, 0.3), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
         h1 {
-            font-size: 3rem;
+            font-size: 3.2rem;
             margin-bottom: 1rem;
             background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #8a2be2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            transform: translateZ(30px);
         }
         p {
             color: #a0aec0;
             font-size: 1.15rem;
             margin-bottom: 2.5rem;
             line-height: 1.6;
+            transform: translateZ(20px);
         }
         .features {
             display: flex;
@@ -68,18 +89,24 @@
             margin-bottom: 2.5rem;
             color: #cbd5e1;
             font-size: 0.95rem;
+            transform: translateZ(25px);
         }
         .feature-item {
             background: rgba(255, 255, 255, 0.05);
-            padding: 0.6rem 1rem;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0.7rem 1.2rem;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: 0.3s;
+        }
+        .feature-item:hover {
+            background: rgba(0, 242, 254, 0.1);
+            border-color: rgba(0, 242, 254, 0.3);
         }
         .btn {
             background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
             color: #03030c;
             border: none;
-            padding: 1.1rem 2.8rem;
+            padding: 1.15rem 3rem;
             font-size: 1.1rem;
             font-weight: bold;
             border-radius: 35px;
@@ -90,10 +117,11 @@
             letter-spacing: 1px;
             text-decoration: none;
             display: inline-block;
+            transform: translateZ(40px);
         }
         .btn:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 18px 35px rgba(0, 242, 254, 0.6);
+            transform: translateZ(45px) translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0, 242, 254, 0.6);
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
         .status {
@@ -104,6 +132,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transform: translateZ(15px);
         }
         .dot {
             width: 9px;
@@ -115,7 +144,7 @@
         }
         @keyframes pulse {
             0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.35); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 1; }
             100% { transform: scale(0.95); opacity: 0.8; }
         }
     </style>
@@ -123,9 +152,9 @@
 <body>
     <div class="bg-glow"></div>
     <div class="container">
-        <div class="card">
+        <div class="card" id="card3d">
             <h1>PHANTOM SPACE</h1>
-            <p>Windows kompyuteringizda cheksiz hajmli bulutli <b>P: diskingizni</b> yarating. Kompyuter xotirasini Band qilmasdan barcha fayllaringizni onlayn boshqaring.</p>
+            <p>Windows kompyuteringizda <b>100,000,000 TB</b> cheksiz hajmli bulutli <b>P: diskingizni</b> yarating. Kompyuter xotirasini band qilmasdan onlayn boshqaring.</p>
             
             <div class="features">
                 <div class="feature-item">⚡ 0 MB Lokal Xotira</div>
@@ -133,7 +162,6 @@
                 <div class="feature-item">🔒 Xavfsiz Shifrlash</div>
             </div>
 
-            <!-- Dasturni yuklab olish uchun haqiqiy havola yoki fayl manzili -->
             <a href="phantom-client.exe" download class="btn">Dasturni Yuklab Olish</a>
             
             <div class="status">
@@ -142,5 +170,26 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Sichqoncha harakatiga qarab 3D burilish effekti
+        const card = document.getElementById('card3d');
+        
+        document.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Sichqoncha chiqib ketganda joyiga qaytish
+        document.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+            card.style.transition = 'transform 0.5s ease';
+        });
+
+        document.addEventListener('mouseenter', () => {
+            card.style.transition = 'none';
+        });
+    </script>
 </body>
 </html>
