@@ -162,6 +162,7 @@
                 <div class="feature-item">🔒 Xavfsiz Shifrlash</div>
             </div>
 
+            <!-- O'zingiz logotip bilan tayyorlagan phantom-client.exe faylini GitHub'ga yuklaysiz -->
             <a href="phantom-client.exe" download class="btn">Dasturni Yuklab Olish</a>
             
             <div class="status">
@@ -172,7 +173,6 @@
     </div>
 
     <script>
-        // Sichqoncha harakatiga qarab 3D burilish effekti
         const card = document.getElementById('card3d');
         
         document.addEventListener('mousemove', (e) => {
@@ -181,7 +181,6 @@
             card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
         });
 
-        // Sichqoncha chiqib ketganda joyiga qaytish
         document.addEventListener('mouseleave', () => {
             card.style.transform = `rotateY(0deg) rotateX(0deg)`;
             card.style.transition = 'transform 0.5s ease';
