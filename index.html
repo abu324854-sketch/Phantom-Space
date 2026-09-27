@@ -3,143 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phantom Space — Secure Cloud Vault</title>
+    <title>Phantom Space — 3D Cyber Cloud</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
             --primary: #00f2fe;
             --secondary: #4facfe;
             --accent: #8a2be2;
-            --bg: #03030c;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
+            --bg: #020208;
+            --card-bg: rgba(255, 255, 255, 0.02);
+            --border: rgba(0, 242, 254, 0.15);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; position: relative; overflow-x: hidden; }
+        
         #webgl-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
 
-        /* Kirish Oynasi */
+        /* Kirish Oynasi 3D Glass Effect */
         #authOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 3, 12, 0.95); backdrop-filter: blur(20px);
+            background: rgba(2, 2, 8, 0.85); backdrop-filter: blur(25px);
             display: flex; justify-content: center; align-items: center; z-index: 1000;
         }
         .auth-box {
-            background: rgba(20, 20, 40, 0.9); border: 1px solid var(--primary);
-            padding: 2.5rem; border-radius: 24px; text-align: center; width: 90%; max-width: 400px;
-            box-shadow: 0 0 50px rgba(0, 242, 254, 0.2);
+            background: rgba(15, 15, 35, 0.7); border: 1px solid var(--primary);
+            padding: 3rem 2.5rem; border-radius: 30px; text-align: center; width: 90%; max-width: 420px;
+            box-shadow: 0 0 60px rgba(0, 242, 254, 0.25), inset 0 0 20px rgba(0, 242, 254, 0.05);
+            animation: floatBox 4s ease-in-out infinite;
         }
-        .auth-box h2 { color: var(--primary); margin-bottom: 0.5rem; letter-spacing: 2px; }
-        .auth-box p { color: #a0aec0; font-size: 0.85rem; margin-bottom: 1.5rem; }
+        @keyframes floatBox {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .auth-box h2 { color: var(--primary); margin-bottom: 0.5rem; letter-spacing: 3px; font-size: 2rem; text-shadow: 0 0 15px rgba(0,242,254,0.5); }
+        .auth-box p { color: #a0aec0; font-size: 0.9rem; margin-bottom: 2rem; }
         .auth-box input {
-            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border);
-            padding: 0.9rem 1rem; border-radius: 12px; color: #fff; font-size: 1rem;
-            outline: none; margin-bottom: 1rem; text-align: center;
+            width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--border);
+            padding: 1rem 1.2rem; border-radius: 16px; color: #fff; font-size: 1.1rem;
+            outline: none; margin-bottom: 1.2rem; text-align: center; transition: 0.3s;
         }
-        .auth-box input:focus { border-color: var(--primary); }
+        .auth-box input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,242,254,0.3); }
         .auth-btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: #03030c; border: none; padding: 0.9rem; font-weight: bold;
-            border-radius: 15px; cursor: pointer; width: 100%; font-size: 1rem;
-            box-shadow: 0 10px 20px rgba(0,242,254,0.3); transition: 0.2s;
+            color: #020208; border: none; padding: 1rem; font-weight: bold;
+            border-radius: 16px; cursor: pointer; width: 100%; font-size: 1.1rem;
+            box-shadow: 0 10px 25px rgba(0,242,254,0.4); transition: 0.3s;
         }
-        .auth-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .auth-btn:hover { transform: scale(1.02); box-shadow: 0 15px 35px rgba(0,242,254,0.6); }
 
         /* Asosiy Dastur */
-        .main-app { display: none; width: 100%; max-width: 1100px; flex-direction: column; align-items: center; z-index: 2; }
-        header { text-align: center; margin-bottom: 2rem; width: 100%; }
-        h1 { font-size: 2.8rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; margin-bottom: 0.3rem; }
+        .main-app { display: none; width: 100%; max-width: 1200px; flex-direction: column; align-items: center; z-index: 2; }
+        header { text-align: center; margin-bottom: 2.5rem; width: 100%; }
+        h1 { font-size: 3.2rem; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 4px; margin-bottom: 0.5rem; text-shadow: 0 0 30px rgba(0,242,254,0.3); }
         
         .controls-bar {
-            display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;
+            display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 1.5rem; margin-bottom: 2.5rem; flex-wrap: wrap;
         }
         .search-box {
-            flex: 1; min-width: 250px; background: var(--card-bg); border: 1px solid var(--border);
-            backdrop-filter: blur(15px); border-radius: 16px; padding: 0.7rem 1.2rem; display: flex; align-items: center; gap: 10px;
+            flex: 1; min-width: 280px; background: var(--card-bg); border: 1px solid var(--border);
+            backdrop-filter: blur(20px); border-radius: 20px; padding: 0.8rem 1.4rem; display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .search-box input { background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 0.95rem; }
+        .search-box input { background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 1rem; }
 
         .stats-badge {
-            background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(15px);
-            padding: 0.7rem 1.5rem; border-radius: 16px; font-size: 0.9rem; color: #a0aec0;
+            background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(20px);
+            padding: 0.8rem 1.8rem; border-radius: 20px; font-size: 0.95rem; color: #a0aec0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .stats-badge strong { color: var(--primary); }
 
-        /* Yuklash Paneli */
+        /* Yuklash Paneli 3D Border */
         .upload-panel {
-            background: var(--card-bg); border: 2px dashed var(--primary); backdrop-filter: blur(20px);
-            border-radius: 24px; padding: 2.5rem; width: 100%; text-align: center;
-            margin-bottom: 2rem; cursor: pointer; transition: 0.3s;
+            background: var(--card-bg); border: 2px dashed var(--primary); backdrop-filter: blur(25px);
+            border-radius: 30px; padding: 3rem; width: 100%; text-align: center;
+            margin-bottom: 2.5rem; cursor: pointer; transition: 0.4s;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
         }
-        .upload-panel:hover, .upload-panel.dragover { background: rgba(0, 242, 254, 0.05); border-color: #fff; }
+        .upload-panel:hover, .upload-panel.dragover { background: rgba(0, 242, 254, 0.04); border-color: #fff; transform: translateY(-4px); box-shadow: 0 20px 45px rgba(0,242,254,0.2); }
         .upload-btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: #03030c; border: none; padding: 0.8rem 2.2rem; font-size: 1rem; font-weight: bold;
-            border-radius: 30px; cursor: pointer; margin-top: 1rem; box-shadow: 0 10px 20px rgba(0, 242, 254, 0.2);
+            color: #020208; border: none; padding: 0.9rem 2.5rem; font-size: 1.1rem; font-weight: bold;
+            border-radius: 30px; cursor: pointer; margin-top: 1.2rem; box-shadow: 0 10px 25px rgba(0, 242, 254, 0.3);
+            transition: 0.3s;
         }
+        .upload-btn:hover { transform: scale(1.05); }
 
-        /* Fayllar Gridi */
+        /* Fayllar 3D Karta Gridi */
         .files-container {
-            width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;
+            width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.8rem;
         }
         .file-card {
-            background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(15px);
-            border-radius: 20px; padding: 1.5rem; cursor: pointer; transition: 0.3s; position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(20px);
+            border-radius: 24px; padding: 1.8rem; cursor: pointer; transition: 0.4s; position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
-        .file-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0,242,254,0.15); }
-        .file-icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
-        .file-name { font-size: 1rem; font-weight: bold; margin-bottom: 0.3rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .file-size { font-size: 0.8rem; color: #a0aec0; }
+        .file-card:hover { 
+            border-color: var(--primary); 
+            transform: translateY(-8px) scale(1.02); 
+            box-shadow: 0 20px 45px rgba(0,242,254,0.3); 
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .file-icon { font-size: 2.5rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(0,242,254,0.4)); }
+        .file-name { font-size: 1.05rem; font-weight: bold; margin-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-size { font-size: 0.85rem; color: #a0aec0; }
 
         /* Modal oyna */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 3, 12, 0.85); backdrop-filter: blur(10px);
+            background: rgba(2, 2, 8, 0.85); backdrop-filter: blur(15px);
             justify-content: center; align-items: center; z-index: 100;
         }
         .modal-content {
-            background: rgba(20, 20, 40, 0.95); border: 1px solid var(--primary);
-            border-radius: 24px; padding: 2rem; width: 90%; max-width: 500px; text-align: center;
+            background: rgba(15, 15, 35, 0.9); border: 1px solid var(--primary);
+            border-radius: 28px; padding: 2.5rem; width: 90%; max-width: 520px; text-align: center;
+            box-shadow: 0 0 50px rgba(0,242,254,0.3);
         }
-        .modal-title { font-size: 1.2rem; color: var(--primary); margin-bottom: 1rem; word-break: break-all; }
-        .modal-body { color: #cbd5e1; font-size: 0.9rem; margin-bottom: 1.5rem; text-align: left; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px; }
-        .modal-preview img { max-width: 100%; max-height: 180px; border-radius: 8px; margin-top: 10px; display: block; margin-left: auto; margin-right: auto; }
-        .modal-actions { display: flex; gap: 10px; justify-content: center; }
-        .action-btn { padding: 0.6rem 1.4rem; font-weight: bold; border-radius: 20px; cursor: pointer; border: none; font-size: 0.9rem; }
-        .download-action { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #03030c; }
+        .modal-title { font-size: 1.3rem; color: var(--primary); margin-bottom: 1rem; word-break: break-all; }
+        .modal-body { color: #cbd5e1; font-size: 0.95rem; margin-bottom: 1.8rem; text-align: left; background: rgba(0,0,0,0.4); padding: 1.2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
+        .modal-preview img { max-width: 100%; max-height: 200px; border-radius: 12px; margin-top: 12px; display: block; margin-left: auto; margin-right: auto; }
+        .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .action-btn { padding: 0.7rem 1.6rem; font-weight: bold; border-radius: 22px; cursor: pointer; border: none; font-size: 0.95rem; transition: 0.3s; }
+        .download-action { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #020208; box-shadow: 0 5px 15px rgba(0,242,254,0.3); }
+        .download-action:hover { transform: scale(1.05); }
         .delete-action { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .delete-action:hover { background: rgba(239, 68, 68, 0.4); }
 
         /* Toast Bildirishnoma */
         #toast {
-            visibility: hidden; min-width: 250px; background-color: #141428; color: #fff; border: 1px solid var(--primary);
-            text-align: center; border-radius: 12px; padding: 1rem; position: fixed; z-index: 3000; right: 30px; bottom: 30px; font-size: 0.95rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            visibility: hidden; min-width: 260px; background-color: rgba(15, 15, 35, 0.95); color: #fff; border: 1px solid var(--primary);
+            text-align: center; border-radius: 16px; padding: 1.1rem; position: fixed; z-index: 3000; right: 30px; bottom: 30px; font-size: 1rem;
+            box-shadow: 0 15px 40px rgba(0,242,254,0.25);
         }
-        #toast.show { visibility: visible; animation: fadein 0.3s, fadeout 0.3s 2.5s; }
+        #toast.show { visibility: visible; animation: fadein 0.4s, fadeout 0.4s 2.6s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
         #loadingOverlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3,3,12,0.85); z-index: 2000; justify-content: center; align-items: center;
-            color: var(--primary); font-size: 1.1rem; font-weight: bold; flex-direction: column; gap: 15px;
+            background: rgba(2,2,8,0.9); z-index: 2000; justify-content: center; align-items: center;
+            color: var(--primary); font-size: 1.2rem; font-weight: bold; flex-direction: column; gap: 20px;
+            backdrop-filter: blur(15px);
         }
+        .spinner {
+            width: 50px; height: 50px; border: 3px solid rgba(0,242,254,0.1); border-top: 3px solid var(--primary);
+            border-radius: 50%; animation: spin 1s linear infinite; box-shadow: 0 0 20px rgba(0,242,254,0.5);
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         input[type="file"] { display: none; }
     </style>
 </head>
 <body>
     <div id="webgl-container"></div>
-    <div id="loadingOverlay"><div style="font-size: 2rem;">⏳</div><span id="loadingText">Yuklanmoqda...</span></div>
+    <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">Yuklanmoqda...</span></div>
     <div id="toast">Xabar</div>
 
     <!-- Kirish Oynasi -->
     <div id="authOverlay">
         <div class="auth-box">
             <h2>PHANTOM SPACE</h2>
-            <p>Xavfsiz Bulutga Kirish Paroli</p>
-            <input type="password" id="secretPass" placeholder="Parolni kiriting..." onkeypress="if(event.key==='Enter') login()">
-            <button class="auth-btn" onclick="login()">Omborga Kirish</button>
+            <p>3D Xavfsiz Bulut Portali</p>
+            <input type="password" id="secretPass" placeholder="Maxfiy parolni kiriting..." onkeypress="if(event.key==='Enter') login()">
+            <button class="auth-btn" onclick="login()">Tizimga ulanish</button>
         </div>
     </div>
 
@@ -147,23 +172,23 @@
     <div class="main-app" id="mainApp">
         <header>
             <h1>PHANTOM SPACE</h1>
-            <p style="color: #a0aec0;">Serverda Himoyalangan Shifrlangan Bulut</p>
+            <p style="color: #a0aec0;">Kvant Shifrlangan Bulutli Ombor</p>
         </header>
 
         <div class="controls-bar">
             <div class="search-box">
                 <span>🔍</span>
-                <input type="text" id="searchInput" placeholder="Fayllarni qidirish..." oninput="renderFiles()">
+                <input type="text" id="searchInput" placeholder="Fayllar orasidan qidirish..." oninput="renderFiles()">
             </div>
             <div class="stats-badge">
-                Fayllar: <strong id="fileCount">0 ta</strong>
+                Ombordagi fayllar: <strong id="fileCount">0 ta</strong>
             </div>
         </div>
 
         <div class="upload-panel" id="dropZone" onclick="document.getElementById('fileInput').click()">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">☁️</div>
-            <p>Fayllarni tanlang yoki shu yerga sudrab tashlang</p>
-            <button class="upload-btn">Fayl Yuklash</button>
+            <div style="font-size: 3rem; margin-bottom: 0.8rem; filter: drop-shadow(0 0 15px rgba(0,242,254,0.5));">☁️</div>
+            <p style="font-size: 1.1rem; font-weight: 500;">Fayllarni tanlang yoki shu yerga sudrab tashlang</p>
+            <button class="upload-btn">Bulutga Yuklash</button>
             <input type="file" id="fileInput" multiple onchange="uploadFiles(this.files)">
         </div>
 
@@ -373,24 +398,60 @@
             if(e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files);
         });
 
-        // Three.js Fon Animatsiyasi
-        const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        // --- Three.js 3D Interaktiv Kosmik Fon va Geometriya ---
+        const container = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); 
         renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('webgl-container').appendChild(renderer.domElement);
-        
-        const geom = new THREE.BufferGeometry(); 
-        const pos = new Float32Array(1200 * 3);
-        for(let i=0; i<3600; i++) pos[i] = (Math.random() - 0.5) * 200;
-        geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const stars = new THREE.Points(geom, new THREE.PointsMaterial({size: 0.7, color: 0x00f2fe}));
-        scene.add(stars); camera.position.z = 50;
-        
-        (function anim() { 
-            requestAnimationFrame(anim); 
-            stars.rotation.y += 0.0008; 
+        container.appendChild(renderer.domElement);
+
+        // 3D Markaziy Kosmik Torus Halqasi
+        const torusGeometry = new THREE.TorusGeometry(12, 0.4, 16, 100);
+        const torusMaterial = new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.25 });
+        const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+        scene.add(torus);
+
+        // Yulduzlar qatlami
+        const starsGeo = new THREE.BufferGeometry(); 
+        const starPositions = new Float32Array(2000 * 3);
+        for(let i = 0; i < 6000; i++) starPositions[i] = (Math.random() - 0.5) * 300;
+        starsGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starsMat = new THREE.PointsMaterial({ size: 0.8, color: 0x4facfe });
+        const stars = new THREE.Points(starsGeo, starsMat);
+        scene.add(stars);
+
+        camera.position.z = 35;
+
+        // Sichqoncha harakatiga ko'ra 3D sahnani yengil burish
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.0005;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.0005;
+        });
+
+        (function animate3D() { 
+            requestAnimationFrame(animate3D); 
+            
+            // Sahnani animatsiya qilish
+            stars.rotation.y += 0.0008;
+            torus.rotation.x += 0.003;
+            torus.rotation.y += 0.005;
+
+            // Kameraning sichqonchaga reaksiyasi
+            camera.position.x += (mouseX - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
             renderer.render(scene, camera); 
         })();
+
+        // Ekran o'lchami o'zgarganda
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
