@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phantom Space — Quantum Secure Cloud</title>
-    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00f2fe">
     <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/192/futuristic.png">
     
@@ -63,7 +62,6 @@
         }
         .auth-btn:hover { transform: scale(1.03); }
 
-        /* Kのうちta Hajmini Tanlash Modali */
         #quotaModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(1, 1, 8, 0.95); backdrop-filter: blur(35px);
@@ -143,7 +141,6 @@
         .file-name { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .file-size { font-size: 0.9rem; color: #8a99ad; }
 
-        /* Modal oyna */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(1, 1, 8, 0.88); backdrop-filter: blur(30px);
@@ -229,7 +226,6 @@
     <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">Yuklanmoqda...</span></div>
     <div id="toast">Xabar</div>
 
-    <!-- Kirish Oynasi -->
     <div id="authOverlay">
         <div class="auth-box">
             <div class="auth-logo">🌌</div>
@@ -240,7 +236,6 @@
         </div>
     </div>
 
-    <!-- Xotira Hajmini Tanlash Oynasi (Faqat 1 marta chiqadi) -->
     <div id="quotaModal">
         <div class="quota-box">
             <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 900;">Xotira Hajmini Tanlang</h3>
@@ -254,7 +249,6 @@
         </div>
     </div>
 
-    <!-- Asosiy Dastur Interfeysi -->
     <div class="main-app" id="mainApp">
         <header>
             <div class="header-btns">
@@ -293,7 +287,6 @@
         <div class="files-container" id="filesGrid"></div>
     </div>
 
-    <!-- Fayl tafsilotlari Modal -->
     <div class="modal" id="fileModal" onclick="closeModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-close-icon" onclick="closeModalBtn()">✕</div>
@@ -306,7 +299,6 @@
         </div>
     </div>
 
-    <!-- Chiqindi Qutisi Modal -->
     <div class="modal" id="trashModal" onclick="closeTrashModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-close-icon" onclick="document.getElementById('trashModal').style.display='none'">✕</div>
@@ -317,7 +309,6 @@
         </div>
     </div>
 
-    <!-- Qurilma va Tizim Tanlash Oynasi -->
     <div id="deviceModal" style="display: none;">
         <div class="device-box">
             <h3>Qurilmani Tanlang</h3>
@@ -411,7 +402,7 @@
             document.getElementById('mainApp').style.display = 'flex';
             updateStorageStats();
             renderFiles();
-            showToast(`Xotira hajmi ${gb} GB qilib muvaffaqiyatli belgilandi!`);
+            showToast('Xotira hajmi muvaffaqiyatli belgilandi!');
         }
 
         function logout() {
@@ -438,10 +429,10 @@
             let maxBytes = userQuotaGB * 1024 * 1024 * 1024;
 
             if ((totalCurrentBytes + incomingBytes) > maxBytes) {
-                return showToast(`Xotira yetarli emas! Sizning tanlagan limit: ${userQuotaGB} GB`);
+                return showToast('Xotira yetarli emas!');
             }
 
-            setLoading(true, 'Fayllar bulutga yuklanmoqda...');
+            setLoading(true, 'Fayllar yuklanmoqda...');
             
             let promises = Array.from(newFiles).map(f => {
                 return new Promise((resolve, reject) => {
@@ -540,7 +531,7 @@
             listContainer.innerHTML = '';
 
             if(trashList.length === 0) {
-                listContainer.innerHTML = '<p style="color: #8a99ad; text-align: center;">Chiqindi qutisi bo'sh</p>';
+                listContainer.innerHTML = '<p style="color: #8a99ad; text-align: center;">Chiqindi qutisi boch</p>';
             } else {
                 trashList.forEach(f => {
                     let item = document.createElement('div');
@@ -604,7 +595,7 @@
             if(type === 'PC') {
                 btnPC.classList.add('active');
                 btnPhone.classList.remove('active');
-                ['Windows (64-bit / 32-bit)', 'macOS (Apple Silicon / Intel)', 'Linux (Ubuntu, Debian, Fedora va b.)'].forEach(sys => {
+                ['Windows (64-bit / 32-bit)', 'macOS (Apple Silicon / Intel)', 'Linux'].forEach(sys => {
                     let opt = document.createElement('option');
                     opt.value = sys;
                     opt.innerText = sys;
@@ -613,7 +604,7 @@
             } else {
                 btnPhone.classList.add('active');
                 btnPC.classList.remove('active');
-                ['Android (Samsung, Redmi, Poco va b.)', 'iOS (iPhone / iPad)', 'HarmonyOS'].forEach(sys => {
+                ['Android', 'iOS (iPhone / iPad)', 'HarmonyOS'].forEach(sys => {
                     let opt = document.createElement('option');
                     opt.value = sys;
                     opt.innerText = sys;
@@ -627,7 +618,7 @@
             let sys = document.getElementById('sysSelect').value;
             document.getElementById('deviceModal').style.display = 'none';
 
-            showToast(`Fayl ${selectedDevice} (${sys}) uchun yuklanmoqda...`);
+            showToast('Fayl yuklanmoqda...');
 
             let a = document.createElement('a');
             a.href = selectedFileForDownload.data;
@@ -645,7 +636,6 @@
             if(e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files);
         });
 
-        // Three.js Fon Animatsiyasi
         const container = document.getElementById('webgl-container');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
