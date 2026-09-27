@@ -3,634 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phantom Space — Server Guarded Vault</title>
+    <title>Phantom Space — Secure Cloud</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
             --primary: #00f2fe;
             --secondary: #4facfe;
-            --accent: #8a2be2;
             --bg: #03030c;
             --card-bg: rgba(255, 255, 255, 0.03);
             --border: rgba(255, 255, 255, 0.1);
         }
-        [data-theme="matrix"] {
-            --primary: #00ff66;
-            --secondary: #00cc44;
-            --accent: #003311;
-            --bg: #010803;
-            --card-bg: rgba(0, 255, 102, 0.03);
-            --border: rgba(0, 255, 102, 0.15);
-        }
-        [data-theme="purple"] {
-            --primary: #d946ef;
-            --secondary: #a855f7;
-            --accent: #6366f1;
-            --bg: #08030c;
-            --card-bg: rgba(217, 70, 239, 0.03);
-            --border: rgba(217, 70, 239, 0.15);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; position: relative; overflow-x: hidden; }
+        #webgl-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: background 0.3s, border-color 0.3s;
-        }
-        body {
-            background-color: var(--bg);
-            color: #ffffff;
-            min-height: 100vh;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 2rem;
-            position: relative;
-        }
-        #webgl-container {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Kirish Oynasi */
+        /* Sodda va qulay kirish oynasi */
         #authOverlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 3, 12, 0.95);
-            backdrop-filter: blur(20px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 3, 12, 0.95); backdrop-filter: blur(20px);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
         }
         .auth-box {
-            background: rgba(20, 20, 40, 0.9);
-            border: 1px solid var(--primary);
-            padding: 2.5rem;
-            border-radius: 24px;
-            text-align: center;
-            box-shadow: 0 0 50px rgba(0, 242, 254, 0.2);
-            width: 90%;
-            max-width: 420px;
+            background: rgba(20, 20, 40, 0.9); border: 1px solid var(--primary);
+            padding: 2.5rem; border-radius: 24px; text-align: center; width: 90%; max-width: 380px;
+            box-shadow: 0 0 40px rgba(0, 242, 254, 0.2);
         }
-        .auth-box h2 {
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-            letter-spacing: 2px;
-        }
-        .auth-box p {
-            color: #a0aec0;
-            font-size: 0.85rem;
-            margin-bottom: 1.5rem;
-        }
+        .auth-box h2 { color: var(--primary); margin-bottom: 0.5rem; letter-spacing: 2px; }
+        .auth-box p { color: #a0aec0; font-size: 0.85rem; margin-bottom: 1.5rem; }
         .auth-box input {
-            width: 100%;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--border);
-            padding: 0.8rem 1rem;
-            border-radius: 12px;
-            color: #fff;
-            font-size: 0.95rem;
-            outline: none;
-            margin-bottom: 1rem;
+            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+            padding: 0.9rem 1rem; border-radius: 12px; color: #fff; font-size: 1rem;
+            outline: none; margin-bottom: 1rem; text-align: center;
         }
         .auth-box input:focus { border-color: var(--primary); }
         .auth-btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: #03030c;
-            border: none;
-            padding: 0.8rem 2rem;
-            font-weight: bold;
-            border-radius: 20px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
+            color: #03030c; border: none; padding: 0.9rem; font-weight: bold;
+            border-radius: 15px; cursor: pointer; width: 100%; font-size: 1rem;
             box-shadow: 0 10px 20px rgba(0,242,254,0.3);
-            margin-top: 0.5rem;
         }
 
-        .main-app {
-            display: none;
-            width: 100%;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-            z-index: 2;
-            width: 100%;
-            max-width: 1100px;
-        }
-        h1 {
-            font-size: 3rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 3px;
-            margin-bottom: 0.3rem;
-        }
-        .user-badge {
-            display: inline-block;
-            background: rgba(0, 242, 254, 0.1);
-            border: 1px solid var(--primary);
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-            cursor: pointer;
-        }
-
-        .top-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            width: 100%;
-        }
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 0.7rem 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .search-box input {
-            background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 0.95rem;
-        }
-        .theme-switcher { display: flex; gap: 8px; }
-        .theme-btn {
-            width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; transition: 0.2s;
-        }
-        .theme-btn.cyan { background: #00f2fe; }
-        .theme-btn.matrix { background: #00ff66; }
-        .theme-btn.purple { background: #d946ef; }
-        .theme-btn:hover { transform: scale(1.1); }
-
-        .stats-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(20px);
-            padding: 1rem 2rem;
-            border-radius: 20px;
-            display: inline-flex;
-            gap: 2.5rem;
-            margin-top: 1.5rem;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-        }
-        .stat-item span { display: block; font-size: 0.8rem; color: #a0aec0; }
-        .stat-item strong { font-size: 1.2rem; color: var(--primary); }
+        .main-app { display: none; width: 100%; flex-direction: column; align-items: center; }
+        header { text-align: center; margin-bottom: 2rem; z-index: 2; width: 100%; max-width: 1100px; }
+        h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 0.3rem; letter-spacing: 2px; }
         
         .upload-panel {
-            background: var(--card-bg);
-            border: 2px dashed var(--primary);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 1100px;
-            text-align: center;
-            margin-bottom: 2.5rem;
-            cursor: pointer;
-            transition: 0.3s;
-            z-index: 2;
+            background: var(--card-bg); border: 2px dashed var(--primary); backdrop-filter: blur(20px);
+            border-radius: 24px; padding: 2rem; width: 100%; max-width: 1100px; text-align: center;
+            margin-bottom: 2rem; cursor: pointer; transition: 0.3s; z-index: 2;
         }
-        .upload-panel:hover { background: rgba(0, 242, 254, 0.04); box-shadow: 0 10px 30px rgba(0, 242, 254, 0.15); }
+        .upload-panel:hover { background: rgba(0, 242, 254, 0.04); }
         .upload-btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: #03030c; border: none; padding: 0.8rem 2rem; font-size: 1rem; font-weight: bold;
-            border-radius: 30px; cursor: pointer; margin-top: 1rem; box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3);
+            border-radius: 30px; cursor: pointer; margin-top: 1rem;
         }
 
         .files-container {
-            width: 100%;
-            max-width: 1100px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-            z-index: 2;
+            width: 100%; max-width: 1100px; display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; z-index: 2;
         }
         .file-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            cursor: pointer;
-            position: relative;
+            background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(15px);
+            border-radius: 20px; padding: 1.5rem; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
-        .file-card:hover { border-color: var(--primary); box-shadow: 0 25px 50px rgba(0, 242, 254, 0.2); }
-        .file-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
-        .file-name { font-size: 1.05rem; font-weight: bold; margin-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .file-size { font-size: 0.85rem; color: #a0aec0; }
-
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 3, 12, 0.85); backdrop-filter: blur(10px);
-            justify-content: center; align-items: center; z-index: 100;
-        }
-        .modal-content {
-            background: rgba(20, 20, 40, 0.95); border: 1px solid var(--primary);
-            border-radius: 24px; padding: 2.5rem; width: 90%; max-width: 550px; text-align: center;
-        }
-        .modal-title { font-size: 1.3rem; color: var(--primary); margin-bottom: 1rem; word-break: break-all; }
-        .modal-body { color: #cbd5e1; font-size: 0.95rem; margin-bottom: 1.5rem; max-height: 250px; overflow-y: auto; text-align: left; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px;}
-        .modal-preview img { max-width: 100%; max-height: 150px; border-radius: 8px; margin-top: 10px; }
-        .modal-actions { display: flex; gap: 10px; justify-content: center; }
-        .action-btn { padding: 0.6rem 1.4rem; font-weight: bold; border-radius: 20px; cursor: pointer; border: none; }
-        .download-action { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: #03030c; }
-        .delete-action { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .file-card:hover { border-color: var(--primary); }
+        .file-name { font-size: 1rem; font-weight: bold; margin-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-size { font-size: 0.8rem; color: #a0aec0; }
         input[type="file"] { display: none; }
-        
+
         #loadingOverlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3,3,12,0.8); z-index: 2000; justify-content: center; align-items: center;
-            color: var(--primary); font-size: 1.2rem; font-weight: bold;
+            background: rgba(3,3,12,0.85); z-index: 2000; justify-content: center; align-items: center;
+            color: var(--primary); font-size: 1.1rem; font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div id="webgl-container"></div>
-    <div id="loadingOverlay">Server bazasi tekshirilmoqda...</div>
+    <div id="loadingOverlay">Yuklanmoqda...</div>
 
-    <!-- Server Himoyalangan Kirish Oynasi -->
+    <!-- Juda sodda kirish oynasi (Faqat parol) -->
     <div id="authOverlay">
         <div class="auth-box">
             <h2>PHANTOM SPACE</h2>
-            <p>Server Parol Bazasi Himoyasi</p>
-            <input type="text" id="ghUser" placeholder="GitHub Username">
-            <input type="text" id="ghRepo" placeholder="Repository nomi">
-            <input type="password" id="ghToken" placeholder="GitHub Token (PAT)">
-            <input type="password" id="secretPass" placeholder="Shaxsiy Parolingiz" style="margin-top: 10px; border-color: var(--primary);">
-            <button class="auth-btn" onclick="verifyServerPassword()">Serverga Ulanish</button>
+            <p>Shaxsiy parolingizni kiriting</p>
+            <input type="password" id="secretPass" placeholder="Parol (PIN)">
+            <button class="auth-btn" onclick="login()">Kirish</button>
         </div>
     </div>
 
-    <!-- Asosiy Dastur Qismi -->
+    <!-- Asosiy Dastur -->
     <div class="main-app" id="mainApp">
         <header>
-            <div class="user-badge" onclick="logout()" title="Chiqish">Server Himoyasi: Faol 🔒</div>
             <h1>PHANTOM SPACE</h1>
-            <p style="color: #a0aec0;">Serverda Saqlanuvchi Shifrlangan Bulut</p>
-            
-            <div class="top-controls">
-                <div class="search-box">
-                    <span>🔍</span>
-                    <input type="text" id="searchInput" placeholder="Fayllarni qidirish..." oninput="renderFiles()">
-                </div>
-                <div class="theme-switcher">
-                    <div class="theme-btn cyan" onclick="setTheme('cyan')"></div>
-                    <div class="theme-btn matrix" onclick="setTheme('matrix')"></div>
-                    <div class="theme-btn purple" onclick="setTheme('purple')"></div>
-                </div>
-            </div>
-
-            <div class="stats-box">
-                <div class="stat-item">
-                    <span>Bazaviy Himoya</span>
-                    <strong>SERVERGA BOG'LANGAN</strong>
-                </div>
-                <div class="stat-item">
-                    <span>Fayllar Soni</span>
-                    <strong id="fileCount">0 ta</strong>
-                </div>
-            </div>
+            <p style="color: #a0aec0;">Bulutli Xavfsiz Ombor</p>
         </header>
 
         <div class="upload-panel" onclick="document.getElementById('fileInput').click()">
-            <div style="font-size: 2rem; margin-bottom: 0.5rem;">☁️</div>
-            <p>Fayllarni tanlang (Server bulutiga ketadi)</p>
+            <p>📁 Fayllarni tanlang (Kompyuter xotirasiga saqlanmaydi)</p>
             <button class="upload-btn">Bulutga Yuklash</button>
-            <input type="file" id="fileInput" multiple onchange="uploadToCloud(this.files)">
+            <input type="file" id="fileInput" multiple onchange="uploadFiles(this.files)">
         </div>
 
         <div class="files-container" id="filesGrid"></div>
     </div>
 
-    <div class="modal" id="fileModal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-title" id="modalFileName"></div>
-            <div class="modal-body" id="modalFileContent"></div>
-            <div class="modal-actions" id="modalActions"></div>
-        </div>
-    </div>
-
     <script>
-        let config = { user: '', repo: '', token: '', pass: '' };
+        // --- SOZLAMALAR (Bularni o'zingizning GitHub ma'lumotlaringiz bilan to'ldiring) ---
+        const GH_USER = "SIZNING_GITHUB_USERNAME"; 
+        const GH_REPO = "SIZNING_REPO_NOMI";
+        const GH_TOKEN = "SIZning_GITHUB_TOKENINGiz";
+        // --------------------------------------------------------------------------------
+
+        let currentPass = '';
         let filesList = [];
-        let deviceId = localStorage.getItem('phantom_device_id');
-        if(!deviceId) {
-            deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + Date.now();
-            localStorage.setItem('phantom_device_id', deviceId);
-        }
+        let deviceId = localStorage.getItem('phantom_dev_id') || ('dev_' + Math.random().toString(36).substr(2, 9));
+        localStorage.setItem('phantom_dev_id', deviceId);
 
-        // Three.js Galaktika Foni
-        const container = document.getElementById('webgl-container');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        container.appendChild(renderer.domElement);
-
-        const particlesCount = 1200;
-        const geometry = new THREE.BufferGeometry();
-        const positions = new Float32Array(particlesCount * 3);
-        for(let i = 0; i < particlesCount * 3; i++) { positions[i] = (Math.random() - 0.5) * 200; }
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const material = new THREE.PointsMaterial({ size: 0.7, color: 0x00f2fe });
-        const particles = new THREE.Points(geometry, material);
-        scene.add(particles);
-        camera.position.z = 50;
-
-        function animateStars() {
-            requestAnimationFrame(animateStars);
-            particles.rotation.y += 0.0008;
-            renderer.render(scene, camera);
-        }
-        animateStars();
-
-        window.onload = function() {
-            let saved = localStorage.getItem('phantom_auth_data');
-            if(saved) {
-                let parsed = JSON.parse(saved);
-                document.getElementById('ghUser').value = parsed.user;
-                document.getElementById('ghRepo').value = parsed.repo;
-                document.getElementById('ghToken').value = parsed.token;
-                document.getElementById('secretPass').value = parsed.pass;
-                verifyServerPassword(true);
-            }
-        }
-
-        async function verifyServerPassword(auto = false) {
-            config.user = document.getElementById('ghUser').value.trim();
-            config.repo = document.getElementById('ghRepo').value.trim();
-            config.token = document.getElementById('ghToken').value.trim();
-            config.pass = document.getElementById('secretPass').value.trim();
-
-            if(!config.user || !config.repo || !config.token || !config.pass) {
-                return alert('Barcha maydonlarni to\'ldiring!');
-            }
+        async function login() {
+            currentPass = document.getElementById('secretPass').value.trim();
+            if(!currentPass) return alert('Parolni kiriting!');
 
             document.getElementById('loadingOverlay').style.display = 'flex';
-            document.getElementById('loadingOverlay').innerText = 'Serverdagi parol bazasi tekshirilmoqda...';
+            document.getElementById('loadingOverlay').innerText = 'Tekshirilmoqda...';
 
             try {
-                // Serverdagi passwords_db.json faylini o'qib olamiz
-                let dbRes = await fetch(`https://api.github.com/repos/${config.user}/${config.repo}/contents/passwords_db.json`, {
-                    headers: { 'Authorization': `token ${config.token}` }
+                let res = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/passwords_db.json`, {
+                    headers: { 'Authorization': `token ${GH_TOKEN}` }
                 });
 
-                let passwordsMap = {};
-                let fileSha = null;
-
-                if(dbRes.ok) {
-                    let fileData = await dbRes.json();
-                    fileSha = fileData.sha;
-                    let decoded = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
-                    passwordsMap = decoded;
+                let db = {};
+                let sha = null;
+                if(res.ok) {
+                    let fileData = await res.json();
+                    sha = fileData.sha;
+                    db = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
                 }
 
-                let passKey = btoa(config.pass); // Parolni server uchun shifrlash
+                let passKey = btoa(currentPass);
 
-                // Server bazasidan tekshiruv
-                if(passwordsMap[passKey]) {
-                    // Agar bu parol oldin band qilingan bo'lsa, uni boshqa qurilmadan kiritishganmi tekshiramiz
-                    if(passwordsMap[passKey] !== deviceId) {
-                        throw new Error('Xatolik: Bu parol allaqachon server bazasida boshqa foydalanuvchiga tegishli! Uni qayta ishlatib bo\'lmaydi.');
+                if(db[passKey]) {
+                    if(db[passKey] !== deviceId) {
+                        throw new Error('Bu parol boshqa qurilma tomonidan band qilingan!');
                     }
                 } else {
-                    // Agar parol hali bazada bo'lmasa, uni server bazasiga shu qurilma uchun band qilib yozamiz
-                    passwordsMap[passKey] = deviceId;
-                    
-                    let contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(passwordsMap))));
-                    let putBody = {
-                        message: 'Register password ownership on server',
-                        content: contentEncoded
-                    };
-                    if(fileSha) putBody.sha = fileSha;
-
-                    await fetch(`https://api.github.com/repos/${config.user}/${config.repo}/contents/passwords_db.json`, {
+                    db[passKey] = deviceId;
+                    await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/passwords_db.json`, {
                         method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${config.token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(putBody)
+                        headers: { 'Authorization': `token ${GH_TOKEN}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: 'New pass', content: btoa(unescape(encodeURIComponent(JSON.stringify(db)))), sha: sha })
                     });
                 }
 
-                // Muvaffaqiyatli ulandi
-                localStorage.setItem('phantom_auth_data', JSON.stringify(config));
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'flex';
-                await loadCloudFiles();
-
-            } catch(err) {
-                alert(err.message);
-            } finally {
-                document.getElementById('loadingOverlay').style.display = 'none';
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('phantom_auth_data');
-            location.reload();
-        }
-
-        async function loadCloudFiles() {
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            document.getElementById('loadingOverlay').innerText = 'Serverdan fayllar yuklanmoqda...';
-            try {
-                let folderName = `server_vault_${btoa(config.pass).substr(0,10)}`;
-                let res = await fetch(`https://api.github.com/repos/${config.user}/${config.repo}/contents/${folderName}`, {
-                    headers: { 'Authorization': `token ${config.token}` }
-                });
-                if(res.ok) {
-                    let items = await res.json();
-                    filesList = [];
-                    for(let item of items) {
-                        if(item.type === 'file') {
-                            let fileRes = await fetch(item.download_url);
-                            let fileData = await fileRes.json();
-                            filesList.push(fileData);
-                        }
-                    }
-                } else {
-                    filesList = [];
-                }
-                renderFiles();
-                updateStats();
+                await loadFiles();
             } catch(e) {
-                console.error(e);
+                alert(e.message);
             } finally {
                 document.getElementById('loadingOverlay').style.display = 'none';
             }
         }
 
-        async function uploadToCloud(newFiles) {
+        async function loadFiles() {
             document.getElementById('loadingOverlay').style.display = 'flex';
-            let folderName = `server_vault_${btoa(config.pass).substr(0,10)}`;
-
-            for(let i = 0; i < newFiles.length; i++) {
-                let file = newFiles[i];
-                document.getElementById('loadingOverlay').innerText = `${file.name} serverga yuklanmoqda...`;
-                
-                let base64Data = await toBase64(file);
-                let fileObj = {
-                    id: 'file_' + Date.now() + Math.random().toString(36).substr(2, 9),
-                    name: file.name,
-                    size: file.size,
-                    type: file.type,
-                    lastModified: file.lastModified,
-                    data: base64Data
-                };
-
-                let path = `${folderName}/${fileObj.id}.json`;
-                let contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(fileObj))));
-
-                await fetch(`https://api.github.com/repos/${config.user}/${config.repo}/contents/${path}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${config.token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Upload file to server vault`,
-                        content: contentEncoded
-                    })
+            try {
+                let folder = `vault_${btoa(currentPass).substr(0,10)}`;
+                let res = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${folder}`, {
+                    headers: { 'Authorization': `token ${GH_TOKEN}` }
                 });
-            }
-
-            await loadCloudFiles();
-            document.getElementById('loadingOverlay').style.display = 'none';
+                filesList = res.ok ? await Promise.all((await res.json()).map(async f => await (await fetch(f.download_url)).json())) : [];
+                render();
+            } catch(e) { console.error(e); }
+            finally { document.getElementById('loadingOverlay').style.display = 'none'; }
         }
 
-        function toBase64(file) {
-            return new Promise((resolve, reject) => {
+        async function uploadFiles(newFiles) {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            let folder = `vault_${btoa(currentPass).substr(0,10)}`;
+            for(let f of newFiles) {
                 let reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        function renderFiles() {
-            const grid = document.getElementById('filesGrid');
-            grid.innerHTML = '';
-            let query = document.getElementById('searchInput').value.toLowerCase();
-            let filtered = filesList.filter(f => f.name.toLowerCase().includes(query));
-
-            filtered.forEach(item => {
-                let card = document.createElement('div');
-                card.className = 'file-card';
-                card.innerHTML = `
-                    <div class="file-icon">${item.type && item.type.includes('image') ? '🖼️' : '📁'}</div>
-                    <div class="file-name" title="${item.name}">${item.name}</div>
-                    <div class="file-size">${formatBytes(item.size)}</div>
-                `;
-                card.addEventListener('click', () => openFileDetails(item));
-                grid.appendChild(card);
-            });
-        }
-
-        function formatBytes(bytes) {
-            if (!bytes || bytes === 0) return '0 MB';
-            let mb = bytes / (1024 * 1024);
-            return mb < 1024 ? mb.toFixed(2) + ' MB' : (mb / 1024).toFixed(2) + ' GB';
-        }
-
-        function updateStats() {
-            document.getElementById('fileCount').innerText = filesList.length + ' ta';
-        }
-
-        async function openFileDetails(item) {
-            document.getElementById('modalFileName').innerText = item.name;
-            const contentBox = document.getElementById('modalFileContent');
-            const actionsBox = document.getElementById('modalActions');
-
-            let infoHTML = `
-                <b>Hajmi:</b> ${formatBytes(item.size)}<br>
-                <b>Turi:</b> ${item.type || 'Nomaʼlum'}<br>
-                <b>Sana:</b> ${new Date(item.lastModified).toLocaleDateString()}<br>
-            `;
-
-            if (item.type && item.type.includes('image')) {
-                infoHTML += `<div style="text-align:center;"><img src="${item.data}" class="modal-preview"></div>`;
-            }
-            contentBox.innerHTML = infoHTML;
-
-            actionsBox.innerHTML = `
-                <button class="action-btn download-action" onclick="downloadFile('${item.id}')">Yuklab olish</button>
-                <button class="action-btn delete-action" onclick="deleteFile('${item.id}')">O'chirish</button>
-            `;
-
-            document.getElementById('fileModal').style.display = 'flex';
-        }
-
-        function downloadFile(id) {
-            let item = filesList.find(f => f.id == id);
-            if (!item) return;
-            let a = document.createElement('a');
-            a.href = item.data;
-            a.download = item.name;
-            a.click();
-        }
-
-        async function deleteFile(id) {
-            if(!confirm('Bu faylni o\'chirasizmi?')) return;
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            document.getElementById('loadingOverlay').innerText = 'O\'chirilmoqda...';
-
-            let folderName = `server_vault_${btoa(config.pass).substr(0,10)}`;
-            let path = `${folderName}/${id}.json`;
-            try {
-                let getRes = await fetch(`https://api.github.com/repos/${config.user}/${config.repo}/contents/${path}`, {
-                    headers: { 'Authorization': `token ${config.token}` }
+                reader.readAsDataURL(f);
+                await new Promise(r => reader.onload = r);
+                
+                let fileObj = { id: 'f_' + Date.now() + Math.random(), name: f.name, size: f.size, data: reader.result };
+                await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${folder}/${fileObj.id}.json`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${GH_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: 'Upload', content: btoa(unescape(encodeURIComponent(JSON.stringify(fileObj)))) })
                 });
-                if(getRes.ok) {
-                    let fileData = await getRes.json();
-                    await fetch(`https://api.github.com/repos/${config.user}/${config.repo}/contents/${path}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `token ${config.token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `Delete file from server`,
-                            sha: fileData.sha
-                        })
-                    });
-                }
-                await loadCloudFiles();
-                closeModalBtn();
-            } catch(e) {
-                alert('Xatolik: ' + e.message);
-            } finally {
-                document.getElementById('loadingOverlay').style.display = 'none';
             }
+            await loadFiles();
         }
 
-        function closeModal(e) { if (e.target.id === 'fileModal') closeModalBtn(); }
-        function closeModalBtn() { document.getElementById('fileModal').style.display = 'none'; }
-
-        function setTheme(name) {
-            if(name === 'cyan') document.documentElement.removeAttribute('data-theme');
-            else document.documentElement.setAttribute('data-theme', name);
+        function render() {
+            let grid = document.getElementById('filesGrid');
+            grid.innerHTML = '';
+            filesList.forEach(f => {
+                grid.innerHTML += `<div class="file-card" onclick="download('${f.id}')">
+                    <div class="file-name">${f.name}</div>
+                    <div class="file-size">${(f.size/1024/1024).toFixed(2)} MB</div>
+                </div>`;
+            });
         }
+
+        function download(id) {
+            let f = filesList.find(x => x.id == id);
+            let a = document.createElement('a'); a.href = f.data; a.download = f.name; a.click();
+        }
+
+        // Three.js Fon
+        const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true }); renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('webgl-container').appendChild(renderer.domElement);
+        const geom = new THREE.BufferGeometry(); const pos = new Float32Array(1000 * 3);
+        for(let i=0; i<3000; i++) pos[i] = (Math.random() - 0.5) * 200;
+        geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        const stars = new THREE.Points(geom, new THREE.PointsMaterial({size: 0.7, color: 0x00f2fe}));
+        scene.add(stars); camera.position.z = 50;
+        (function anim() { requestAnimationFrame(anim); stars.rotation.y += 0.001; renderer.render(scene, camera); })();
     </script>
 </body>
 </html>
