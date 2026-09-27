@@ -101,23 +101,64 @@
         .file-name { font-size: 1.05rem; font-weight: bold; margin-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .file-size { font-size: 0.85rem; color: #a0aec0; }
 
+        /* --- Yangi Chiroyli va Premium Modal Dizayn --- */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 2, 8, 0.85); backdrop-filter: blur(15px);
+            background: rgba(2, 2, 8, 0.8); backdrop-filter: blur(20px);
             justify-content: center; align-items: center; z-index: 100;
+            animation: fadeInModal 0.3s ease;
         }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+
         .modal-content {
-            background: rgba(15, 15, 35, 0.9); border: 1px solid var(--primary);
-            border-radius: 28px; padding: 2.5rem; width: 90%; max-width: 520px; text-align: center;
-            box-shadow: 0 0 50px rgba(0,242,254,0.3);
+            background: rgba(10, 10, 25, 0.85); border: 1px solid var(--primary);
+            border-radius: 30px; padding: 2.5rem; width: 90%; max-width: 580px; text-align: center;
+            box-shadow: 0 0 60px rgba(0, 242, 254, 0.25), inset 0 0 20px rgba(0, 242, 254, 0.05);
+            backdrop-filter: blur(30px);
+            transform: scale(0.9); animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
         }
-        .modal-title { font-size: 1.3rem; color: var(--primary); margin-bottom: 1rem; word-break: break-all; }
-        .modal-body { color: #cbd5e1; font-size: 0.95rem; margin-bottom: 1.8rem; text-align: left; background: rgba(0,0,0,0.4); padding: 1.2rem; border-radius: 16px; }
-        .modal-preview img { max-width: 100%; max-height: 200px; border-radius: 12px; margin-top: 12px; display: block; margin-left: auto; margin-right: auto; }
-        .modal-actions { display: flex; gap: 12px; justify-content: center; }
-        .action-btn { padding: 0.7rem 1.6rem; font-weight: bold; border-radius: 22px; cursor: pointer; border: none; font-size: 0.95rem; transition: 0.3s; }
-        .download-action { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #020208; }
-        .delete-action { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+        @keyframes scaleUp { to { transform: scale(1); } }
+
+        .modal-close-icon {
+            position: absolute; top: 20px; right: 22px; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border); color: #fff; width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; font-size: 1.1rem;
+        }
+        .modal-close-icon:hover { background: rgba(0,242,254,0.2); border-color: var(--primary); transform: rotate(90deg); }
+
+        .modal-title { font-size: 1.4rem; color: var(--primary); margin-bottom: 1.2rem; word-break: break-all; font-weight: 600; text-shadow: 0 0 10px rgba(0,242,254,0.3); }
+        
+        .modal-body { 
+            color: #cbd5e1; font-size: 0.95rem; margin-bottom: 2rem; text-align: left; 
+            background: rgba(0, 0, 0, 0.4); padding: 1.2rem 1.5rem; border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 8px;
+        }
+        
+        .modal-preview-container {
+            width: 100%; max-height: 280px; border-radius: 14px; overflow: hidden; 
+            margin-top: 10px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.6);
+        }
+        .modal-preview-container img, .modal-preview-container video {
+            max-width: 100%; max-height: 260px; object-fit: contain; border-radius: 10px;
+        }
+
+        .modal-actions { display: flex; gap: 15px; justify-content: center; }
+        .action-btn { 
+            padding: 0.8rem 2rem; font-weight: bold; border-radius: 20px; cursor: pointer; 
+            border: none; font-size: 1rem; transition: 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+        .download-action { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: #020208; box-shadow: 0 5px 20px rgba(0,242,254,0.3); 
+        }
+        .download-action:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(0,242,254,0.5); }
+        
+        .delete-action { 
+            background: rgba(239, 68, 68, 0.15); color: #ef4444; 
+            border: 1px solid rgba(239, 68, 68, 0.3); 
+        }
+        .delete-action:hover { background: rgba(239, 68, 68, 0.3); transform: scale(1.05); }
 
         #toast {
             visibility: hidden; min-width: 260px; background-color: rgba(15, 15, 35, 0.95); color: #fff; border: 1px solid var(--primary);
@@ -182,13 +223,15 @@
         <div class="files-container" id="filesGrid"></div>
     </div>
 
+    <!-- Chiroyli Cyber Modal Oyna -->
     <div class="modal" id="fileModal" onclick="closeModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close-icon" onclick="closeModalBtn()">✕</div>
             <div class="modal-title" id="modalFileName">fayl.png</div>
             <div class="modal-body" id="modalFileContent"></div>
             <div class="modal-actions">
-                <button class="action-btn download-action" id="modalDownloadBtn">Yuklab olish</button>
-                <button class="action-btn delete-action" id="modalDeleteBtn">O'chirish</button>
+                <button class="action-btn download-action" id="modalDownloadBtn">📥 Yuklab olish</button>
+                <button class="action-btn delete-action" id="modalDeleteBtn">🗑️ O'chirish</button>
             </div>
         </div>
     </div>
@@ -262,7 +305,6 @@
             }
         }
 
-        // Barcha fayllarni bitta yagona JSON indeks fayldan bir zumda o'qish (Tezkor usul)
         async function loadFiles() {
             setLoading(true, 'Fayllar yuklanmoqda...');
             try {
@@ -291,14 +333,12 @@
             }
         }
 
-        // Fayllarni bir vaqtning o'zida parallel yuklash va index faylni yangilash
         async function uploadFiles(newFiles) {
             setLoading(true, 'Bulutga yuklanmoqda...');
             let folder = `vault_${btoa(currentPass).substr(0,10)}`;
             let indexPath = `${folder}/vault_index.json`;
 
             try {
-                // Har bir tanlangan faylni o'qib, obyektga aylantiramiz
                 let promises = Array.from(newFiles).map(f => {
                     return new Promise((resolve) => {
                         let reader = new FileReader();
@@ -318,7 +358,6 @@
                 let uploadedObjects = await Promise.all(promises);
                 filesList.push(...uploadedObjects);
 
-                // Yagona index faylni yangilaymiz (1 ta so'rov orqali hamma fayllar saqlanadi)
                 let contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(filesList))));
                 let bodyData = {
                     message: 'Update vault index',
@@ -375,11 +414,21 @@
 
         function openModal(f) {
             document.getElementById('modalFileName').innerText = f.name;
-            let body = `Hajmi: ${(f.size / 1024 / 1024).toFixed(2)} MB<br>Turi: ${f.type || 'Nomaʼlum'}`;
+            
+            let bodyHTML = `
+                <div>📦 <b>Hajmi:</b> ${(f.size / 1024 / 1024).toFixed(2)} MB</div>
+                <div>📄 <b>Turi:</b> ${f.type || 'Nomaʼlum'}</div>
+            `;
+
             if(f.type && f.type.includes('image')) {
-                body += `<img src="${f.data}">`;
+                bodyHTML += `<div class="modal-preview-container"><img src="${f.data}"></div>`;
+            } else if(f.type && f.type.includes('video')) {
+                bodyHTML += `<div class="modal-preview-container"><video controls src="${f.data}"></video></div>`;
+            } else if(f.type && f.type.includes('audio')) {
+                bodyHTML += `<div style="margin-top: 10px;"><audio controls src="${f.data}" style="width: 100%;"></audio></div>`;
             }
-            document.getElementById('modalFileContent').innerHTML = body;
+
+            document.getElementById('modalFileContent').innerHTML = bodyHTML;
             document.getElementById('modalDownloadBtn').onclick = () => {
                 let a = document.createElement('a'); a.href = f.data; a.download = f.name; a.click();
             };
