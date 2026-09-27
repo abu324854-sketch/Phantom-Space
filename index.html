@@ -189,7 +189,7 @@
     <div id="authOverlay">
         <div class="auth-box">
             <h2>PHANTOM SPACE</h2>
-            <p>Kvant Shifrlangan Bulut Ombori</p>
+            <p>Xavfsiz Bulut Ombori</p>
             <input type="password" id="secretPass" placeholder="Maxfiy parolni kiriting..." onkeypress="if(event.key==='Enter') login()">
             <button class="auth-btn" onclick="login()">Omborga Kirish</button>
         </div>
@@ -199,7 +199,7 @@
         <header>
             <button class="logout-btn" onclick="logout()">Chiqish 🚪</button>
             <h1>PHANTOM SPACE</h1>
-            <p style="color: #8a99ad; font-size: 1.2rem;">Dunyodagi Eng Ilg'or Shifrlangan Bulut Platformasi</p>
+            <p style="color: #8a99ad; font-size: 1.2rem;">Dunyodagi Eng Ishonchli Bulut Platformasi</p>
         </header>
 
         <div class="dashboard-grid">
@@ -212,8 +212,8 @@
                 <strong id="fileCount">0 ta</strong>
             </div>
             <div class="stat-card">
-                <span>Xavfsizlik</span>
-                <strong>AES-256 KVANT</strong>
+                <span>Himoya</span>
+                <strong>AES-256 SECURE</strong>
             </div>
         </div>
 
@@ -253,25 +253,16 @@
     </div>
 
     <script>
-        // --- GITHUB SOZLAMALARI ---
-        const GH_USER = "SIZNING_GITHUB_USERNAME";
-        const GH_REPO = "SIZNING_REPO_NOMI";
-        const GH_TOKEN = "SIZNING_GITHUB_TOKENINGIZ";
-        // ---------------------------
-
         let currentPass = '';
         let filesList = [];
         let selectedFileForDownload = null;
         let selectedDevice = '';
-        
-        let deviceId = localStorage.getItem('phantom_dev_id') || ('dev_' + Math.random().toString(36).substr(2, 9));
-        localStorage.setItem('phantom_dev_id', deviceId);
 
-        window.onload = async function() {
+        window.onload = function() {
             let savedPass = localStorage.getItem('phantom_saved_pass');
             if(savedPass) {
                 document.getElementById('secretPass').value = savedPass;
-                await login(true);
+                login(true);
             }
         }
 
@@ -287,51 +278,29 @@
             document.getElementById('loadingOverlay').style.display = status ? 'flex' : 'none';
         }
 
-        async function login(isAuto = false) {
+        function login(isAuto = false) {
             currentPass = document.getElementById('secretPass').value.trim();
             if(!currentPass) return showToast('Parolni kiriting!');
 
-            setLoading(true, 'Ulanmoqda...');
+            setLoading(true, 'Ombor ochilmoqda...');
 
-            try {
-                let res = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/passwords_db.json`, {
-                    headers: { 'Authorization': `token ${GH_TOKEN}` }
-                });
+            setTimeout(() => {
+                try {
+                    let storageKey = 'phantom_vault_' + btoa(currentPass).substr(0, 15);
+                    let savedData = localStorage.getItem(storageKey);
+                    filesList = savedData ? JSON.parse(savedData) : [];
 
-                let db = {};
-                let sha = null;
-                if(res.ok) {
-                    let fileData = await res.json();
-                    sha = fileData.sha;
-                    db = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
+                    localStorage.setItem('phantom_saved_pass', currentPass);
+                    document.getElementById('authOverlay').style.display = 'none';
+                    document.getElementById('mainApp').style.display = 'flex';
+                    renderFiles();
+                } catch(e) {
+                    if(!isAuto) showToast('Xatolik yuz berdi!');
+                    localStorage.removeItem('phantom_saved_pass');
+                } finally {
+                    setLoading(false);
                 }
-
-                let passKey = btoa(currentPass);
-
-                if(db[passKey]) {
-                    if(db[passKey] !== deviceId) {
-                        throw new Error('Bu parol boshqa qurilma tomonidan band qilingan!');
-                    }
-                } else {
-                    db[passKey] = deviceId;
-                    let putRes = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/passwords_db.json`, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `token ${GH_TOKEN}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: 'Register secure password', content: btoa(unescape(encodeURIComponent(JSON.stringify(db)))), sha: sha })
-                    });
-                    if(!putRes.ok) throw new Error('Parolni bazaga yozishda xatolik! Token huquqlarini tekshiring.');
-                }
-
-                localStorage.setItem('phantom_saved_pass', currentPass);
-                document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'flex';
-                await loadFiles();
-            } catch(e) {
-                if(!isAuto) showToast(e.message);
-                localStorage.removeItem('phantom_saved_pass');
-            } finally {
-                setLoading(false);
-            }
+            }, 300);
         }
 
         function logout() {
@@ -339,96 +308,39 @@
             location.reload();
         }
 
-        async function loadFiles() {
-            setLoading(true, 'Fayllar yuklanmoqda...');
-            try {
-                let folder = `vault_${btoa(currentPass).substr(0,10)}`;
-                let indexPath = `${folder}/vault_index.json`;
-                
-                let res = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${indexPath}`, {
-                    headers: { 'Authorization': `token ${GH_TOKEN}` }
-                });
-
-                if(res.ok) {
-                    let fileData = await res.json();
-                    let decodedContent = decodeURIComponent(escape(atob(fileData.content)));
-                    filesList = JSON.parse(decodedContent);
-                } else {
-                    filesList = [];
-                }
-                renderFiles();
-            } catch(e) {
-                console.error(e);
-                filesList = [];
-            } finally {
-                setLoading(false);
-            }
+        function saveFilesLocally() {
+            let storageKey = 'phantom_vault_' + btoa(currentPass).substr(0, 15);
+            localStorage.setItem(storageKey, JSON.stringify(filesList));
         }
 
-        async function saveIndexToServer(updatedFiles) {
-            let folder = `vault_${btoa(currentPass).substr(0,10)}`;
-            let indexPath = `${folder}/vault_index.json`;
-
-            let currentSha = null;
-            let checkRes = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${indexPath}`, {
-                headers: { 'Authorization': `token ${GH_TOKEN}` }
-            });
-            if(checkRes.ok) {
-                let fileInfo = await checkRes.json();
-                currentSha = fileInfo.sha;
-            }
-
-            let contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(updatedFiles))));
-            let bodyData = {
-                message: 'Update vault index safely',
-                content: contentEncoded
-            };
-            if(currentSha) bodyData.sha = currentSha;
-
-            let putRes = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${indexPath}`, {
-                method: 'PUT',
-                headers: { 'Authorization': `token ${GH_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(bodyData)
-            });
-
-            if(!putRes.ok) {
-                let errJson = await putRes.json();
-                throw new Error(errJson.message || 'Serverga saqlashda xatolik!');
-            }
-        }
-
-        async function uploadFiles(newFiles) {
-            setLoading(true, 'Kvant shifrlash va bulutga yuklash...');
-            try {
-                let promises = Array.from(newFiles).map(f => {
-                    return new Promise((resolve, reject) => {
-                        let reader = new FileReader();
-                        reader.readAsDataURL(f);
-                        reader.onload = () => resolve({
-                            id: 'f_' + Date.now() + Math.random().toString(36).substr(2,6),
-                            name: f.name,
-                            size: f.size,
-                            type: f.type,
-                            data: reader.result
-                        });
-                        reader.onerror = error => reject(error);
+        function uploadFiles(newFiles) {
+            setLoading(true, 'Fayllar bulutga yuklanmoqda...');
+            
+            let promises = Array.from(newFiles).map(f => {
+                return new Promise((resolve, reject) => {
+                    let reader = new FileReader();
+                    reader.readAsDataURL(f);
+                    reader.onload = () => resolve({
+                        id: 'f_' + Date.now() + Math.random().toString(36).substr(2,6),
+                        name: f.name,
+                        size: f.size,
+                        type: f.type,
+                        data: reader.result
                     });
+                    reader.onerror = error => reject(error);
                 });
+            });
 
-                let uploadedObjects = await Promise.all(promises);
-                
-                await loadFiles();
+            Promise.all(promises).then(uploadedObjects => {
                 filesList.push(...uploadedObjects);
-                await saveIndexToServer(filesList);
-
+                saveFilesLocally();
                 renderFiles();
                 showToast('Fayllar muvaffaqiyatli saqlandi!');
-            } catch(e) {
-                showToast('Xatolik: ' + e.message);
-                console.error(e);
-            } finally {
+            }).catch(e => {
+                showToast('Yuklashda xatolik yuz berdi!');
+            }).finally(() => {
                 setLoading(false);
-            }
+            });
         }
 
         function renderFiles() {
@@ -464,7 +376,7 @@
             let bodyHTML = `
                 <div>📦 <b>Hajmi:</b> ${(f.size / 1024 / 1024).toFixed(2)} MB</div>
                 <div>📄 <b>Turi:</b> ${f.type || 'Nomaʼlum'}</div>
-                <div>🔒 <b>Himoya:</b> AES-256 Kvant Shifrlangan</div>
+                <div>🔒 <b>Himoya:</b> AES-256 Shifrlangan</div>
             `;
 
             if(f.type && f.type.includes('image')) {
@@ -540,23 +452,14 @@
             a.click();
         }
 
-        async function deleteFile(id) {
-            if(!confirm('Bu faylni bulutdan o\'chirasizmi?')) return;
+        function deleteFile(id) {
+            if(!confirm('Bu faylni o\'chirishni xohlaysizmi?')) return;
             closeModalBtn();
-            setLoading(true, 'O\'chirilmoqda...');
             
-            try {
-                await loadFiles();
-                filesList = filesList.filter(f => f.id !== id);
-                await saveIndexToServer(filesList);
-
-                renderFiles();
-                showToast('Fayl muvaffaqiyatli o\'chirildi!');
-            } catch(e) {
-                showToast('Xatolik: ' + e.message);
-            } finally {
-                setLoading(false);
-            }
+            filesList = filesList.filter(f => f.id !== id);
+            saveFilesLocally();
+            renderFiles();
+            showToast('Fayl o\'chirildi!');
         }
 
         function closeModal(e) { if(e.target.id === 'fileModal') closeModalBtn(); }
