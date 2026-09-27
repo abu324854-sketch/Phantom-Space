@@ -3,16 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phantom Space — 3D Cloud Dashboard</title>
+    <title>Phantom Space — 3D Advanced Cloud Dashboard</title>
     <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #8a2be2;
+            --bg: #03030c;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        [data-theme="matrix"] {
+            --primary: #00ff66;
+            --secondary: #00cc44;
+            --accent: #003311;
+            --bg: #010803;
+            --card-bg: rgba(0, 255, 102, 0.03);
+            --border: rgba(0, 255, 102, 0.15);
+        }
+        [data-theme="purple"] {
+            --primary: #d946ef;
+            --secondary: #a855f7;
+            --accent: #6366f1;
+            --bg: #08030c;
+            --card-bg: rgba(217, 70, 239, 0.03);
+            --border: rgba(217, 70, 239, 0.15);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.3s, border-color 0.3s;
         }
         body {
-            background-color: #03030c;
+            background-color: var(--bg);
             color: #ffffff;
             min-height: 100vh;
             overflow-x: hidden;
@@ -26,35 +52,86 @@
             position: absolute;
             width: 700px;
             height: 700px;
-            background: radial-gradient(circle, rgba(0, 242, 254, 0.2) 0%, rgba(138, 43, 226, 0.1) 50%, rgba(0,0,0,0) 70%);
+            background: radial-gradient(circle, var(--primary) 0%, var(--accent) 50%, rgba(0,0,0,0) 70%);
             top: 20%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: -1;
-            filter: blur(100px);
+            filter: blur(120px);
+            opacity: 0.25;
         }
         header {
             text-align: center;
             margin-bottom: 2rem;
             z-index: 2;
+            width: 100%;
+            max-width: 1000px;
         }
         h1 {
             font-size: 2.8rem;
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #8a2be2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: 2px;
             margin-bottom: 0.5rem;
         }
+        
+        /* Yuqori boshqaruv paneli (Mavzular va Qidiruv) */
+        .top-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 0.7rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-box input {
+            background: none;
+            border: none;
+            color: #fff;
+            outline: none;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+        .theme-switcher {
+            display: flex;
+            gap: 8px;
+        }
+        .theme-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .theme-btn.cyan { background: #00f2fe; }
+        .theme-btn.matrix { background: #00ff66; }
+        .theme-btn.purple { background: #d946ef; }
+        .theme-btn:hover { transform: scale(1.1); }
+
         .stats-box {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             backdrop-filter: blur(20px);
             padding: 1rem 2rem;
             border-radius: 20px;
             display: inline-flex;
             gap: 2rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         .stat-item span {
@@ -64,18 +141,18 @@
         }
         .stat-item strong {
             font-size: 1.2rem;
-            color: #00f2fe;
+            color: var(--primary);
         }
         
         /* Upload Panel */
         .upload-panel {
-            background: rgba(255, 255, 255, 0.03);
-            border: 2px dashed rgba(0, 242, 254, 0.3);
+            background: var(--card-bg);
+            border: 2px dashed var(--primary);
             backdrop-filter: blur(20px);
             border-radius: 24px;
             padding: 2.5rem;
             width: 100%;
-            max-width: 800px;
+            max-width: 1000px;
             text-align: center;
             margin-bottom: 2.5rem;
             cursor: pointer;
@@ -83,11 +160,11 @@
             z-index: 2;
         }
         .upload-panel:hover {
-            border-color: #00f2fe;
             background: rgba(0, 242, 254, 0.04);
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.15);
         }
         .upload-btn {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: #03030c;
             border: none;
             padding: 0.8rem 2rem;
@@ -101,7 +178,6 @@
         }
         .upload-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 25px rgba(0, 242, 254, 0.5);
         }
 
         /* 3D Fayllar Gridi */
@@ -114,8 +190,8 @@
             z-index: 2;
         }
         .file-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             backdrop-filter: blur(15px);
             border-radius: 20px;
             padding: 1.5rem;
@@ -124,9 +200,10 @@
             transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s;
             transform-style: preserve-3d;
             cursor: pointer;
+            position: relative;
         }
         .file-card:hover {
-            border-color: rgba(0, 242, 254, 0.5);
+            border-color: var(--primary);
             box-shadow: 0 25px 50px rgba(0, 242, 254, 0.2);
         }
         .file-icon {
@@ -146,7 +223,7 @@
             color: #a0aec0;
         }
 
-        /* Modal oyna (Fayl tafsilotlari uchun) */
+        /* Modal oyna */
         .modal {
             display: none;
             position: fixed;
@@ -158,12 +235,12 @@
             z-index: 100;
         }
         .modal-content {
-            background: rgba(20, 20, 40, 0.9);
-            border: 1px solid rgba(0, 242, 254, 0.3);
+            background: rgba(20, 20, 40, 0.95);
+            border: 1px solid var(--primary);
             border-radius: 24px;
             padding: 2.5rem;
             width: 90%;
-            max-width: 500px;
+            max-width: 550px;
             box-shadow: 0 30px 60px rgba(0,0,0,0.8);
             text-align: center;
             position: relative;
@@ -174,8 +251,8 @@
             100% { transform: scale(1); opacity: 1; }
         }
         .modal-title {
-            font-size: 1.4rem;
-            color: #00f2fe;
+            font-size: 1.3rem;
+            color: var(--primary);
             margin-bottom: 1rem;
             word-break: break-all;
         }
@@ -183,25 +260,46 @@
             color: #cbd5e1;
             font-size: 0.95rem;
             margin-bottom: 1.5rem;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
             background: rgba(0,0,0,0.3);
             padding: 1rem;
             border-radius: 12px;
             text-align: left;
         }
-        .close-btn {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            color: #03030c;
-            border: none;
-            padding: 0.6rem 1.8rem;
+        .modal-preview img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .action-btn {
+            padding: 0.6rem 1.4rem;
             font-weight: bold;
             border-radius: 20px;
             cursor: pointer;
+            border: none;
+            transition: 0.2s;
         }
-        input[type="file"] {
-            display: none;
+        .download-action {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #03030c;
         }
+        .delete-action {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+        .delete-action:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
@@ -211,6 +309,18 @@
         <h1>PHANTOM SPACE</h1>
         <p style="color: #a0aec0;">100,000,000 TB Cheksiz Bulutli 3D Disk</p>
         
+        <div class="top-controls">
+            <div class="search-box">
+                <span>🔍</span>
+                <input type="text" id="searchInput" placeholder="Fayllarni qidirish..." oninput="filterFiles()">
+            </div>
+            <div class="theme-switcher">
+                <div class="theme-btn cyan" onclick="setTheme('cyan')" title="Cyberpunk Cyan"></div>
+                <div class="theme-btn matrix" onclick="setTheme('matrix')" title="Matrix Green"></div>
+                <div class="theme-btn purple" onclick="setTheme('purple')" title="Neon Purple"></div>
+            </div>
+        </div>
+
         <div class="stats-box">
             <div class="stat-item">
                 <span>Jami Xotira</span>
@@ -236,51 +346,67 @@
 
     <div class="files-container" id="filesGrid"></div>
 
-    <!-- Ma'lumot ko'rsatish oynasi (Modal) -->
+    <!-- Fayl tafsilotlari oynasi -->
     <div class="modal" id="fileModal" onclick="closeModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-title" id="modalFileName">Fayl Nomi</div>
-            <div class="modal-body" id="modalFileContent">Ma'lumotlar yuklanmoqda...</div>
-            <button class="close-btn" onclick="closeModalBtn()">Yopish</button>
+            <div class="modal-body" id="modalFileContent"></div>
+            <div class="modal-actions" id="modalActions"></div>
         </div>
     </div>
 
     <script>
+        let filesList = [];
         let totalBytes = 0;
-        let fileCounter = 0;
+
+        function setTheme(themeName) {
+            if (themeName === 'cyan') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', themeName);
+            }
+        }
 
         function formatBytes(bytes) {
             if (bytes === 0) return '0 MB';
             let mb = bytes / (1024 * 1024);
-            if (mb < 1024) {
-                return mb.toFixed(2) + ' MB';
-            } else {
-                return (mb / 1024).toFixed(2) + ' GB';
-            }
+            return mb < 1024 ? mb.toFixed(2) + ' MB' : (mb / 1024).toFixed(2) + ' GB';
         }
 
-        function handleFiles(files) {
-            const grid = document.getElementById('filesGrid');
-
-            for (let i = 0; i < files.length; i++) {
-                let file = files[i];
+        function handleFiles(newFiles) {
+            for (let i = 0; i < newFiles.length; i++) {
+                let file = newFiles[i];
+                filesList.push({
+                    id: Date.now() + Math.random(),
+                    file: file,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    lastModified: file.lastModified
+                });
                 totalBytes += file.size;
-                fileCounter++;
+            }
+            renderFiles();
+            updateStats();
+        }
 
+        function renderFiles(filterText = '') {
+            const grid = document.getElementById('filesGrid');
+            grid.innerHTML = '';
+
+            let filtered = filesList.filter(f => f.name.toLowerCase().includes(filterText.toLowerCase()));
+
+            filtered.forEach(item => {
                 let card = document.createElement('div');
                 card.className = 'file-card';
                 card.innerHTML = `
-                    <div class="file-icon">📁</div>
-                    <div class="file-name" title="${file.name}">${file.name}</div>
-                    <div class="file-size">${formatBytes(file.size)}</div>
+                    <div class="file-icon">${item.type.includes('image') ? '🖼️' : '📁'}</div>
+                    <div class="file-name" title="${item.name}">${item.name}</div>
+                    <div class="file-size">${formatBytes(item.size)}</div>
                 `;
 
-                // Fayl ustiga bosilganda uning ma'lumotlarini ochish
-                card.addEventListener('click', () => {
-                    openFileDetails(file);
-                });
+                card.addEventListener('click', () => openFileDetails(item));
 
-                // 3D Tilt effekti
                 card.addEventListener('mousemove', (e) => {
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left - rect.width / 2;
@@ -293,40 +419,75 @@
                 });
 
                 grid.appendChild(card);
-            }
-
-            document.getElementById('usedStorage').innerText = formatBytes(totalBytes);
-            document.getElementById('fileCount').innerText = fileCounter + ' ta';
+            });
         }
 
-        function openFileDetails(file) {
-            document.getElementById('modalFileName').innerText = file.name;
+        function filterFiles() {
+            let query = document.getElementById('searchInput').value;
+            renderFiles(query);
+        }
+
+        function updateStats() {
+            document.getElementById('usedStorage').innerText = formatBytes(totalBytes);
+            document.getElementById('fileCount').innerText = filesList.length + ' ta';
+        }
+
+        function openFileDetails(item) {
+            document.getElementById('modalFileName').innerText = item.name;
             const contentBox = document.getElementById('modalFileContent');
-            
+            const actionsBox = document.getElementById('modalActions');
+
             let infoHTML = `
-                <b>Hajmi:</b> ${formatBytes(file.size)}<br>
-                <b>Turi:</b> ${file.type || 'Nomaʼlum / Aniqlanmagan'}<br>
-                <b>Oxirgi o'zgartirilgan:</b> ${new Date(file.lastModified).toLocaleDateString()}
+                <b>Hajmi:</b> ${formatBytes(item.size)}<br>
+                <b>Turi:</b> ${item.type || 'Nomaʼlum'}<br>
+                <b>Yuklangan sana:</b> ${new Date(item.lastModified).toLocaleDateString()}<br>
             `;
 
-            // Agar matnli fayl bo'lsa, ichidagi matnni ham o'qib ko'rsatish
-            if (file.type.includes('text') || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+            if (item.type.includes('image')) {
+                let imageUrl = URL.createObjectURL(item.file);
+                infoHTML += `<div style="text-align:center;"><img src="${imageUrl}" class="modal-preview"></div>`;
+            } else if (item.type.includes('text') || item.name.endsWith('.txt') || item.name.endsWith('.md')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    contentBox.innerHTML = infoHTML + `<hr style="margin:10px 0; border-color:rgba(255,255,255,0.1)"><b>Matn mazmuni:</b><br><pre style="white-space: pre-wrap; margin-top:5px;">${e.target.result}</pre>`;
+                    contentBox.innerHTML = infoHTML + `<hr style="margin:10px 0; border-color:rgba(255,255,255,0.1)"><b>Mazmuni:</b><br><pre style="white-space: pre-wrap; margin-top:5px; max-height:100px;">${e.target.result}</pre>`;
                 };
-                reader.readAsText(file);
+                reader.readAsText(item.file);
             } else {
-                contentBox.innerHTML = infoHTML + `<hr style="margin:10px 0; border-color:rgba(255,255,255,0.1)"><p style="color:#00f2fe;">Bu fayl turi uchun to'g'ridan-to'g'ri ko'rish imkoniyati mavjud emas, lekin u bulutda xavfsiz saqlanmoqda.</p>`;
+                contentBox.innerHTML = infoHTML;
             }
+
+            contentBox.innerHTML = infoHTML;
+
+            actionsBox.innerHTML = `
+                <button class="action-btn download-action" onclick="downloadFile('${item.id}')">Yuklab olish</button>
+                <button class="action-btn delete-action" onclick="deleteFile('${item.id}')">O'chirish</button>
+            `;
 
             document.getElementById('fileModal').style.display = 'flex';
         }
 
-        function closeModal(e) {
-            if (e.target.id === 'fileModal') {
-                document.getElementById('fileModal').style.display = 'none';
+        function downloadFile(id) {
+            let item = filesList.find(f => f.id == id);
+            if (!item) return;
+            let a = document.createElement('a');
+            a.href = URL.createObjectURL(item.file);
+            a.download = item.name;
+            a.click();
+        }
+
+        function deleteFile(id) {
+            let index = filesList.findIndex(f => f.id == id);
+            if (index !== -1) {
+                totalBytes -= filesList[index].size;
+                filesList.splice(index, 1);
+                renderFiles(document.getElementById('searchInput').value);
+                updateStats();
+                closeModalBtn();
             }
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'fileModal') closeModalBtn();
         }
 
         function closeModalBtn() {
