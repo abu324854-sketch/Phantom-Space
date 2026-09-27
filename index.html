@@ -123,6 +123,7 @@
             transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
             transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s;
             transform-style: preserve-3d;
+            cursor: pointer;
         }
         .file-card:hover {
             border-color: rgba(0, 242, 254, 0.5);
@@ -143,6 +144,60 @@
         .file-size {
             font-size: 0.85rem;
             color: #a0aec0;
+        }
+
+        /* Modal oyna (Fayl tafsilotlari uchun) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 3, 12, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: rgba(20, 20, 40, 0.9);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            text-align: center;
+            position: relative;
+            animation: modalPop 0.3s ease;
+        }
+        @keyframes modalPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-title {
+            font-size: 1.4rem;
+            color: #00f2fe;
+            margin-bottom: 1rem;
+            word-break: break-all;
+        }
+        .modal-body {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: left;
+        }
+        .close-btn {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #03030c;
+            border: none;
+            padding: 0.6rem 1.8rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
         }
         input[type="file"] {
             display: none;
@@ -172,7 +227,6 @@
         </div>
     </header>
 
-    <!-- Fayl yuklash maydoni -->
     <div class="upload-panel" onclick="document.getElementById('fileInput').click()">
         <div style="font-size: 2rem; margin-bottom: 0.5rem;">☁️</div>
         <p>Fayllarni bu yerga tashlang yoki tanlash uchun bosing</p>
@@ -180,8 +234,16 @@
         <input type="file" id="fileInput" multiple onchange="handleFiles(this.files)">
     </div>
 
-    <!-- 3D Fayllar ro'yxati -->
     <div class="files-container" id="filesGrid"></div>
+
+    <!-- Ma'lumot ko'rsatish oynasi (Modal) -->
+    <div class="modal" id="fileModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-title" id="modalFileName">Fayl Nomi</div>
+            <div class="modal-body" id="modalFileContent">Ma'lumotlar yuklanmoqda...</div>
+            <button class="close-btn" onclick="closeModalBtn()">Yopish</button>
+        </div>
+    </div>
 
     <script>
         let totalBytes = 0;
@@ -213,7 +275,12 @@
                     <div class="file-size">${formatBytes(file.size)}</div>
                 `;
 
-                // 3D Tilt effekti har bir karta uchun
+                // Fayl ustiga bosilganda uning ma'lumotlarini ochish
+                card.addEventListener('click', () => {
+                    openFileDetails(file);
+                });
+
+                // 3D Tilt effekti
                 card.addEventListener('mousemove', (e) => {
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left - rect.width / 2;
@@ -228,9 +295,42 @@
                 grid.appendChild(card);
             }
 
-            // Statistikani yangilash
             document.getElementById('usedStorage').innerText = formatBytes(totalBytes);
             document.getElementById('fileCount').innerText = fileCounter + ' ta';
+        }
+
+        function openFileDetails(file) {
+            document.getElementById('modalFileName').innerText = file.name;
+            const contentBox = document.getElementById('modalFileContent');
+            
+            let infoHTML = `
+                <b>Hajmi:</b> ${formatBytes(file.size)}<br>
+                <b>Turi:</b> ${file.type || 'Nomaʼlum / Aniqlanmagan'}<br>
+                <b>Oxirgi o'zgartirilgan:</b> ${new Date(file.lastModified).toLocaleDateString()}
+            `;
+
+            // Agar matnli fayl bo'lsa, ichidagi matnni ham o'qib ko'rsatish
+            if (file.type.includes('text') || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    contentBox.innerHTML = infoHTML + `<hr style="margin:10px 0; border-color:rgba(255,255,255,0.1)"><b>Matn mazmuni:</b><br><pre style="white-space: pre-wrap; margin-top:5px;">${e.target.result}</pre>`;
+                };
+                reader.readAsText(file);
+            } else {
+                contentBox.innerHTML = infoHTML + `<hr style="margin:10px 0; border-color:rgba(255,255,255,0.1)"><p style="color:#00f2fe;">Bu fayl turi uchun to'g'ridan-to'g'ri ko'rish imkoniyati mavjud emas, lekin u bulutda xavfsiz saqlanmoqda.</p>`;
+            }
+
+            document.getElementById('fileModal').style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'fileModal') {
+                document.getElementById('fileModal').style.display = 'none';
+            }
+        }
+
+        function closeModalBtn() {
+            document.getElementById('fileModal').style.display = 'none';
         }
     </script>
 </body>
