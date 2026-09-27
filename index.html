@@ -56,7 +56,15 @@
         .auth-btn:hover { transform: scale(1.03); box-shadow: 0 15px 40px rgba(0,242,254,0.6); }
 
         .main-app { display: none; width: 100%; max-width: 1250px; flex-direction: column; align-items: center; z-index: 2; }
-        header { text-align: center; margin-bottom: 3rem; width: 100%; }
+        header { text-align: center; margin-bottom: 3rem; width: 100%; position: relative; }
+        
+        /* Chiqish tugmasi */
+        .logout-btn {
+            position: absolute; right: 0; top: 0; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444; padding: 0.5rem 1rem; border-radius: 12px; cursor: pointer; font-weight: 700; transition: 0.3s;
+        }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.3); }
+
         h1 { font-size: 3.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; margin-bottom: 0.5rem; font-weight: 900; }
         
         .controls-bar {
@@ -227,6 +235,7 @@
 
     <div class="main-app" id="mainApp">
         <header>
+            <button class="logout-btn" onclick="logout()">Chiqish 🚪</button>
             <h1>PHANTOM SPACE</h1>
             <p style="color: #8a99ad; font-size: 1.1rem;">Tezkor Shifrlangan Bulutli Ombor</p>
         </header>
@@ -293,6 +302,15 @@
         let deviceId = localStorage.getItem('phantom_dev_id') || ('dev_' + Math.random().toString(36).substr(2, 9));
         localStorage.setItem('phantom_dev_id', deviceId);
 
+        // Sahifa ochilganda avval saqlangan parolni tekshirish (Sahifa yangilanganda o'chib ketmasligi uchun)
+        window.onload = async function() {
+            let savedPass = localStorage.getItem('phantom_saved_pass');
+            if(savedPass) {
+                document.getElementById('secretPass').value = savedPass;
+                await login(true);
+            }
+        }
+
         function showToast(text) {
             let t = document.getElementById('toast');
             t.innerText = text;
@@ -305,7 +323,7 @@
             document.getElementById('loadingOverlay').style.display = status ? 'flex' : 'none';
         }
 
-        async function login() {
+        async function login(isAuto = false) {
             currentPass = document.getElementById('secretPass').value.trim();
             if(!currentPass) return showToast('Parolni kiriting!');
 
@@ -339,14 +357,23 @@
                     });
                 }
 
+                // Parolni brauzerda eslab qolish (sahifa yangilanganda ham saqlanadi)
+                localStorage.setItem('phantom_saved_pass', currentPass);
+
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'flex';
                 await loadFiles();
             } catch(e) {
-                showToast(e.message);
+                if(!isAuto) showToast(e.message);
+                localStorage.removeItem('phantom_saved_pass');
             } finally {
                 setLoading(false);
             }
+        }
+
+        function logout() {
+            localStorage.removeItem('phantom_saved_pass');
+            location.reload();
         }
 
         async function loadFiles() {
@@ -375,12 +402,10 @@
             }
         }
 
-        // --- MUAMMO HAL QILINDI: Har safar eng oxirgi SHA kodini o'qib olib keyin yozamiz ---
         async function saveIndexToServer(updatedFiles) {
             let folder = `vault_${btoa(currentPass).substr(0,10)}`;
             let indexPath = `${folder}/vault_index.json`;
 
-            // 1. Serverdan faylning eng so'nggi SHA kodini tekshirib olamiz
             let currentSha = null;
             let checkRes = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${indexPath}`, {
                 headers: { 'Authorization': `token ${GH_TOKEN}` }
@@ -390,7 +415,6 @@
                 currentSha = fileInfo.sha;
             }
 
-            // 2. Yangilangan ma'lumotni to'g'ri SHA kodi bilan yuboramiz
             let contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(updatedFiles))));
             let bodyData = {
                 message: 'Update vault index safely',
@@ -428,11 +452,8 @@
 
                 let uploadedObjects = await Promise.all(promises);
                 
-                // Serverdan eng yangi ro'yxatni tortib olib, ustiga qo'shamiz
                 await loadFiles();
                 filesList.push(...uploadedObjects);
-
-                // Xavfsiz saqlash funksiyasi orqali yozamiz
                 await saveIndexToServer(filesList);
 
                 renderFiles();
@@ -545,7 +566,7 @@
             let sys = document.getElementById('sysSelect').value;
             document.getElementById('deviceModal').style.display = 'none';
 
-            showToast(`Fayl ${selectedDevice} (${sys}) uchun tayyorlandi!`);
+            showToast(`Fayl ${selectedDevice} (${sys}) uchun yuklanmoqda...`);
 
             let a = document.createElement('a');
             a.href = selectedFileForDownload.data;
