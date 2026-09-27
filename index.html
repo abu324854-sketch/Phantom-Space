@@ -231,20 +231,20 @@
             <div class="auth-logo">🌌</div>
             <h2>PHANTOM SPACE</h2>
             <p>Xavfsiz Bulut Ombori</p>
-            <input type="password" id="secretPass" placeholder="Maxfiy parolni kiriting..." onkeypress="if(event.key==='Enter') login()">
-            <button class="auth-btn" onclick="login()">Omborga Kirish</button>
+            <input type="password" id="secretPass" placeholder="Maxfiy parolni kiriting...">
+            <button class="auth-btn" id="loginBtn">Omborga Kirish</button>
         </div>
     </div>
 
     <div id="quotaModal">
         <div class="quota-box">
             <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 900;">Xotira Hajmini Tanlang</h3>
-            <p style="color: #8a99ad; font-size: 0.95rem;">Ushbu tanlov faqat bir marta belgilanadi va keyinchalik o'zgarmaydi.</p>
+            <p style="color: #8a99ad; font-size: 0.95rem;">Ushbu tanlov faqat bir marta belgilanadi.</p>
             <div class="quota-options">
-                <button class="quota-btn" onclick="setQuotaLimit(10)">10 GB</button>
-                <button class="quota-btn" onclick="setQuotaLimit(50)">50 GB</button>
-                <button class="quota-btn" onclick="setQuotaLimit(100)">100 GB</button>
-                <button class="quota-btn" onclick="setQuotaLimit(500)">500 GB</button>
+                <button class="quota-btn" data-gb="10">10 GB</button>
+                <button class="quota-btn" data-gb="50">50 GB</button>
+                <button class="quota-btn" data-gb="100">100 GB</button>
+                <button class="quota-btn" data-gb="500">500 GB</button>
             </div>
         </div>
     </div>
@@ -252,8 +252,8 @@
     <div class="main-app" id="mainApp">
         <header>
             <div class="header-btns">
-                <button class="top-btn" onclick="openTrashModal()">🗑️ Chiqindi qutisi</button>
-                <button class="top-btn logout-btn" onclick="logout()">Chiqish 🚪</button>
+                <button class="top-btn" id="openTrashBtn">🗑️ Chiqindi qutisi</button>
+                <button class="top-btn logout-btn" id="logoutBtn">Chiqish 🚪</button>
             </div>
             <div class="header-brand">
                 <div class="app-logo-small">🌌</div>
@@ -265,7 +265,7 @@
         <div class="dashboard-grid">
             <div class="search-box">
                 <span style="font-size: 1.3rem;">🔍</span>
-                <input type="text" id="searchInput" placeholder="Fayllar orasidan tezkor qidirish..." oninput="renderFiles()">
+                <input type="text" id="searchInput" placeholder="Fayllar orasidan tezkor qidirish...">
             </div>
             <div class="stat-card">
                 <span>Fayllar Soni</span>
@@ -277,19 +277,19 @@
             </div>
         </div>
 
-        <div class="upload-panel" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-panel" id="dropZone">
             <div style="font-size: 4rem; margin-bottom: 0.8rem;">☁️</div>
-            <p style="font-size: 1.3rem; font-weight: 700;">Fayllarni tanlang yoki shu yerga sudrab tashlang</p>
-            <button class="upload-btn">Bulutga Yuklash</button>
-            <input type="file" id="fileInput" multiple onchange="uploadFiles(this.files)">
+            <p style="font-size: 1.3rem; font-weight: 700;">Fayllar, ilovalar va o'yinlarni tanlang yoki shu yerga tashlang</p>
+            <button class="upload-btn" id="uploadTriggerBtn">Bulutga Yuklash</button>
+            <input type="file" id="fileInput" multiple>
         </div>
 
         <div class="files-container" id="filesGrid"></div>
     </div>
 
-    <div class="modal" id="fileModal" onclick="closeModal(event)">
+    <div class="modal" id="fileModal">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-close-icon" onclick="closeModalBtn()">✕</div>
+            <div class="modal-close-icon" id="closeFileModalBtn">✕</div>
             <div class="modal-title" id="modalFileName">fayl.png</div>
             <div class="modal-body" id="modalFileContent"></div>
             <div class="modal-actions">
@@ -299,9 +299,9 @@
         </div>
     </div>
 
-    <div class="modal" id="trashModal" onclick="closeTrashModal(event)">
+    <div class="modal" id="trashModal">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-close-icon" onclick="document.getElementById('trashModal').style.display='none'">✕</div>
+            <div class="modal-close-icon" id="closeTrashModalBtn">✕</div>
             <div class="modal-title">🗑️ Chiqindi Qutisi</div>
             <div class="modal-body" id="trashFilesList" style="max-height: 300px; overflow-y: auto;">
                 <p style="color: #8a99ad; text-align: center;">Chiqindi qutisi bo'sh</p>
@@ -314,11 +314,11 @@
             <h3>Qurilmani Tanlang</h3>
             <p>Fayl qaysi operatsion tizimga yuklab olinmoqda?</p>
             <div class="device-options">
-                <button class="device-opt-btn" id="btnPC" onclick="selectDeviceType('PC')">💻 Kompyuter</button>
-                <button class="device-opt-btn" id="btnPhone" onclick="selectDeviceType('Phone')">📱 Telefon</button>
+                <button class="device-opt-btn" id="btnPC">💻 Kompyuter</button>
+                <button class="device-opt-btn" id="btnPhone">📱 Telefon</button>
             </div>
             <select class="sys-select" id="sysSelect"></select>
-            <button class="auth-btn" id="confirmDownloadBtn" style="display: none;" onclick="executeDownload()">Yuklab Olishni Boshlash</button>
+            <button class="auth-btn" id="confirmDownloadBtn" style="display: none;">Yuklab Olishni Boshlash</button>
         </div>
     </div>
 
@@ -330,13 +330,64 @@
         let selectedFileForDownload = null;
         let selectedDevice = '';
 
-        window.onload = function() {
+        window.addEventListener('DOMContentLoaded', () => {
             let savedPass = localStorage.getItem('phantom_saved_pass');
             if(savedPass) {
                 document.getElementById('secretPass').value = savedPass;
                 login(true);
             }
-        }
+
+            document.getElementById('loginBtn').addEventListener('click', () => login(false));
+            document.getElementById('secretPass').addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') login(false);
+            });
+
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('openTrashBtn').addEventListener('click', openTrashModal);
+            
+            document.getElementById('uploadTriggerBtn').addEventListener('click', () => {
+                document.getElementById('fileInput').click();
+            });
+            document.getElementById('dropZone').addEventListener('click', (e) => {
+                if(e.target.tagName !== 'BUTTON') document.getElementById('fileInput').click();
+            });
+
+            document.getElementById('fileInput').addEventListener('change', (e) => {
+                if(e.target.files.length > 0) uploadFiles(e.target.files);
+            });
+
+            document.getElementById('searchInput').addEventListener('input', renderFiles);
+
+            document.querySelectorAll('.quota-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setQuotaLimit(parseInt(btn.getAttribute('data-gb')));
+                });
+            });
+
+            document.getElementById('closeFileModalBtn').addEventListener('click', closeModalBtn);
+            document.getElementById('fileModal').addEventListener('click', (e) => {
+                if(e.target.id === 'fileModal') closeModalBtn();
+            });
+
+            document.getElementById('closeTrashModalBtn').addEventListener('click', () => {
+                document.getElementById('trashModal').style.display = 'none';
+            });
+            document.getElementById('trashModal').addEventListener('click', (e) => {
+                if(e.target.id === 'trashModal') document.getElementById('trashModal').style.display = 'none';
+            });
+
+            document.getElementById('btnPC').addEventListener('click', () => selectDeviceType('PC'));
+            document.getElementById('btnPhone').addEventListener('click', () => selectDeviceType('Phone'));
+            document.getElementById('confirmDownloadBtn').addEventListener('click', executeDownload);
+
+            let dropZone = document.getElementById('dropZone');
+            ['dragenter', 'dragover'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }));
+            ['dragleave', 'drop'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); }));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if(e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files);
+            });
+        });
 
         function showToast(text) {
             let t = document.getElementById('toast');
@@ -432,7 +483,7 @@
                 return showToast('Xotira yetarli emas!');
             }
 
-            setLoading(true, 'Fayllar yuklanmoqda...');
+            setLoading(true, 'Fayl va ilovalar yuklanmoqda...');
             
             let promises = Array.from(newFiles).map(f => {
                 return new Promise((resolve, reject) => {
@@ -442,7 +493,7 @@
                         id: 'f_' + Date.now() + Math.random().toString(36).substr(2,6),
                         name: f.name,
                         size: f.size,
-                        type: f.type,
+                        type: f.type || 'application/octet-stream',
                         data: reader.result
                     });
                     reader.onerror = error => reject(error);
@@ -453,7 +504,7 @@
                 filesList.push(...uploadedObjects);
                 saveFilesLocally();
                 renderFiles();
-                showToast('Fayllar muvaffaqiyatli saqlandi!');
+                showToast('Fayl va ilovalar muvaffaqiyatli saqlandi!');
             }).catch(e => {
                 showToast('Yuklashda xatolik yuz berdi!');
             }).finally(() => {
@@ -471,9 +522,13 @@
 
             filtered.forEach(f => {
                 let icon = '📁';
+                let lowerName = f.name.toLowerCase();
                 if(f.type && f.type.includes('image')) icon = '🖼️';
                 else if(f.type && f.type.includes('video')) icon = '🎬';
                 else if(f.type && f.type.includes('audio')) icon = '🎵';
+                else if(lowerName.endsWith('.apk')) icon = '📱';
+                else if(lowerName.endsWith('.exe') || lowerName.endsWith('.msi')) icon = '💻';
+                else if(lowerName.endsWith('.zip') || lowerName.endsWith('.rar') || lowerName.endsWith('.7z')) icon = '📦';
 
                 let card = document.createElement('div');
                 card.className = 'file-card';
@@ -482,7 +537,7 @@
                     <div class="file-name">${f.name}</div>
                     <div class="file-size">${(f.size / 1024 / 1024).toFixed(2)} MB</div>
                 `;
-                card.onclick = () => openModal(f);
+                card.addEventListener('click', () => openModal(f));
                 grid.appendChild(card);
             });
         }
@@ -493,7 +548,7 @@
             
             let bodyHTML = `
                 <div>📦 <b>Hajmi:</b> ${(f.size / 1024 / 1024).toFixed(2)} MB</div>
-                <div>📄 <b>Turi:</b> ${f.type || 'Nomaʼlum'}</div>
+                <div>📄 <b>Turi:</b> ${f.type || 'Ilova / Fayl'}</div>
                 <div>🔒 <b>Himoya:</b> AES-256 Shifrlangan</div>
             `;
 
@@ -506,11 +561,16 @@
             }
 
             document.getElementById('modalFileContent').innerHTML = bodyHTML;
-            document.getElementById('modalDownloadBtn').onclick = () => {
+            
+            let downloadBtn = document.getElementById('modalDownloadBtn');
+            let deleteBtn = document.getElementById('modalDeleteBtn');
+            
+            downloadBtn.onclick = () => {
                 closeModalBtn();
                 openDeviceModal();
             };
-            document.getElementById('modalDeleteBtn').onclick = () => moveToTrash(f.id);
+            deleteBtn.onclick = () => moveToTrash(f.id);
+
             document.getElementById('fileModal').style.display = 'flex';
         }
 
@@ -531,7 +591,7 @@
             listContainer.innerHTML = '';
 
             if(trashList.length === 0) {
-                listContainer.innerHTML = '<p style="color: #8a99ad; text-align: center;">Chiqindi qutisi boch</p>';
+                listContainer.innerHTML = '<p style="color: #8a99ad; text-align: center;">Chiqindi qutisi bo\'sh</p>';
             } else {
                 trashList.forEach(f => {
                     let item = document.createElement('div');
@@ -539,10 +599,12 @@
                     item.innerHTML = `
                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${f.name}</span>
                         <div style="display: flex; gap: 8px;">
-                            <button class="action-btn restore-action" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;" onclick="restoreFile('${f.id}')">Tiklash</button>
-                            <button class="action-btn delete-action" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;" onclick="deleteForever('${f.id}')">O'chirish</button>
+                            <button class="action-btn restore-action" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;" data-id="${f.id}">Tiklash</button>
+                            <button class="action-btn delete-action" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;" data-id="${f.id}">O'chirish</button>
                         </div>
                     `;
+                    item.querySelector('.restore-action').addEventListener('click', () => restoreFile(f.id));
+                    item.querySelector('.delete-action').addEventListener('click', () => deleteForever(f.id));
                     listContainer.appendChild(item);
                 });
             }
@@ -565,10 +627,8 @@
             trashList = trashList.filter(f => f.id !== id);
             saveFilesLocally();
             openTrashModal();
-            showToast('Fayl butunlay o'chirildi!');
+            showToast('Fayl butunlay o\'chirildi!');
         }
-
-        function closeTrashModal(e) { if(e.target.id === 'trashModal') document.getElementById('trashModal').style.display = 'none'; }
 
         function openDeviceModal() {
             selectedDevice = '';
@@ -626,15 +686,9 @@
             a.click();
         }
 
-        function closeModal(e) { if(e.target.id === 'fileModal') closeModalBtn(); }
-        function closeModalBtn() { document.getElementById('fileModal').style.display = 'none'; }
-
-        const dropZone = document.getElementById('dropZone');
-        ['dragenter', 'dragover'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }));
-        ['dragleave', 'drop'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); }));
-        dropZone.addEventListener('drop', (e) => {
-            if(e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files);
-        });
+        function closeModalBtn() { 
+            document.getElementById('fileModal').style.display = 'none'; 
+        }
 
         const container = document.getElementById('webgl-container');
         const scene = new THREE.Scene();
