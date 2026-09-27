@@ -1,0 +1,20 @@
+{
+  "name": "Phantom Space",
+  "short_name": "PhantomSpace",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#010108",
+  "theme_color": "#00f2fe",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/fluency/192/futuristic.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://img.icons8.com/fluency/512/futuristic.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
