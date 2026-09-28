@@ -234,7 +234,7 @@
         <div class="auth-box">
             <div class="auth-logo">🌌</div>
             <h2>PHANTOM SPACE</h2>
-            <p>IndexedDB Katta Hajmli Kvant Ombori</p>
+            <p>Cheksiz IndexedDB Kvant Ombori</p>
             <input type="password" id="secretPass" placeholder="Maxfiy parolni kiriting...">
             <button class="auth-btn" id="loginBtn">Omborga Kirish</button>
         </div>
@@ -243,7 +243,7 @@
     <div id="quotaModal">
         <div class="quota-box">
             <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 900;">Xotira Hajmini Tanlang</h3>
-            <p style="color: #8a99ad; font-size: 0.95rem;">Cheksiz (Gigabaytlab fayllar uchun)</p>
+            <p style="color: #8a99ad; font-size: 0.95rem;">Gigabaytlab fayllar uchun cheksiz joy</p>
             <div class="quota-options">
                 <button class="quota-btn" data-gb="100">100 GB</button>
                 <button class="quota-btn" data-gb="500">500 GB</button>
@@ -264,7 +264,7 @@
                 <div class="app-logo-small">🌌</div>
                 <h1>PHANTOM SPACE</h1>
             </div>
-            <p style="color: #8a99ad; font-size: 1.2rem;">Cheksiz Hajmli Zero-Knowledge Bulut</p>
+            <p style="color: #8a99ad; font-size: 1.2rem;">Ultra-Tezkor Zero-Knowledge Bulut</p>
         </header>
 
         <div class="dashboard-grid">
@@ -284,8 +284,8 @@
 
         <div class="upload-panel" id="dropZone">
             <div style="font-size: 4rem; margin-bottom: 0.8rem;">☁️</div>
-            <p style="font-size: 1.3rem; font-weight: 700;">Istalgan hajmdagi o'yin, kino va fayllarni shu yerga tashlang</p>
-            <button class="upload-btn" id="uploadTriggerBtn">Katta Fayllarni Yuklash</button>
+            <p style="font-size: 1.3rem; font-weight: 700;">Ko'p fayllar, o'yin va videolarni shu yerga tashlang</p>
+            <button class="upload-btn" id="uploadTriggerBtn">Chaqlmoq Tezligida Yuklash</button>
             <input type="file" id="fileInput" multiple>
         </div>
 
@@ -321,7 +321,7 @@
             <div class="modal-close-icon" onclick="document.getElementById('p2pModal').style.display='none'">✕</div>
             <div class="modal-title">⚡ WebRTC P2P Uzatish</div>
             <div class="modal-body">
-                <p style="color: #cbd5e1; font-size: 0.95rem;">Server chetlab o'tiladi, gigabaytlab fayllar to'g'ridan-to'g'ri qurilmadan uzatiladi.</p>
+                <p style="color: #cbd5e1; font-size: 0.95rem;">Server chetlab o'tiladi, gigabaytlar to'g'ridan-to'g'ri qurilmadan uzatiladi.</p>
                 <div style="background: rgba(0,242,254,0.05); padding: 15px; border-radius: 14px; border: 1px solid var(--border);">
                     <b>Ulanish holati:</b> <span id="p2pStatus" style="color: var(--primary);">Tayyor</span>
                 </div>
@@ -352,7 +352,6 @@
         let selectedDevice = '';
         let db = null;
 
-        // --- INDEXEDDB MOTOR (Cheksiz Katta Xotira) ---
         function initDB() {
             return new Promise((resolve, reject) => {
                 let request = indexedDB.open("PhantomSpaceDB", 1);
@@ -387,7 +386,6 @@
             });
         }
 
-        // --- CRYPTO ENGINE (AES-GCM) ---
         async function getCryptoKey(password) {
             const enc = new TextEncoder();
             const keyMaterial = await window.crypto.subtle.importKey(
@@ -416,11 +414,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            try {
-                await initDB();
-            } catch(e) {
-                console.error("IndexedDB xatoligi:", e);
-            }
+            try { await initDB(); } catch(e) { console.error("DB xatosi:", e); }
 
             let savedPass = localStorage.getItem('phantom_saved_pass');
             let savedQuota = localStorage.getItem('phantom_saved_quota');
@@ -501,16 +495,13 @@
             currentPass = document.getElementById('secretPass').value.trim();
             if(!currentPass) return showToast('Parolni kiriting!');
 
-            setLoading(true, 'Katta hajmli ombor ochilmoqda...');
+            setLoading(true, 'Ombor ochilmoqda...');
 
             setTimeout(async () => {
                 try {
                     let passHash = btoa(currentPass).substr(0, 15);
-                    let storageKey = 'phantom_vault_' + passHash;
-                    let trashKey = 'phantom_trash_' + passHash;
-
-                    let encryptedData = await dbGet(storageKey);
-                    let encryptedTrash = await dbGet(trashKey);
+                    let encryptedData = await dbGet('phantom_vault_' + passHash);
+                    let encryptedTrash = await dbGet('phantom_trash_' + passHash);
 
                     if (encryptedData) {
                         try {
@@ -528,12 +519,8 @@
                         try {
                             let decryptedTrashStr = await decryptData(encryptedTrash, currentPass);
                             trashList = JSON.parse(decryptedTrashStr);
-                        } catch (err) {
-                            trashList = [];
-                        }
-                    } else {
-                        trashList = [];
-                    }
+                        } catch (err) { trashList = []; }
+                    } else { trashList = []; }
 
                     if (!userQuotaGB) {
                         setLoading(false);
@@ -566,7 +553,7 @@
             document.getElementById('mainApp').style.display = 'flex';
             updateStorageStats();
             renderFiles();
-            showToast('Cheksiz xotira hajmi muvaffaqiyatli faollashdi!');
+            showToast('Cheksiz xotira muvaffaqiyatli faollashdi!');
         }
 
         function logout() {
@@ -591,13 +578,18 @@
             document.getElementById('storageStats').innerText = `${totalMB} MB / ${userQuotaGB} GB`;
         }
 
+        // --- PARALLEL CHAQMOQ TEZLIGIDAGI YUKLASH (10+ fayl bir vaqtda) ---
         async function uploadFiles(newFiles) {
-            setLoading(true, 'Katta hajmli fayllar AES-256 bilan shifrlanmoqda...');
-            
             let filesArray = Array.from(newFiles);
-            let successCount = 0;
+            let totalFiles = filesArray.length;
+            if (totalFiles === 0) return;
 
-            for (let f of filesArray) {
+            setLoading(true, `0 / ${totalFiles} ta fayl parallel o'qilmoqda...`);
+            
+            let successCount = 0;
+            let processedCount = 0;
+
+            let promises = filesArray.map(async (f) => {
                 try {
                     let fileObj = await new Promise((resolve, reject) => {
                         let reader = new FileReader();
@@ -616,13 +608,19 @@
                     successCount++;
                 } catch (e) {
                     console.error("Faylni o'qishda xatolik:", f.name);
+                } finally {
+                    processedCount++;
+                    document.getElementById('loadingText').innerText = `${processedCount} / ${totalFiles} ta fayl tayyorlandi...`;
                 }
-            }
+            });
+
+            await Promise.all(promises);
 
             if (successCount > 0) {
+                setLoading(true, 'Kvant bazaga shifrlanib saqlanmoqda...');
                 await saveFilesLocally();
                 renderFiles();
-                showToast(`${successCount} ta katta fayl xavfsiz saqlandi!`);
+                showToast(`${successCount} ta fayl chaqmoq tezligida saqlandi!`);
             } else {
                 showToast('Fayllarni yuklashda xatolik yuz berdi!');
             }
@@ -688,7 +686,7 @@
                 showToast('P2P havolasi buferga nusxalandi!');
             };
             document.getElementById('modalAiBtn').onclick = () => {
-                showToast('🤖 AI: Katta hajmli fayl shifrlangan va tahlilga tayyor.');
+                showToast('🤖 AI: Fayl shifrlangan va tahlilga tayyor.');
             };
             document.getElementById('modalDeleteBtn').onclick = () => moveToTrash(f.id);
 
@@ -811,7 +809,7 @@
         }
 
         function startP2PSession() {
-            document.getElementById('p2pStatus').innerText = 'Gigabaytli oqim ochilmoqda... (WebRTC)';
+            document.getElementById('p2pStatus').innerText = 'P2P oqim ochilmoqda... (WebRTC)';
             setTimeout(() => {
                 document.getElementById('p2pStatus').innerText = 'P2P tarmoq ulandi va shifrlandi!';
                 showToast('P2P ulanish faollashdi!');
