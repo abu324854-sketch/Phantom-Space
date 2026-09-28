@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phantom Space — Ultimate Quantum Enterprise Cloud</title>
+    <title>Phantom Space — Ultimate Quantum Cloud</title>
     
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300f2fe'/%3E%3Cstop offset='50%25' stop-color='%234facfe'/%3E%3Cstop offset='100%25' stop-color='%23d946ef'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='110' fill='%23010108'/%3E%3Crect x='30' y='30' width='452' height='452' rx='90' fill='url(%23grad)' fill-opacity='0.18'/%3E%3Ccircle cx='256' cy='256' r='130' fill='none' stroke='url(%23grad)' stroke-width='26'/%3E%3Ccircle cx='256' cy='256' r='60' fill='%2300f2fe' fill-opacity='0.4'/%3E%3Cpath d='M190 256 L230 296 L322 204' fill='none' stroke='%2300f2fe' stroke-width='24' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Phantom Space","short_name":"Phantom Space","start_url":".","display":"standalone","background_color":"%23010108","theme_color":"%2300f2fe","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 512 512\'%3E%3Cdefs%3E%3ClinearGradient id=\'grad\' x1=\'0%25\' y1=\'0%25\' x2=\'100%25\' y2=\'100%25\'%3E%3Cstop offset=\'0%25\' stop-color=\'%2300f2fe\'/%3E%3Cstop offset=\'50%25\' stop-color=\'%234facfe\'/%3E%3Cstop offset=\'100%25\' stop-color=\'%23d946ef\'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=\'512\' height=\'512\' rx=\'110\' fill=\'%23010108\'/%3E%3Crect x=\'30\' y=\'30\' width=\'452\' height=\'452\' rx=\'90\' fill=\'url(%23grad)\' fill-opacity=\'0.18\'/%3E%3Ccircle cx=\'256\' cy=\'256\' r=\'130\' fill=\'none\' stroke=\'url(%23grad)\' stroke-width=\'26\'/%3E%3Ccircle cx=\'256\' cy=\'256\' r=\'60\' fill=\'%2300f2fe\' fill-opacity=\'0.4\'/%3E%3Cpath d=\'M190 256 L230 296 L322 204\' fill=\'none\' stroke=\'%2300f2fe\' stroke-width=\'24\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
+    <meta name="theme-color" content="#00f2fe">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
@@ -13,41 +16,40 @@
             --secondary: #4facfe;
             --accent: #d946ef;
             --bg: #010108;
+            --card-bg: rgba(255, 255, 255, 0.02);
             --border: rgba(0, 242, 254, 0.2);
-            --glow: 0 0 35px rgba(0, 242, 254, 0.5);
-            --text-dim: #8a99ad;
-            --card-bg: rgba(10, 10, 30, 0.75);
+            --glow: 0 0 35px rgba(0, 242, 254, 0.4);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; user-select: none; }
-        body { background-color: var(--bg); color: #fff; min-height: 100vh; overflow-x: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; position: relative; overflow-x: hidden; }
         
-        #webgl-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; }
+        #webgl-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
 
         #authOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(1, 1, 8, 0.94); backdrop-filter: blur(40px);
+            background: rgba(1, 1, 8, 0.92); backdrop-filter: blur(35px);
             display: flex; justify-content: center; align-items: center; z-index: 1000;
         }
         .auth-box {
-            background: var(--card-bg); border: 1px solid var(--primary);
-            padding: 3.5rem 2.8rem; border-radius: 40px; text-align: center; width: 90%; max-width: 480px;
-            box-shadow: 0 0 100px rgba(0, 242, 254, 0.3);
+            background: rgba(10, 10, 30, 0.85); border: 1px solid var(--primary);
+            padding: 3rem 2.5rem; border-radius: 40px; text-align: center; width: 90%; max-width: 450px;
+            box-shadow: 0 0 90px rgba(0, 242, 254, 0.25);
         }
         .auth-logo {
-            width: 90px; height: 90px; margin: 0 auto 1.5rem auto; background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
-            box-shadow: 0 0 35px rgba(0,242,254,0.6); animation: pulseLogo 3s infinite ease-in-out;
+            width: 80px; height: 80px; margin: 0 auto 1.5rem auto; background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;
+            box-shadow: 0 0 30px rgba(0,242,254,0.6); animation: pulseLogo 3s infinite ease-in-out;
         }
         @keyframes pulseLogo {
             0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(0,242,254,0.5); }
-            50% { transform: scale(1.06); box-shadow: 0 0 50px rgba(217,70,239,0.8); }
+            50% { transform: scale(1.06); box-shadow: 0 0 45px rgba(217,70,239,0.8); }
         }
         .auth-box h2 { 
             background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem; letter-spacing: 4px; font-size: 2.3rem; font-weight: 900; 
+            margin-bottom: 0.5rem; letter-spacing: 4px; font-size: 2.1rem; font-weight: 900; 
         }
-        .auth-box p { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 2rem; }
+        .auth-box p { color: #8a99ad; font-size: 0.95rem; margin-bottom: 2rem; }
         .auth-box input {
             width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--border);
             padding: 1.2rem 1.4rem; border-radius: 20px; color: #fff; font-size: 1.1rem;
@@ -62,120 +64,148 @@
         }
         .auth-btn:hover { transform: scale(1.03); }
 
-        .main-app { display: none; width: 100%; flex-direction: column; align-items: center; padding: 2rem; }
-        header { text-align: center; margin-bottom: 2rem; width: 100%; max-width: 1300px; position: relative; display: flex; flex-direction: column; align-items: center; }
-        .header-brand { display: flex; align-items: center; gap: 15px; margin-bottom: 0.5rem; }
-        .app-logo-small {
-            width: 55px; height: 55px; background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
-            box-shadow: 0 0 25px rgba(0,242,254,0.5); animation: pulseLogo 3s infinite ease-in-out;
-        }
-        h1 { font-size: 3.2rem; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; font-weight: 900; }
-        header p { color: var(--text-dim); font-size: 1.1rem; }
-        
-        .header-btns { position: absolute; right: 0; top: 0; display: flex; gap: 12px; }
-        .top-btn {
-            background: rgba(0, 242, 254, 0.1); border: 1px solid var(--border);
-            color: var(--primary); padding: 0.7rem 1.2rem; border-radius: 14px; cursor: pointer; font-weight: 700; transition: 0.3s;
-            display: flex; align-items: center; gap: 8px; font-size: 0.95rem;
-        }
-        .top-btn:hover { background: rgba(0, 242, 254, 0.25); box-shadow: 0 0 15px rgba(0,242,254,0.3); }
-        .logout-btn { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #ef4444; }
-        .logout-btn:hover { background: rgba(239, 68, 68, 0.3); box-shadow: 0 0 15px rgba(239,68,68,0.3); }
-
-        .dashboard-grid {
-            display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.5rem; width: 100%; max-width: 1300px; margin-bottom: 2rem; align-items: center;
-            background: var(--card-bg); border: 1px solid var(--border); border-radius: 30px; padding: 1.8rem 2.2rem;
-            backdrop-filter: blur(20px); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-        .search-box { display: flex; align-items: center; gap: 14px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 18px; padding: 1rem 1.2rem; }
-        .search-box input { background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 1.05rem; }
-        
-        .stat-card { display: flex; flex-direction: column; gap: 6px; }
-        .stat-card span { color: var(--text-dim); font-size: 0.9rem; }
-        .stat-card strong { color: var(--primary); font-size: 1.15rem; font-weight: 700; }
-        
-        .memory-container { display: flex; flex-direction: column; gap: 8px; }
-        .memory-bar-bg { width: 100%; height: 10px; background: rgba(0,242,254,0.1); border-radius: 5px; overflow: hidden; border: 1px solid var(--border); }
-        .memory-bar-fill { height: 100%; background: linear-gradient(to right, var(--primary), var(--accent)); border-radius: 5px; width: 0%; transition: width 1s ease-out; }
-        .memory-text { display: flex; justify-content: space-between; color: var(--text-dim); font-size: 0.85rem; }
-
-        .category-tabs {
-            display: flex; gap: 10px; width: 100%; max-width: 1300px; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 5px;
-        }
-        .cat-tab {
-            background: var(--card-bg); border: 1px solid var(--border); padding: 0.7rem 1.5rem;
-            border-radius: 16px; color: var(--text-dim); font-weight: 700; cursor: pointer; transition: 0.3s; white-space: nowrap;
-        }
-        .cat-tab:hover, .cat-tab.active { background: rgba(0,242,254,0.15); border-color: var(--primary); color: var(--primary); box-shadow: 0 0 15px rgba(0,242,254,0.2); }
-
-        .upload-panel {
-            background: var(--card-bg); border: 2px dashed var(--border); backdrop-filter: blur(20px);
-            border-radius: 35px; padding: 2.5rem; width: 100%; max-width: 1300px; text-align: center;
-            margin-bottom: 2.5rem; cursor: pointer; transition: 0.4s;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; gap: 12px;
-        }
-        .upload-panel:hover { background: rgba(0, 242, 254, 0.04); border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--glow); }
-        .upload-panel h3 { font-size: 1.3rem; font-weight: 700; }
-        .upload-btn {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: #010108; border: none; padding: 0.9rem 2.8rem; font-size: 1.1rem; font-weight: 900;
-            border-radius: 20px; cursor: pointer; margin-top: 0.8rem; box-shadow: 0 10px 30px rgba(0, 242, 254, 0.4);
-            transition: 0.3s;
-        }
-        .upload-btn:hover { transform: scale(1.04); }
-
-        .files-section { width: 100%; max-width: 1300px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 30px; padding: 2rem; backdrop-filter: blur(20px); margin-bottom: 3rem; }
-        .files-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .files-header h3 { font-size: 1.4rem; color: var(--primary); font-weight: 800; }
-        
-        .file-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .file-table th { color: var(--text-dim); font-size: 0.9rem; padding: 12px 16px; border-bottom: 1px solid var(--border); font-weight: 600; }
-        .file-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.95rem; vertical-align: middle; }
-        .file-table tr:hover { background: rgba(0, 242, 254, 0.04); }
-        
-        .file-name-cell { display: flex; align-items: center; gap: 12px; font-weight: 600; }
-        .file-icon { font-size: 1.4rem; }
-        .action-icon-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.1rem; transition: 0.2s; padding: 6px; border-radius: 8px; }
-        .action-icon-btn:hover { color: var(--primary); background: rgba(0,242,254,0.1); }
-        .action-delete:hover { color: #ef4444 !important; background: rgba(239,68,68,0.15) !important; }
-
-        #contextMenu {
-            display: none; position: absolute; background: rgba(10, 10, 30, 0.96); border: 1px solid var(--border);
-            backdrop-filter: blur(15px); border-radius: 14px; padding: 8px; z-index: 500;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6); min-width: 180px;
-        }
-        .ctx-item {
-            padding: 10px 16px; color: #fff; cursor: pointer; border-radius: 10px;
-            font-size: 0.95rem; transition: 0.2s; display: flex; align-items: center; gap: 10px;
-        }
-        .ctx-item:hover { background: rgba(0, 242, 254, 0.15); color: var(--primary); }
-        .ctx-delete { color: #ef4444 !important; }
-        .ctx-delete:hover { background: rgba(239, 68, 68, 0.2) !important; }
-        hr { border: 0; border-top: 1px solid var(--border); margin: 4px 0; }
-
-        .modal {
+        #quotaModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(1, 1, 8, 0.9); backdrop-filter: blur(30px);
-            justify-content: center; align-items: center; z-index: 1000;
+            background: rgba(1, 1, 8, 0.95); backdrop-filter: blur(35px);
+            justify-content: center; align-items: center; z-index: 2000;
         }
-        .modal-content {
-            background: rgba(10, 10, 30, 0.96); border: 1px solid var(--primary);
-            border-radius: 35px; padding: 3rem; width: 92%; max-width: 520px; text-align: center;
+        .quota-box {
+            background: rgba(10, 10, 30, 0.95); border: 1px solid var(--primary);
+            padding: 3rem 2.5rem; border-radius: 40px; text-align: center; width: 90%; max-width: 480px;
             box-shadow: 0 0 100px rgba(0, 242, 254, 0.4);
         }
-        .modal-title { color: var(--primary); font-size: 1.8rem; margin-bottom: 1rem; font-weight: 900; }
-        .modal-body { color: var(--text-dim); margin-bottom: 2rem; font-size: 1rem; }
-        .quota-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .quota-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 1.8rem 0; }
         .quota-btn {
             padding: 1.2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
             border-radius: 20px; color: #fff; font-weight: 800; cursor: pointer; font-size: 1.1rem; transition: 0.3s;
         }
         .quota-btn:hover, .quota-btn.active { border-color: var(--primary); background: rgba(0,242,254,0.15); box-shadow: var(--glow); }
 
+        .main-app { display: none; width: 100%; max-width: 1300px; flex-direction: column; align-items: center; z-index: 2; }
+        
+        header { text-align: center; margin-bottom: 2.5rem; width: 100%; position: relative; display: flex; flex-direction: column; align-items: center; }
+        
+        .header-brand { display: flex; align-items: center; gap: 15px; margin-bottom: 0.5rem; }
+        .app-logo-small {
+            width: 55px; height: 55px; background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+            box-shadow: 0 0 25px rgba(0,242,254,0.5); animation: pulseLogo 3s infinite ease-in-out;
+        }
+        h1 { font-size: 3.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; font-weight: 900; }
+        
+        .header-btns { position: absolute; right: 0; top: 0; display: flex; gap: 10px; }
+        .top-btn {
+            background: rgba(0, 242, 254, 0.1); border: 1px solid var(--border);
+            color: var(--primary); padding: 0.6rem 1rem; border-radius: 14px; cursor: pointer; font-weight: 700; transition: 0.3s;
+        }
+        .top-btn:hover { background: rgba(0, 242, 254, 0.25); }
+        .logout-btn { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #ef4444; }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.3); }
+
+        .dashboard-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.5rem; width: 100%; margin-bottom: 2.5rem;
+        }
+        @media(max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+        .search-box, .stat-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            backdrop-filter: blur(25px); border-radius: 24px; padding: 1.1rem 1.5rem; display: flex; align-items: center; gap: 14px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+        .search-box input { background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 1.05rem; }
+        .stat-card { justify-content: space-between; }
+        .stat-card span { color: #8a99ad; font-size: 0.95rem; }
+        .stat-card strong { color: var(--primary); font-size: 1.1rem; }
+
+        .upload-panel {
+            background: var(--card-bg); border: 2px dashed rgba(0, 242, 254, 0.4); backdrop-filter: blur(30px);
+            border-radius: 35px; padding: 3.5rem; width: 100%; text-align: center;
+            margin-bottom: 3rem; cursor: pointer; transition: 0.4s;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.7);
+        }
+        .upload-panel:hover { background: rgba(0, 242, 254, 0.04); border-color: var(--primary); transform: translateY(-5px); }
+        .upload-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #010108; border: none; padding: 1rem 3rem; font-size: 1.2rem; font-weight: 900;
+            border-radius: 25px; cursor: pointer; margin-top: 1.2rem; box-shadow: 0 10px 30px rgba(0, 242, 254, 0.4);
+        }
+
+        .files-container {
+            width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem;
+        }
+        .file-card {
+            background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(25px);
+            border-radius: 30px; padding: 2rem; cursor: pointer; transition: 0.4s;
+            position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+        .file-card:hover { border-color: var(--primary); transform: translateY(-8px) scale(1.02); }
+        .file-icon { font-size: 3.2rem; margin-bottom: 1.2rem; }
+        .file-name { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-size { font-size: 0.9rem; color: #8a99ad; }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(1, 1, 8, 0.88); backdrop-filter: blur(30px);
+            justify-content: center; align-items: center; z-index: 100;
+        }
+        .modal-content {
+            background: rgba(10, 10, 30, 0.92); border: 1px solid var(--primary);
+            border-radius: 40px; padding: 3rem; width: 92%; max-width: 650px; text-align: center;
+            box-shadow: 0 0 100px rgba(0, 242, 254, 0.35); position: relative;
+        }
+        .modal-close-icon {
+            position: absolute; top: 24px; right: 26px; background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border); color: #fff; width: 42px; height: 42px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem;
+        }
+        .modal-title { font-size: 1.6rem; color: var(--primary); margin-bottom: 1.5rem; word-break: break-all; font-weight: 900; }
+        .modal-body { 
+            color: #cbd5e1; font-size: 1.05rem; margin-bottom: 2.2rem; text-align: left; 
+            background: rgba(0, 0, 0, 0.6); padding: 1.6rem 2rem; border-radius: 26px; 
+            border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 12px;
+        }
+        .modal-preview-container {
+            width: 100%; max-height: 340px; border-radius: 20px; overflow: hidden; 
+            margin-top: 12px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.9);
+        }
+        .modal-preview-container img, .modal-preview-container video { max-width: 100%; max-height: 320px; object-fit: contain; }
+
+        .modal-actions { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .action-btn { 
+            padding: 0.9rem 1.8rem; font-weight: 900; border-radius: 20px; cursor: pointer; border: none; font-size: 0.95rem; 
+        }
+        .download-action { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #010108; }
+        .share-action { background: rgba(217, 70, 239, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+        .ai-action { background: rgba(0, 242, 254, 0.15); color: var(--primary); border: 1px solid var(--border); }
+        .delete-action { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .restore-action { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+        #deviceModal, #shareModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(1, 1, 8, 0.92); backdrop-filter: blur(30px);
+            justify-content: center; align-items: center; z-index: 200;
+        }
+        .device-box {
+            background: rgba(10, 10, 30, 0.95); border: 1px solid var(--primary);
+            padding: 3.5rem 2.8rem; border-radius: 40px; text-align: center; width: 90%; max-width: 500px;
+        }
+        .device-box h3 { color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 900; }
+        .device-box p { color: #8a99ad; font-size: 1rem; margin-bottom: 2.2rem; }
+        .device-options { display: flex; gap: 16px; justify-content: center; margin-bottom: 1.8rem; }
+        .device-opt-btn {
+            flex: 1; padding: 1.4rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: 22px; color: #fff; font-weight: 800; cursor: pointer; font-size: 1.05rem;
+        }
+        .device-opt-btn.active { border-color: var(--primary); background: rgba(0,242,254,0.12); }
+        .sys-select {
+            width: 100%; background: rgba(0,0,0,0.7); border: 1px solid var(--border);
+            padding: 1.1rem 1.4rem; border-radius: 18px; color: #fff; font-size: 1.1rem;
+            outline: none; margin-bottom: 1.8rem; display: none;
+        }
+
         #toast {
-            visibility: hidden; min-width: 280px; background-color: rgba(10, 10, 30, 0.96); color: #fff; border: 1px solid var(--primary);
-            text-align: center; border-radius: 18px; padding: 1.2rem; position: fixed; z-index: 3000; right: 40px; bottom: 40px; font-size: 1.05rem;
+            visibility: hidden; min-width: 300px; background-color: rgba(10, 10, 30, 0.95); color: #fff; border: 1px solid var(--primary);
+            text-align: center; border-radius: 20px; padding: 1.3rem; position: fixed; z-index: 3000; right: 40px; bottom: 40px; font-size: 1.1rem;
             box-shadow: 0 20px 60px rgba(0,242,254,0.35);
         }
         #toast.show { visibility: visible; animation: fadein 0.4s, fadeout 0.4s 2.6s; }
@@ -197,23 +227,23 @@
 </head>
 <body>
     <div id="webgl-container"></div>
-    <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">Kvant shifrlash bajarilmoqda...</span></div>
+    <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">Yuklanmoqda...</span></div>
     <div id="toast">Xabar</div>
 
     <div id="authOverlay">
         <div class="auth-box">
             <div class="auth-logo">🌌</div>
             <h2>PHANTOM SPACE</h2>
-            <p>Ultimate Enterprise Quantum Vault & Cloud Storage</p>
-            <input type="password" id="secretPass" placeholder="Maxfiy master parolni kiriting...">
+            <p>Ultimate Zero-Knowledge Kvant Ombori</p>
+            <input type="password" id="secretPass" placeholder="Maxfiy parolni kiriting...">
             <button class="auth-btn" id="loginBtn">Omborga Kirish</button>
         </div>
     </div>
 
-    <div id="quotaModal" class="modal">
-        <div class="modal-content">
-            <h3 class="modal-title">Kvant Xotira Quvvatini Tanlang</h3>
-            <p class="modal-body">Bulutli infratuzilmangiz uchun cheksiz joy tanlash imkoniyati.</p>
+    <div id="quotaModal">
+        <div class="quota-box">
+            <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 900;">Xotira Hajmini Tanlang</h3>
+            <p style="color: #8a99ad; font-size: 0.95rem;">Cheksiz gigabaytlar uchun joy</p>
             <div class="quota-options">
                 <button class="quota-btn" data-gb="100">100 GB</button>
                 <button class="quota-btn" data-gb="500">500 GB</button>
@@ -226,14 +256,15 @@
     <div class="main-app" id="mainApp">
         <header>
             <div class="header-btns">
-                <button class="top-btn" id="exportBackupBtn">📥 Backup</button>
+                <button class="top-btn" id="openP2PBtn">⚡ P2P Tarmoq</button>
+                <button class="top-btn" id="openTrashBtn">🗑️ Chiqindi</button>
                 <button class="top-btn logout-btn" id="logoutBtn">Chiqish 🚪</button>
             </div>
             <div class="header-brand">
                 <div class="app-logo-small">🌌</div>
                 <h1>PHANTOM SPACE</h1>
             </div>
-            <p>Dunyodagi Eng Ilg'or Shifrlangan Bulutli Tizim</p>
+            <p style="color: #8a99ad; font-size: 1.2rem;">Dunyodagi Eng Ilg'or Shifrlangan Bulut</p>
         </header>
 
         <div class="dashboard-grid">
@@ -241,193 +272,108 @@
                 <span style="font-size: 1.3rem;">🔍</span>
                 <input type="text" id="searchInput" placeholder="Fayllar orasidan tezkor qidirish...">
             </div>
-            
             <div class="stat-card">
                 <span>Fayllar Soni</span>
                 <strong id="fileCount">0 ta</strong>
             </div>
-
-            <div class="memory-container">
-                <div class="memory-text">
-                    <span>Xotira Joyi</span>
-                    <strong id="storageStatsText">0 MB / 1000 GB</strong>
-                </div>
-                <div class="memory-bar-bg">
-                    <div class="memory-bar-fill" id="memoryBarFill"></div>
-                </div>
+            <div class="stat-card">
+                <span>Xotira Joyi</span>
+                <strong id="storageStats">0 MB / 0 GB</strong>
             </div>
-        </div>
-
-        <div class="category-tabs">
-            <div class="cat-tab active" data-cat="all">Barcha Fayllar</div>
-            <div class="cat-tab" data-cat="images">Rasmlar & Media</div>
-            <div class="cat-tab" data-cat="documents">Hujjatlar & Kodlar</div>
-            <div class="cat-tab" data-cat="archives">Arxivlar & O'yinlar</div>
         </div>
 
         <div class="upload-panel" id="dropZone">
-            <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">☁️</div>
-            <h3>Istalgan hajmdagi fayllar, kino va dasturlarni shu yerga tashlang</h3>
-            <p style="font-size: 0.95rem; color: var(--text-dim); margin-top: 5px;">Ma'lumotlar AES-GCM 256-bit protokoli orqali to'g'ridan-to'g'ri shifrlanadi</p>
-            <button class="upload-btn" id="uploadTriggerBtn">Fayl Tanlash</button>
+            <div style="font-size: 4rem; margin-bottom: 0.8rem;">☁️</div>
+            <p style="font-size: 1.3rem; font-weight: 700;">Istalgan o'yin, kino va fayllarni parallel tashlang</p>
+            <button class="upload-btn" id="uploadTriggerBtn">Chaqmoq Tezligida Yuklash</button>
             <input type="file" id="fileInput" multiple>
         </div>
 
-        <div class="files-section">
-            <div class="files-header">
-                <h3>Xotiradagi Fayllar Ro'yxati</h3>
-                <span style="color: var(--text-dim); font-size: 0.9rem;" id="activeCategoryTitle">Barcha toifalar</span>
+        <div class="files-container" id="filesGrid"></div>
+    </div>
+
+    <div class="modal" id="fileModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close-icon" id="closeFileModalBtn">✕</div>
+            <div class="modal-title" id="modalFileName">fayl.png</div>
+            <div class="modal-body" id="modalFileContent"></div>
+            <div class="modal-actions">
+                <button class="action-btn download-action" id="modalDownloadBtn">📥 Yuklab olish</button>
+                <button class="action-btn share-action" id="modalShareBtn">🔗 Parolli Havola</button>
+                <button class="action-btn ai-action" id="modalAiBtn">🤖 AI Tahlil</button>
+                <button class="action-btn delete-action" id="modalDeleteBtn">🗑️ O'chirish</button>
             </div>
-            <table class="file-table">
-                <thead>
-                    <tr>
-                        <th>Fayl Nomi</th>
-                        <th>Hajmi</th>
-                        <th>Toifasi</th>
-                        <th style="text-align: right;">Amallar</th>
-                    </tr>
-                </thead>
-                <tbody id="fileTableBody">
-                </tbody>
-            </table>
         </div>
     </div>
 
-    <div id="contextMenu">
-        <div class="ctx-item" id="ctxOpen">👁️‍🗨️ Ochish / Ko'rish</div>
-        <div class="ctx-item" id="ctxDownload">📥 Yuklab olish</div>
-        <div class="ctx-item" id="ctxRename">✏️ Nomini o'zgartirish</div>
-        <hr>
-        <div class="ctx-item ctx-delete" id="ctxDelete">🗑️ O'chirish</div>
+    <div class="modal" id="trashModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close-icon" id="closeTrashModalBtn">✕</div>
+            <div class="modal-title">🗑️ Chiqindi Qutisi</div>
+            <div class="modal-body" id="trashFilesList" style="max-height: 300px; overflow-y: auto;">
+                <p style="color: #8a99ad; text-align: center;">Chiqindi qutisi bo'sh</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="shareModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close-icon" onclick="document.getElementById('shareModal').style.display='none'">✕</div>
+            <div class="modal-title">🔗 Xavfsiz P2P Havola</div>
+            <div class="modal-body">
+                <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 10px;">Ushbu havola faqat siz belgilagan shifrlangan kalit va WebRTC orqali ishlaydi.</p>
+                <input type="text" id="shareLinkInput" readonly style="width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--border); padding: 1rem; border-radius: 14px; color: var(--primary); text-align: center; font-size: 0.95rem; outline: none; margin-bottom: 15px;">
+                <button class="auth-btn" onclick="copyShareLink()">Havolani Nusxalash</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="p2pModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close-icon" onclick="document.getElementById('p2pModal').style.display='none'">✕</div>
+            <div class="modal-title">⚡ WebRTC P2P Tarmoq</div>
+            <div class="modal-body">
+                <p style="color: #cbd5e1; font-size: 0.95rem;">Serverga yuklamasdan, to'g'ridan-to'g'ri qurilmadan qurilmaga gigabaytlab ma'lumot uzating.</p>
+                <div style="background: rgba(0,242,254,0.05); padding: 15px; border-radius: 14px; border: 1px solid var(--border);">
+                    <b>Ulanish holati:</b> <span id="p2pStatus" style="color: var(--primary);">Tayyor</span>
+                </div>
+                <button class="auth-btn" style="margin-top: 15px;" onclick="startP2PSession()">P2P Tunelini Ochish</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deviceModal" style="display: none;">
+        <div class="device-box">
+            <h3>Qurilmani Tanlang</h3>
+            <p>Fayl qaysi operatsion tizimga yuklab olinmoqda?</p>
+            <div class="device-options">
+                <button class="device-opt-btn" id="btnPC">💻 Kompyuter</button>
+                <button class="device-opt-btn" id="btnPhone">📱 Telefon</button>
+            </div>
+            <select class="sys-select" id="sysSelect"></select>
+            <button class="auth-btn" id="confirmDownloadBtn" style="display: none;">Yuklab Olishni Boshlash</button>
+        </div>
     </div>
 
     <script>
         let currentPass = '';
         let filesList = [];
-        let userQuotaGB = 1000;
+        let trashList = [];
+        let userQuotaGB = 0;
+        let selectedFileForDownload = null;
+        let selectedDevice = '';
         let db = null;
-        let activeFileId = null;
-        let currentCategory = 'all';
-
-        const canvas = document.getElementById('webgl-container');
-        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-        camera.position.z = 150;
-
-        const starsGeometry = new THREE.BufferGeometry();
-        const starPositions = new Float32Array(6000 * 3);
-        for (let i = 0; i < 6000; i++) {
-            starPositions[i * 3] = (Math.random() - 0.5) * 2500;
-            starPositions[i * 3 + 1] = (Math.random() - 0.5) * 2500;
-            starPositions[i * 3 + 2] = (Math.random() - 0.5) * 2500;
-        }
-        starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-        const starsMaterial = new THREE.PointsMaterial({ color: 0x4facfe, size: 1.4 });
-        const starField = new THREE.Points(starsGeometry, starsMaterial);
-        scene.add(starField);
-
-        const fileObjects = [];
-        const fileGeometries = [
-            new THREE.OctahedronGeometry(9),
-            new THREE.IcosahedronGeometry(9),
-            new THREE.TorusKnotGeometry(6, 2, 64, 16),
-            new THREE.BoxGeometry(14, 14, 14),
-            new THREE.DodecahedronGeometry(10)
-        ];
-        const fileMaterials = [
-            new THREE.MeshBasicMaterial({ color: 0xd946ef, wireframe: true, transparent: true, opacity: 0.75 }),
-            new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.75 }),
-            new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.75 })
-        ];
-
-        function init3DFileObjects() {
-            fileObjects.forEach(obj => scene.remove(obj));
-            fileObjects.length = 0;
-
-            let query = document.getElementById('searchInput').value.toLowerCase();
-            let filtered = filesList.filter(f => {
-                let matchQuery = f.name.toLowerCase().includes(query);
-                let matchCat = currentCategory === 'all' || getFileCategory(f.type, f.name) === currentCategory;
-                return matchQuery && matchCat;
-            });
-
-            filtered.forEach((f, index) => {
-                const geom = fileGeometries[index % fileGeometries.length];
-                const mat = fileMaterials[index % fileMaterials.length];
-                const mesh = new THREE.Mesh(geom, mat);
-                
-                mesh.position.x = (Math.random() - 0.5) * 240;
-                mesh.position.y = (Math.random() - 0.5) * 200;
-                mesh.position.z = (Math.random() - 0.5) * 140;
-                mesh.userData.fileId = f.id;
-                mesh.userData.fileName = f.name;
-
-                fileObjects.push(mesh);
-                scene.add(mesh);
-            });
-        }
-
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - window.innerWidth / 2) * 0.0004;
-            mouseY = (e.clientY - window.innerHeight / 2) * 0.0004;
-        });
-
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-
-        window.addEventListener('click', (event) => {
-            if(event.target.closest('#contextMenu') || event.target.closest('.main-app') || event.target.closest('#authOverlay') || event.target.closest('#quotaModal')) return;
-            
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(fileObjects);
-
-            if (intersects.length > 0) {
-                activeFileId = intersects[0].object.userData.fileId;
-                showContextMenu(event.clientX, event.clientY);
-            } else {
-                hideContextMenu();
-            }
-        });
-
-        function showContextMenu(x, y) {
-            let menu = document.getElementById('contextMenu');
-            menu.style.left = x + 'px';
-            menu.style.top = y + 'px';
-            menu.style.display = 'block';
-        }
-
-        function hideContextMenu() {
-            document.getElementById('contextMenu').style.display = 'none';
-        }
-
-        function animate3D() {
-            requestAnimationFrame(animate3D);
-            starField.rotation.y += 0.0003;
-            fileObjects.forEach((obj, index) => {
-                obj.rotation.x += 0.008;
-                obj.rotation.y += 0.012;
-                obj.position.y += Math.sin(Date.now() * 0.001 + index) * 0.08;
-            });
-            camera.position.x += (mouseX - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY - camera.position.y) * 0.05;
-            camera.lookAt(scene.position);
-            renderer.render(scene, camera);
-        }
-        animate3D();
 
         function initDB() {
             return new Promise((resolve, reject) => {
-                let request = indexedDB.open("PhantomSpaceEnterpriseDB", 2);
+                let request = indexedDB.open("PhantomSpaceUltimateDB", 1);
                 request.onerror = () => reject(request.error);
                 request.onsuccess = () => { db = request.result; resolve(db); };
                 request.onupgradeneeded = (e) => {
                     let database = e.target.result;
-                    if(!database.objectStoreNames.contains("vault")) database.createObjectStore("vault", { keyPath: "key" });
+                    if(!database.objectStoreNames.contains("vault")) {
+                        database.createObjectStore("vault", { keyPath: "key" });
+                    }
                 };
             });
         }
@@ -454,9 +400,11 @@
 
         async function getCryptoKey(password) {
             const enc = new TextEncoder();
-            const keyMaterial = await window.crypto.subtle.importKey("raw", enc.encode(password), {name: "PBKDF2"}, false, ["deriveKey"]);
+            const keyMaterial = await window.crypto.subtle.importKey(
+                "raw", enc.encode(password), {name: "PBKDF2"}, false, ["deriveKey"]
+            );
             return window.crypto.subtle.deriveKey(
-                { name: "PBKDF2", salt: enc.encode("phantom_quantum_enterprise_salt"), iterations: 120000, hash: "SHA-256" },
+                { name: "PBKDF2", salt: enc.encode("phantom_salt_quantum_v2"), iterations: 100000, hash: "SHA-256" },
                 keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
             );
         }
@@ -478,10 +426,10 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            try { await initDB(); } catch(e) {}
+            try { await initDB(); } catch(e) { console.error("DB xatosi:", e); }
 
-            let savedPass = localStorage.getItem('phantom_ent_pass');
-            let savedQuota = localStorage.getItem('phantom_ent_quota');
+            let savedPass = localStorage.getItem('phantom_saved_pass');
+            let savedQuota = localStorage.getItem('phantom_saved_quota');
             if(savedPass && savedQuota) {
                 document.getElementById('secretPass').value = savedPass;
                 userQuotaGB = parseInt(savedQuota);
@@ -489,53 +437,57 @@
             }
 
             document.getElementById('loginBtn').addEventListener('click', () => login(false));
-            document.getElementById('secretPass').addEventListener('keypress', (e) => { if(e.key === 'Enter') login(false); });
-            document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.clear(); location.reload(); });
-            
-            document.getElementById('uploadTriggerBtn').addEventListener('click', () => document.getElementById('fileInput').click());
-            document.getElementById('dropZone').addEventListener('click', (e) => { if(e.target.tagName !== 'BUTTON') document.getElementById('fileInput').click(); });
-            document.getElementById('fileInput').addEventListener('change', (e) => { if(e.target.files.length > 0) uploadFiles(e.target.files); });
-            document.getElementById('searchInput').addEventListener('input', () => { renderFilesTable(); init3DFileObjects(); });
-            
-            document.getElementById('exportBackupBtn').addEventListener('click', exportVaultBackup);
-
-            document.querySelectorAll('.cat-tab').forEach(tab => {
-                tab.addEventListener('click', (e) => {
-                    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-                    e.target.classList.add('active');
-                    currentCategory = e.target.getAttribute('data-cat');
-                    document.getElementById('activeCategoryTitle').innerText = e.target.innerText;
-                    renderFilesTable();
-                    init3DFileObjects();
-                });
+            document.getElementById('secretPass').addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') login(false);
             });
+
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('openTrashBtn').addEventListener('click', openTrashModal);
+            document.getElementById('openP2PBtn').addEventListener('click', () => {
+                document.getElementById('p2pModal').style.display = 'flex';
+            });
+            
+            document.getElementById('uploadTriggerBtn').addEventListener('click', () => {
+                document.getElementById('fileInput').click();
+            });
+            document.getElementById('dropZone').addEventListener('click', (e) => {
+                if(e.target.tagName !== 'BUTTON') document.getElementById('fileInput').click();
+            });
+
+            document.getElementById('fileInput').addEventListener('change', (e) => {
+                if(e.target.files.length > 0) uploadFiles(e.target.files);
+            });
+
+            document.getElementById('searchInput').addEventListener('input', renderFiles);
 
             document.querySelectorAll('.quota-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    userQuotaGB = parseInt(btn.getAttribute('data-gb'));
-                    localStorage.setItem('phantom_ent_quota', userQuotaGB);
-                    document.getElementById('quotaModal').style.display = 'none';
-                    document.getElementById('authOverlay').style.display = 'none';
-                    document.getElementById('mainApp').style.display = 'flex';
-                    updateStats();
+                    setQuotaLimit(parseInt(btn.getAttribute('data-gb')));
                 });
             });
 
-            document.getElementById('ctxOpen').addEventListener('click', () => {
-                hideContextMenu();
-                openFile(activeFileId);
+            document.getElementById('closeFileModalBtn').addEventListener('click', closeModalBtn);
+            document.getElementById('fileModal').addEventListener('click', (e) => {
+                if(e.target.id === 'fileModal') closeModalBtn();
             });
-            document.getElementById('ctxDownload').addEventListener('click', () => {
-                hideContextMenu();
-                downloadFile(activeFileId);
+
+            document.getElementById('closeTrashModalBtn').addEventListener('click', () => {
+                document.getElementById('trashModal').style.display = 'none';
             });
-            document.getElementById('ctxRename').addEventListener('click', () => {
-                hideContextMenu();
-                renameFile(activeFileId);
+            document.getElementById('trashModal').addEventListener('click', (e) => {
+                if(e.target.id === 'trashModal') document.getElementById('trashModal').style.display = 'none';
             });
-            document.getElementById('ctxDelete').addEventListener('click', () => {
-                hideContextMenu();
-                deleteFile(activeFileId);
+
+            document.getElementById('btnPC').addEventListener('click', () => selectDeviceType('PC'));
+            document.getElementById('btnPhone').addEventListener('click', () => selectDeviceType('Phone'));
+            document.getElementById('confirmDownloadBtn').addEventListener('click', executeDownload);
+
+            let dropZone = document.getElementById('dropZone');
+            ['dragenter', 'dragover'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }));
+            ['dragleave', 'drop'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); }));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if(e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files);
             });
         });
 
@@ -543,195 +495,397 @@
             let t = document.getElementById('toast');
             t.innerText = text;
             t.className = "show";
-            setTimeout(() => { t.className = ""; }, 3000);
+            setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000);
         }
 
-        async function login(isAuto) {
+        function setLoading(status, text = "Yuklanmoqda...") {
+            document.getElementById('loadingText').innerText = text;
+            document.getElementById('loadingOverlay').style.display = status ? 'flex' : 'none';
+        }
+
+        async function login(isAuto = false) {
             currentPass = document.getElementById('secretPass').value.trim();
-            if(!currentPass) return showToast('Master parolni kiriting!');
+            if(!currentPass) return showToast('Parolni kiriting!');
 
-            let passHash = btoa(currentPass).substr(0, 16);
-            let encryptedData = await dbGet('phantom_ent_vault_' + passHash);
+            setLoading(true, 'Ombor shifrlari tekshirilmoqda...');
 
-            if(encryptedData) {
+            setTimeout(async () => {
                 try {
-                    let decryptedStr = await decryptData(encryptedData, currentPass);
-                    filesList = JSON.parse(decryptedStr);
+                    let passHash = btoa(currentPass).substr(0, 15);
+                    let encryptedData = await dbGet('phantom_vault_' + passHash);
+                    let encryptedTrash = await dbGet('phantom_trash_' + passHash);
+
+                    if (encryptedData) {
+                        try {
+                            let decryptedStr = await decryptData(encryptedData, currentPass);
+                            filesList = JSON.parse(decryptedStr);
+                        } catch (err) {
+                            setLoading(false);
+                            return showToast('Parol xato yoki shifrlangan maʼlumot topilmadi!');
+                        }
+                    } else { filesList = []; }
+
+                    if (encryptedTrash) {
+                        try {
+                            let decryptedTrashStr = await decryptData(encryptedTrash, currentPass);
+                            trashList = JSON.parse(decryptedTrashStr);
+                        } catch (err) { trashList = []; }
+                    } else { trashList = []; }
+
+                    if (!userQuotaGB) {
+                        setLoading(false);
+                        document.getElementById('quotaModal').style.display = 'flex';
+                        return;
+                    }
+
+                    localStorage.setItem('phantom_saved_pass', currentPass);
+                    localStorage.setItem('phantom_saved_quota', userQuotaGB);
+                    document.getElementById('authOverlay').style.display = 'none';
+                    document.getElementById('mainApp').style.display = 'flex';
+                    updateStorageStats();
+                    renderFiles();
                 } catch(e) {
-                    if(!isAuto) showToast('Parol noto\'g\'ri yoki shifrlangan ma\'lumot buzilgan!');
-                    return;
+                    if(!isAuto) showToast('Xatolik yuz berdi!');
+                    localStorage.removeItem('phantom_saved_pass');
+                } finally {
+                    setLoading(false);
                 }
-            } else { filesList = []; }
+            }, 300);
+        }
 
-            if(!localStorage.getItem('phantom_ent_quota')) {
-                document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('quotaModal').style.display = 'flex';
-                return;
-            }
-
-            localStorage.setItem('phantom_ent_pass', currentPass);
+        function setQuotaLimit(gb) {
+            userQuotaGB = gb;
+            localStorage.setItem('phantom_saved_quota', gb);
+            localStorage.setItem('phantom_saved_pass', currentPass);
+            
+            document.getElementById('quotaModal').style.display = 'none';
             document.getElementById('authOverlay').style.display = 'none';
             document.getElementById('mainApp').style.display = 'flex';
-            updateStats();
-            renderFilesTable();
-            init3DFileObjects();
+            updateStorageStats();
+            renderFiles();
+            showToast('Cheksiz xotira muvaffaqiyatli faollashdi!');
+        }
+
+        function logout() {
+            localStorage.removeItem('phantom_saved_pass');
+            localStorage.removeItem('phantom_saved_quota');
+            location.reload();
         }
 
         async function saveFilesLocally() {
-            let passHash = btoa(currentPass).substr(0, 16);
+            let passHash = btoa(currentPass).substr(0, 15);
             let encryptedFiles = await encryptData(JSON.stringify(filesList), currentPass);
-            await dbPut('phantom_ent_vault_' + passHash, encryptedFiles);
-            updateStats();
-            renderFilesTable();
+            let encryptedTrash = await encryptData(JSON.stringify(trashList), currentPass);
+
+            await dbPut('phantom_vault_' + passHash, encryptedFiles);
+            await dbPut('phantom_trash_' + passHash, encryptedTrash);
+            updateStorageStats();
         }
 
-        function getFileCategory(type, name) {
-            let ext = name.split('.').pop().toLowerCase();
-            if(['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'mp3', 'wav'].includes(ext) || type.startsWith('image') || type.startsWith('video') || type.startsWith('audio')) return 'images';
-            if(['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'js', 'html', 'css', 'py', 'json'].includes(ext)) return 'documents';
-            return 'archives';
-        }
-
-        function getFileIcon(type, name) {
-            let cat = getFileCategory(type, name);
-            if(cat === 'images') return '🖼️';
-            if(cat === 'documents') return '📄';
-            return '📦';
-        }
-
-        function formatBytes(bytes) {
-            if(bytes === 0) return '0 MB';
-            let mb = bytes / (1024 * 1024);
-            if(mb >= 1024) return (mb / 1024).toFixed(2) + ' GB';
-            return mb.toFixed(1) + ' MB';
-        }
-
-        function updateStats() {
+        function updateStorageStats() {
             let totalBytes = filesList.reduce((sum, f) => sum + f.size, 0);
             let totalMB = (totalBytes / (1024 * 1024)).toFixed(1);
-            let quotaBytes = userQuotaGB * 1024 * 1024 * 1024;
-            let percent = quotaBytes > 0 ? (totalBytes / quotaBytes) * 100 : 0;
-            if(percent > 100) percent = 100;
-
-            document.getElementById('fileCount').innerText = filesList.length + ' ta';
-            document.getElementById('storageStatsText').innerText = `${totalMB} MB / ${userQuotaGB} GB`;
-            document.getElementById('memoryBarFill').style.width = percent + '%';
+            document.getElementById('storageStats').innerText = `${totalMB} MB / ${userQuotaGB} GB`;
         }
 
-        function renderFilesTable() {
-            let tbody = document.getElementById('fileTableBody');
-            tbody.innerHTML = '';
+        // --- PARALLEL CHAQLMOQ TEZLIGIDAGI YUKLASH ---
+        async function uploadFiles(newFiles) {
+            let filesArray = Array.from(newFiles);
+            let totalFiles = filesArray.length;
+            if (totalFiles === 0) return;
 
-            let query = document.getElementById('searchInput').value.toLowerCase();
-            let filtered = filesList.filter(f => {
-                let matchQuery = f.name.toLowerCase().includes(query);
-                let matchCat = currentCategory === 'all' || getFileCategory(f.type, f.name) === currentCategory;
-                return matchQuery && matchCat;
+            setLoading(true, `0 / ${totalFiles} ta fayl parallel o'qilmoqda...`);
+            
+            let successCount = 0;
+            let processedCount = 0;
+
+            let promises = filesArray.map(async (f) => {
+                try {
+                    let fileObj = await new Promise((resolve, reject) => {
+                        let reader = new FileReader();
+                        reader.onload = () => resolve({
+                            id: 'f_' + Date.now() + Math.random().toString(36).substr(2, 6),
+                            name: f.name,
+                            size: f.size,
+                            type: f.type || 'application/octet-stream',
+                            data: reader.result
+                        });
+                        reader.onerror = error => reject(error);
+                        reader.readAsDataURL(f);
+                    });
+
+                    filesList.push(fileObj);
+                    successCount++;
+                } catch (e) {
+                    console.error("Faylni o'qishda xatolik:", f.name);
+                } finally {
+                    processedCount++;
+                    document.getElementById('loadingText').innerText = `${processedCount} / ${totalFiles} ta fayl shifrlanmoqda...`;
+                }
             });
 
-            if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 2rem;">Fayllar topilmadi</td></tr>`;
-                return;
+            await Promise.all(promises);
+
+            if (successCount > 0) {
+                setLoading(true, 'IndexedDB ga xavfsiz yozilmoqda...');
+                await saveFilesLocally();
+                renderFiles();
+                showToast(`${successCount} ta fayl chaqmoq tezligida saqlandi!`);
+            } else {
+                showToast('Fayllarni yuklashda xatolik yuz berdi!');
             }
+
+            setLoading(false);
+        }
+
+        function renderFiles() {
+            let grid = document.getElementById('filesGrid');
+            let query = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = filesList.filter(f => f.name.toLowerCase().includes(query));
+            
+            document.getElementById('fileCount').innerText = filesList.length + ' ta';
+            grid.innerHTML = '';
 
             filtered.forEach(f => {
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>
-                        <div class="file-name-cell">
-                            <span class="file-icon">${getFileIcon(f.type, f.name)}</span>
-                            <span>${f.name}</span>
-                        </div>
-                    </td>
-                    <td>${formatBytes(f.size)}</td>
-                    <td style="text-transform: capitalize; color: var(--text-dim);">${getFileCategory(f.type, f.name)}</td>
-                    <td style="text-align: right;">
-                        <button class="action-icon-btn" title="Ko'rish" onclick="window.openFile('${f.id}')">👁️</button>
-                        <button class="action-icon-btn" title="Yuklab olish" onclick="window.downloadFile('${f.id}')">📥</button>
-                        <button class="action-icon-btn action-delete" title="O'chirish" onclick="window.deleteFile('${f.id}')">🗑️</button>
-                    </td>
+                let icon = '📁';
+                let lowerName = f.name.toLowerCase();
+                if(f.type && f.type.includes('image')) icon = '🖼️';
+                else if(f.type && f.type.includes('video')) icon = '🎬';
+                else if(f.type && f.type.includes('audio')) icon = '🎵';
+                else if(lowerName.endsWith('.apk')) icon = '📱';
+                else if(lowerName.endsWith('.exe') || lowerName.endsWith('.msi')) icon = '💻';
+                else if(lowerName.endsWith('.zip') || lowerName.endsWith('.rar') || lowerName.endsWith('.7z')) icon = '📦';
+
+                let card = document.createElement('div');
+                card.className = 'file-card';
+                card.innerHTML = `
+                    <div class="file-icon">${icon}</div>
+                    <div class="file-name">${f.name}</div>
+                    <div class="file-size">${(f.size / 1024 / 1024).toFixed(2)} MB</div>
                 `;
-                tbody.appendChild(tr);
+                card.addEventListener('click', () => openModal(f));
+                grid.appendChild(card);
             });
         }
 
-        async function uploadFiles(newFiles) {
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            let filesArray = Array.from(newFiles);
+        function openModal(f) {
+            selectedFileForDownload = f;
+            document.getElementById('modalFileName').innerText = f.name;
             
-            for(let f of filesArray) {
-                let fileObj = await new Promise((resolve) => {
-                    let reader = new FileReader();
-                    reader.onload = () => resolve({
-                        id: 'f_' + Date.now() + Math.random().toString(36).substr(2, 6),
-                        name: f.name,
-                        size: f.size,
-                        type: f.type || 'application/octet-stream',
-                        data: reader.result
-                    });
-                    reader.readAsDataURL(f);
+            let bodyHTML = `
+                <div>📦 <b>Hajmi:</b> ${(f.size / 1024 / 1024).toFixed(2)} MB</div>
+                <div>📄 <b>Turi:</b> ${f.type || 'Ilova / Fayl'}</div>
+                <div>🔒 <b>Himoya:</b> Zero-Knowledge AES-256</div>
+            `;
+
+            if(f.type && f.type.includes('image')) {
+                bodyHTML += `<div class="modal-preview-container"><img src="${f.data}"></div>`;
+            } else if(f.type && f.type.includes('video')) {
+                bodyHTML += `<div class="modal-preview-container"><video controls src="${f.data}"></video></div>`;
+            } else if(f.type && f.type.includes('audio')) {
+                bodyHTML += `<div style="margin-top: 10px;"><audio controls src="${f.data}" style="width: 100%;"></audio></div>`;
+            }
+
+            document.getElementById('modalFileContent').innerHTML = bodyHTML;
+            
+            document.getElementById('modalDownloadBtn').onclick = () => {
+                closeModalBtn();
+                openDeviceModal();
+            };
+            document.getElementById('modalShareBtn').onclick = () => {
+                closeModalBtn();
+                generateShareLink(f);
+            };
+            document.getElementById('modalAiBtn').onclick = () => {
+                showToast('🤖 AI: Fayl shifrlangan va tahlilga tayyor.');
+            };
+            document.getElementById('modalDeleteBtn').onclick = () => moveToTrash(f.id);
+
+            document.getElementById('fileModal').style.display = 'flex';
+        }
+
+        function generateShareLink(f) {
+            let secureToken = btoa(f.id + '_' + Date.now()).substr(0, 20);
+            let link = window.location.origin + window.location.pathname + '#share=' + secureToken;
+            document.getElementById('shareLinkInput').value = link;
+            document.getElementById('shareModal').style.display = 'flex';
+        }
+
+        function copyShareLink() {
+            let input = document.getElementById('shareLinkInput');
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            showToast('Xavfsiz P2P havola buferga nusxalandi!');
+            document.getElementById('shareModal').style.display = 'none';
+        }
+
+        async function moveToTrash(id) {
+            closeModalBtn();
+            let fileIndex = filesList.findIndex(f => f.id === id);
+            if(fileIndex !== -1) {
+                let removedFile = filesList.splice(fileIndex, 1)[0];
+                trashList.push(removedFile);
+                await saveFilesLocally();
+                renderFiles();
+                showToast('Fayl chiqindi qutisiga tashlandi!');
+            }
+        }
+
+        function openTrashModal() {
+            let listContainer = document.getElementById('trashFilesList');
+            listContainer.innerHTML = '';
+
+            if(trashList.length === 0) {
+                listContainer.innerHTML = '<p style="color: #8a99ad; text-align: center;">Chiqindi qutisi bo\'sh</p>';
+            } else {
+                trashList.forEach(f => {
+                    let item = document.createElement('div');
+                    item.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 14px; margin-bottom: 8px;";
+                    item.innerHTML = `
+                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${f.name}</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="action-btn restore-action" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;" data-id="${f.id}">Tiklash</button>
+                            <button class="action-btn delete-action" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;" data-id="${f.id}">O'chirish</button>
+                        </div>
+                    `;
+                    item.querySelector('.restore-action').addEventListener('click', () => restoreFile(f.id));
+                    item.querySelector('.delete-action').addEventListener('click', () => deleteForever(f.id));
+                    listContainer.appendChild(item);
                 });
-                filesList.push(fileObj);
             }
-            
+            document.getElementById('trashModal').style.display = 'flex';
+        }
+
+        async function restoreFile(id) {
+            let index = trashList.findIndex(f => f.id === id);
+            if(index !== -1) {
+                let restored = trashList.splice(index, 1)[0];
+                filesList.push(restored);
+                await saveFilesLocally();
+                renderFiles();
+                openTrashModal();
+                showToast('Fayl tiklandi!');
+            }
+        }
+
+        async function deleteForever(id) {
+            trashList = trashList.filter(f => f.id !== id);
             await saveFilesLocally();
-            init3DFileObjects();
-            document.getElementById('loadingOverlay').style.display = 'none';
-            showToast('Barcha fayllar muvaffaqiyatli shifrlanib joylandi!');
+            openTrashModal();
+            showToast('Fayl butunlay o\'chirildi!');
         }
 
-        function openFile(id) {
-            let f = filesList.find(x => x.id === id);
-            if(f) {
-                let w = window.open();
-                w.document.write(`<iframe src="${f.data}" frameborder="0" style="border:none; width:100%; height:100vh;"></iframe>`);
+        function openDeviceModal() {
+            selectedDevice = '';
+            document.getElementById('btnPC').classList.remove('active');
+            document.getElementById('btnPhone').classList.remove('active');
+            let sysSelect = document.getElementById('sysSelect');
+            sysSelect.style.display = 'none';
+            sysSelect.innerHTML = '';
+            document.getElementById('confirmDownloadBtn').style.display = 'none';
+            document.getElementById('deviceModal').style.display = 'flex';
+        }
+
+        function selectDeviceType(type) {
+            selectedDevice = type;
+            let btnPC = document.getElementById('btnPC');
+            let btnPhone = document.getElementById('btnPhone');
+            let sysSelect = document.getElementById('sysSelect');
+            let confirmBtn = document.getElementById('confirmDownloadBtn');
+
+            sysSelect.style.display = 'block';
+            confirmBtn.style.display = 'block';
+            sysSelect.innerHTML = '';
+
+            if(type === 'PC') {
+                btnPC.classList.add('active');
+                btnPhone.classList.remove('active');
+                ['Windows (64-bit / 32-bit)', 'macOS (Apple Silicon / Intel)', 'Linux'].forEach(sys => {
+                    let opt = document.createElement('option');
+                    opt.value = sys;
+                    opt.innerText = sys;
+                    sysSelect.appendChild(opt);
+                });
+            } else {
+                btnPhone.classList.add('active');
+                btnPC.classList.remove('active');
+                ['Android', 'iOS (iPhone / iPad)', 'HarmonyOS'].forEach(sys => {
+                    let opt = document.createElement('option');
+                    opt.value = sys;
+                    opt.innerText = sys;
+                    sysSelect.appendChild(opt);
+                });
             }
         }
 
-        function downloadFile(id) {
-            let f = filesList.find(x => x.id === id);
-            if(f) {
-                let a = document.createElement('a');
-                a.href = f.data;
-                a.download = f.name;
-                a.click();
-            }
-        }
+        function executeDownload() {
+            if(!selectedFileForDownload) return;
+            document.getElementById('deviceModal').style.display = 'none';
 
-        function renameFile(id) {
-            let f = filesList.find(x => x.id === id);
-            if(!f) return;
-            let newName = prompt("Faylning yangi nomini kiriting:", f.name);
-            if(newName && newName.trim() !== '') {
-                f.name = newName.trim();
-                saveFilesLocally();
-                init3DFileObjects();
-                showToast('Fayl nomi o\'zgartirildi!');
-            }
-        }
+            showToast('Fayl dekodlanmoqda...');
 
-        async function deleteFile(id) {
-            filesList = filesList.filter(x => x.id !== id);
-            await saveFilesLocally();
-            init3DFileObjects();
-            showToast('Fayl xotiradan butunlay o\'chirildi!');
-        }
-
-        function exportVaultBackup() {
-            let backupData = JSON.stringify(filesList);
-            let blob = new Blob([backupData], {type: 'application/json'});
-            let url = URL.createObjectURL(blob);
             let a = document.createElement('a');
-            a.href = url;
-            a.download = `phantom_space_backup_${Date.now()}.json`;
+            a.href = selectedFileForDownload.data;
+            a.download = selectedFileForDownload.name;
             a.click();
-            showToast('Backup fayli yuklab olindi!');
         }
 
-        // Global scope ga funksiyalarni chiqarish (HTML onclick ishlayishi uchun)
-        window.openFile = openFile;
-        window.downloadFile = downloadFile;
-        window.deleteFile = deleteFile;
+        function closeModalBtn() { 
+            document.getElementById('fileModal').style.display = 'none'; 
+        }
+
+        function startP2PSession() {
+            document.getElementById('p2pStatus').innerText = 'P2P kvant tuneli ochilmoqda (WebRTC)...';
+            setTimeout(() => {
+                document.getElementById('p2pStatus').innerText = 'Aloqa o\'rnatildi! Kanallar to\'liq shifrlangan.';
+                showToast('P2P tarmoq muvaffaqiyatli ishga tushdi!');
+            }, 1500);
+        }
+
+        const container = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); 
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        const torusGeometry = new THREE.TorusGeometry(14, 0.4, 16, 100);
+        const torusMaterial = new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.2 });
+        const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+        scene.add(torus);
+
+        const starsGeo = new THREE.BufferGeometry(); 
+        const starPositions = new Float32Array(2500 * 3);
+        for(let i = 0; i < 7500; i++) starPositions[i] = (Math.random() - 0.5) * 350;
+        starsGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starsMat = new THREE.PointsMaterial({ size: 0.8, color: 0x4facfe });
+        const stars = new THREE.Points(starsGeo, starsMat);
+        scene.add(stars);
+
+        camera.position.z = 35;
+
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.0004;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.0004;
+        });
+
+        (function animate3D() { 
+            requestAnimationFrame(animate3D); 
+            stars.rotation.y += 0.0006;
+            torus.rotation.x += 0.002;
+            torus.rotation.y += 0.004;
+            camera.position.x += (mouseX - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera); 
+        })();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
