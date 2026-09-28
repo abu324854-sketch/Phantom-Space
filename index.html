@@ -23,7 +23,6 @@
         
         #webgl-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; }
 
-        /* AUTHENTICATION OVERLAY */
         #authOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(1, 1, 8, 0.94); backdrop-filter: blur(40px);
@@ -63,7 +62,6 @@
         }
         .auth-btn:hover { transform: scale(1.03); }
 
-        /* MAIN APP INTERFACE */
         .main-app { display: none; width: 100%; flex-direction: column; align-items: center; padding: 2rem; }
         header { text-align: center; margin-bottom: 2rem; width: 100%; max-width: 1300px; position: relative; display: flex; flex-direction: column; align-items: center; }
         .header-brand { display: flex; align-items: center; gap: 15px; margin-bottom: 0.5rem; }
@@ -85,7 +83,6 @@
         .logout-btn { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #ef4444; }
         .logout-btn:hover { background: rgba(239, 68, 68, 0.3); box-shadow: 0 0 15px rgba(239,68,68,0.3); }
 
-        /* DASHBOARD GRID & METRICS */
         .dashboard-grid {
             display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.5rem; width: 100%; max-width: 1300px; margin-bottom: 2rem; align-items: center;
             background: var(--card-bg); border: 1px solid var(--border); border-radius: 30px; padding: 1.8rem 2.2rem;
@@ -103,7 +100,6 @@
         .memory-bar-fill { height: 100%; background: linear-gradient(to right, var(--primary), var(--accent)); border-radius: 5px; width: 0%; transition: width 1s ease-out; }
         .memory-text { display: flex; justify-content: space-between; color: var(--text-dim); font-size: 0.85rem; }
 
-        /* CATEGORY TABS */
         .category-tabs {
             display: flex; gap: 10px; width: 100%; max-width: 1300px; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 5px;
         }
@@ -113,7 +109,6 @@
         }
         .cat-tab:hover, .cat-tab.active { background: rgba(0,242,254,0.15); border-color: var(--primary); color: var(--primary); box-shadow: 0 0 15px rgba(0,242,254,0.2); }
 
-        /* UPLOAD PANEL */
         .upload-panel {
             background: var(--card-bg); border: 2px dashed var(--border); backdrop-filter: blur(20px);
             border-radius: 35px; padding: 2.5rem; width: 100%; max-width: 1300px; text-align: center;
@@ -130,7 +125,6 @@
         }
         .upload-btn:hover { transform: scale(1.04); }
 
-        /* FILES LIST TABLE / CONTAINER VIEW */
         .files-section { width: 100%; max-width: 1300px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 30px; padding: 2rem; backdrop-filter: blur(20px); margin-bottom: 3rem; }
         .files-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .files-header h3 { font-size: 1.4rem; color: var(--primary); font-weight: 800; }
@@ -146,7 +140,6 @@
         .action-icon-btn:hover { color: var(--primary); background: rgba(0,242,254,0.1); }
         .action-delete:hover { color: #ef4444 !important; background: rgba(239,68,68,0.15) !important; }
 
-        /* CONTEXT MENU */
         #contextMenu {
             display: none; position: absolute; background: rgba(10, 10, 30, 0.96); border: 1px solid var(--border);
             backdrop-filter: blur(15px); border-radius: 14px; padding: 8px; z-index: 500;
@@ -161,7 +154,6 @@
         .ctx-delete:hover { background: rgba(239, 68, 68, 0.2) !important; }
         hr { border: 0; border-top: 1px solid var(--border); margin: 4px 0; }
 
-        /* MODALS */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(1, 1, 8, 0.9); backdrop-filter: blur(30px);
@@ -181,7 +173,6 @@
         }
         .quota-btn:hover, .quota-btn.active { border-color: var(--primary); background: rgba(0,242,254,0.15); box-shadow: var(--glow); }
 
-        /* TOAST NOTIFICATION */
         #toast {
             visibility: hidden; min-width: 280px; background-color: rgba(10, 10, 30, 0.96); color: #fff; border: 1px solid var(--primary);
             text-align: center; border-radius: 18px; padding: 1.2rem; position: fixed; z-index: 3000; right: 40px; bottom: 40px; font-size: 1.05rem;
@@ -191,7 +182,6 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 40px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 40px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* LOADING SPINNER */
         #loadingOverlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(1,1,8,0.95); z-index: 2000; justify-content: center; align-items: center;
@@ -210,7 +200,6 @@
     <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">Kvant shifrlash bajarilmoqda...</span></div>
     <div id="toast">Xabar</div>
 
-    <!-- Parol Kirish Ekranı -->
     <div id="authOverlay">
         <div class="auth-box">
             <div class="auth-logo">🌌</div>
@@ -221,7 +210,6 @@
         </div>
     </div>
 
-    <!-- Xotira Kotalarini Tanlash Modali -->
     <div id="quotaModal" class="modal">
         <div class="modal-content">
             <h3 class="modal-title">Kvant Xotira Quvvatini Tanlang</h3>
@@ -235,7 +223,6 @@
         </div>
     </div>
 
-    <!-- Asosiy Dastur Paneli -->
     <div class="main-app" id="mainApp">
         <header>
             <div class="header-btns">
@@ -301,13 +288,11 @@
                     </tr>
                 </thead>
                 <tbody id="fileTableBody">
-                    <!-- Dinamik fayllar ro'yxati -->
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Kontekst Menyu -->
     <div id="contextMenu">
         <div class="ctx-item" id="ctxOpen">👁️‍🗨️ Ochish / Ko'rish</div>
         <div class="ctx-item" id="ctxDownload">📥 Yuklab olish</div>
@@ -324,7 +309,6 @@
         let activeFileId = null;
         let currentCategory = 'all';
 
-        // Three.js Fazoviy Fon Animatsiyasi
         const canvas = document.getElementById('webgl-container');
         const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -436,7 +420,6 @@
         }
         animate3D();
 
-        // IndexedDB Baza Boshqaruvi
         function initDB() {
             return new Promise((resolve, reject) => {
                 let request = indexedDB.open("PhantomSpaceEnterpriseDB", 2);
@@ -469,7 +452,6 @@
             });
         }
 
-        // Kvant Shifrlash Algoritmi (PBKDF2 + AES-GCM)
         async function getCryptoKey(password) {
             const enc = new TextEncoder();
             const keyMaterial = await window.crypto.subtle.importKey("raw", enc.encode(password), {name: "PBKDF2"}, false, ["deriveKey"]);
@@ -495,7 +477,6 @@
             return new TextDecoder().decode(decrypted);
         }
 
-        // Hodisalar va Dastur Ishga Tushishi
         window.addEventListener('DOMContentLoaded', async () => {
             try { await initDB(); } catch(e) {}
 
@@ -540,7 +521,6 @@
                 });
             });
 
-            // Kontekst menyu amallari
             document.getElementById('ctxOpen').addEventListener('click', () => {
                 hideContextMenu();
                 openFile(activeFileId);
@@ -666,9 +646,9 @@
                     <td>${formatBytes(f.size)}</td>
                     <td style="text-transform: capitalize; color: var(--text-dim);">${getFileCategory(f.type, f.name)}</td>
                     <td style="text-align: right;">
-                        <button class="action-icon-btn" title="Ko'rish" onclick="openFile('${f.id}')">👁️</button>
-                        <button class="action-icon-btn" title="Yuklab olish" onclick="downloadFile('${f.id}')">📥</button>
-                        <button class="action-icon-btn action-delete" title="O'chirish" onclick="deleteFile('${f.id}')">🗑️</button>
+                        <button class="action-icon-btn" title="Ko'rish" onclick="window.openFile('${f.id}')">👁️</button>
+                        <button class="action-icon-btn" title="Yuklab olish" onclick="window.downloadFile('${f.id}')">📥</button>
+                        <button class="action-icon-btn action-delete" title="O'chirish" onclick="window.deleteFile('${f.id}')">🗑️</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -747,6 +727,11 @@
             a.click();
             showToast('Backup fayli yuklab olindi!');
         }
+
+        // Global scope ga funksiyalarni chiqarish (HTML onclick ishlayishi uchun)
+        window.openFile = openFile;
+        window.downloadFile = downloadFile;
+        window.deleteFile = deleteFile;
     </script>
 </body>
 </html>
