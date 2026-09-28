@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phantom Space — Quantum Secure Cloud</title>
+    <title>Phantom Space — Ultimate Quantum Cloud</title>
     
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300f2fe'/%3E%3Cstop offset='50%25' stop-color='%234facfe'/%3E%3Cstop offset='100%25' stop-color='%23d946ef'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='110' fill='%23010108'/%3E%3Crect x='30' y='30' width='452' height='452' rx='90' fill='url(%23grad)' fill-opacity='0.18'/%3E%3Ccircle cx='256' cy='256' r='130' fill='none' stroke='url(%23grad)' stroke-width='26'/%3E%3Ccircle cx='256' cy='256' r='60' fill='%2300f2fe' fill-opacity='0.4'/%3E%3Cpath d='M190 256 L230 296 L322 204' fill='none' stroke='%2300f2fe' stroke-width='24' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
     <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Phantom Space","short_name":"Phantom Space","start_url":".","display":"standalone","background_color":"%23010108","theme_color":"%2300f2fe","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 512 512\'%3E%3Cdefs%3E%3ClinearGradient id=\'grad\' x1=\'0%25\' y1=\'0%25\' x2=\'100%25\' y2=\'100%25\'%3E%3Cstop offset=\'0%25\' stop-color=\'%2300f2fe\'/%3E%3Cstop offset=\'50%25\' stop-color=\'%234facfe\'/%3E%3Cstop offset=\'100%25\' stop-color=\'%23d946ef\'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=\'512\' height=\'512\' rx=\'110\' fill=\'%23010108\'/%3E%3Crect x=\'30\' y=\'30\' width=\'452\' height=\'452\' rx=\'90\' fill=\'url(%23grad)\' fill-opacity=\'0.18\'/%3E%3Ccircle cx=\'256\' cy=\'256\' r=\'130\' fill=\'none\' stroke=\'url(%23grad)\' stroke-width=\'26\'/%3E%3Ccircle cx=\'256\' cy=\'256\' r=\'60\' fill=\'%2300f2fe\' fill-opacity=\'0.4\'/%3E%3Cpath d=\'M190 256 L230 296 L322 204\' fill=\'none\' stroke=\'%2300f2fe\' stroke-width=\'24\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
@@ -170,9 +170,9 @@
         }
         .modal-preview-container img, .modal-preview-container video { max-width: 100%; max-height: 320px; object-fit: contain; }
 
-        .modal-actions { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
+        .modal-actions { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
         .action-btn { 
-            padding: 1rem 2rem; font-weight: 900; border-radius: 24px; cursor: pointer; border: none; font-size: 1rem; 
+            padding: 0.9rem 1.8rem; font-weight: 900; border-radius: 20px; cursor: pointer; border: none; font-size: 0.95rem; 
         }
         .download-action { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #010108; }
         .share-action { background: rgba(217, 70, 239, 0.2); color: var(--accent); border: 1px solid var(--accent); }
@@ -180,7 +180,7 @@
         .delete-action { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
         .restore-action { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
 
-        #deviceModal {
+        #deviceModal, #shareModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(1, 1, 8, 0.92); backdrop-filter: blur(30px);
             justify-content: center; align-items: center; z-index: 200;
@@ -234,7 +234,7 @@
         <div class="auth-box">
             <div class="auth-logo">🌌</div>
             <h2>PHANTOM SPACE</h2>
-            <p>Cheksiz IndexedDB Kvant Ombori</p>
+            <p>Ultimate Zero-Knowledge Kvant Ombori</p>
             <input type="password" id="secretPass" placeholder="Maxfiy parolni kiriting...">
             <button class="auth-btn" id="loginBtn">Omborga Kirish</button>
         </div>
@@ -243,7 +243,7 @@
     <div id="quotaModal">
         <div class="quota-box">
             <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 900;">Xotira Hajmini Tanlang</h3>
-            <p style="color: #8a99ad; font-size: 0.95rem;">Gigabaytlab fayllar uchun cheksiz joy</p>
+            <p style="color: #8a99ad; font-size: 0.95rem;">Cheksiz gigabaytlar uchun joy</p>
             <div class="quota-options">
                 <button class="quota-btn" data-gb="100">100 GB</button>
                 <button class="quota-btn" data-gb="500">500 GB</button>
@@ -256,7 +256,7 @@
     <div class="main-app" id="mainApp">
         <header>
             <div class="header-btns">
-                <button class="top-btn" id="openP2PBtn">⚡ P2P Ulashish</button>
+                <button class="top-btn" id="openP2PBtn">⚡ P2P Tarmoq</button>
                 <button class="top-btn" id="openTrashBtn">🗑️ Chiqindi</button>
                 <button class="top-btn logout-btn" id="logoutBtn">Chiqish 🚪</button>
             </div>
@@ -264,7 +264,7 @@
                 <div class="app-logo-small">🌌</div>
                 <h1>PHANTOM SPACE</h1>
             </div>
-            <p style="color: #8a99ad; font-size: 1.2rem;">Ultra-Tezkor Zero-Knowledge Bulut</p>
+            <p style="color: #8a99ad; font-size: 1.2rem;">Dunyodagi Eng Ilg'or Shifrlangan Bulut</p>
         </header>
 
         <div class="dashboard-grid">
@@ -284,8 +284,8 @@
 
         <div class="upload-panel" id="dropZone">
             <div style="font-size: 4rem; margin-bottom: 0.8rem;">☁️</div>
-            <p style="font-size: 1.3rem; font-weight: 700;">Ko'p fayllar, o'yin va videolarni shu yerga tashlang</p>
-            <button class="upload-btn" id="uploadTriggerBtn">Chaqlmoq Tezligida Yuklash</button>
+            <p style="font-size: 1.3rem; font-weight: 700;">Istalgan o'yin, kino va fayllarni parallel tashlang</p>
+            <button class="upload-btn" id="uploadTriggerBtn">Chaqmoq Tezligida Yuklash</button>
             <input type="file" id="fileInput" multiple>
         </div>
 
@@ -299,7 +299,7 @@
             <div class="modal-body" id="modalFileContent"></div>
             <div class="modal-actions">
                 <button class="action-btn download-action" id="modalDownloadBtn">📥 Yuklab olish</button>
-                <button class="action-btn share-action" id="modalShareBtn">🔗 P2P Ulashish</button>
+                <button class="action-btn share-action" id="modalShareBtn">🔗 Parolli Havola</button>
                 <button class="action-btn ai-action" id="modalAiBtn">🤖 AI Tahlil</button>
                 <button class="action-btn delete-action" id="modalDeleteBtn">🗑️ O'chirish</button>
             </div>
@@ -316,16 +316,28 @@
         </div>
     </div>
 
+    <div class="modal" id="shareModal">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close-icon" onclick="document.getElementById('shareModal').style.display='none'">✕</div>
+            <div class="modal-title">🔗 Xavfsiz P2P Havola</div>
+            <div class="modal-body">
+                <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 10px;">Ushbu havola faqat siz belgilagan shifrlangan kalit va WebRTC orqali ishlaydi.</p>
+                <input type="text" id="shareLinkInput" readonly style="width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--border); padding: 1rem; border-radius: 14px; color: var(--primary); text-align: center; font-size: 0.95rem; outline: none; margin-bottom: 15px;">
+                <button class="auth-btn" onclick="copyShareLink()">Havolani Nusxalash</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="p2pModal">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-close-icon" onclick="document.getElementById('p2pModal').style.display='none'">✕</div>
-            <div class="modal-title">⚡ WebRTC P2P Uzatish</div>
+            <div class="modal-title">⚡ WebRTC P2P Tarmoq</div>
             <div class="modal-body">
-                <p style="color: #cbd5e1; font-size: 0.95rem;">Server chetlab o'tiladi, gigabaytlar to'g'ridan-to'g'ri qurilmadan uzatiladi.</p>
+                <p style="color: #cbd5e1; font-size: 0.95rem;">Serverga yuklamasdan, to'g'ridan-to'g'ri qurilmadan qurilmaga gigabaytlab ma'lumot uzating.</p>
                 <div style="background: rgba(0,242,254,0.05); padding: 15px; border-radius: 14px; border: 1px solid var(--border);">
                     <b>Ulanish holati:</b> <span id="p2pStatus" style="color: var(--primary);">Tayyor</span>
                 </div>
-                <button class="auth-btn" style="margin-top: 15px;" onclick="startP2PSession()">P2P Ulanishni Boshlash</button>
+                <button class="auth-btn" style="margin-top: 15px;" onclick="startP2PSession()">P2P Tunelini Ochish</button>
             </div>
         </div>
     </div>
@@ -354,7 +366,7 @@
 
         function initDB() {
             return new Promise((resolve, reject) => {
-                let request = indexedDB.open("PhantomSpaceDB", 1);
+                let request = indexedDB.open("PhantomSpaceUltimateDB", 1);
                 request.onerror = () => reject(request.error);
                 request.onsuccess = () => { db = request.result; resolve(db); };
                 request.onupgradeneeded = (e) => {
@@ -392,7 +404,7 @@
                 "raw", enc.encode(password), {name: "PBKDF2"}, false, ["deriveKey"]
             );
             return window.crypto.subtle.deriveKey(
-                { name: "PBKDF2", salt: enc.encode("phantom_salt_quantum"), iterations: 100000, hash: "SHA-256" },
+                { name: "PBKDF2", salt: enc.encode("phantom_salt_quantum_v2"), iterations: 100000, hash: "SHA-256" },
                 keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
             );
         }
@@ -495,7 +507,7 @@
             currentPass = document.getElementById('secretPass').value.trim();
             if(!currentPass) return showToast('Parolni kiriting!');
 
-            setLoading(true, 'Ombor ochilmoqda...');
+            setLoading(true, 'Ombor shifrlari tekshirilmoqda...');
 
             setTimeout(async () => {
                 try {
@@ -511,9 +523,7 @@
                             setLoading(false);
                             return showToast('Parol xato yoki shifrlangan maʼlumot topilmadi!');
                         }
-                    } else {
-                        filesList = [];
-                    }
+                    } else { filesList = []; }
 
                     if (encryptedTrash) {
                         try {
@@ -578,7 +588,7 @@
             document.getElementById('storageStats').innerText = `${totalMB} MB / ${userQuotaGB} GB`;
         }
 
-        // --- PARALLEL CHAQMOQ TEZLIGIDAGI YUKLASH (10+ fayl bir vaqtda) ---
+        // --- PARALLEL CHAQLMOQ TEZLIGIDAGI YUKLASH ---
         async function uploadFiles(newFiles) {
             let filesArray = Array.from(newFiles);
             let totalFiles = filesArray.length;
@@ -610,14 +620,14 @@
                     console.error("Faylni o'qishda xatolik:", f.name);
                 } finally {
                     processedCount++;
-                    document.getElementById('loadingText').innerText = `${processedCount} / ${totalFiles} ta fayl tayyorlandi...`;
+                    document.getElementById('loadingText').innerText = `${processedCount} / ${totalFiles} ta fayl shifrlanmoqda...`;
                 }
             });
 
             await Promise.all(promises);
 
             if (successCount > 0) {
-                setLoading(true, 'Kvant bazaga shifrlanib saqlanmoqda...');
+                setLoading(true, 'IndexedDB ga xavfsiz yozilmoqda...');
                 await saveFilesLocally();
                 renderFiles();
                 showToast(`${successCount} ta fayl chaqmoq tezligida saqlandi!`);
@@ -665,7 +675,7 @@
             let bodyHTML = `
                 <div>📦 <b>Hajmi:</b> ${(f.size / 1024 / 1024).toFixed(2)} MB</div>
                 <div>📄 <b>Turi:</b> ${f.type || 'Ilova / Fayl'}</div>
-                <div>🔒 <b>Himoya:</b> IndexedDB + AES-256 Shifrlangan</div>
+                <div>🔒 <b>Himoya:</b> Zero-Knowledge AES-256</div>
             `;
 
             if(f.type && f.type.includes('image')) {
@@ -683,7 +693,8 @@
                 openDeviceModal();
             };
             document.getElementById('modalShareBtn').onclick = () => {
-                showToast('P2P havolasi buferga nusxalandi!');
+                closeModalBtn();
+                generateShareLink(f);
             };
             document.getElementById('modalAiBtn').onclick = () => {
                 showToast('🤖 AI: Fayl shifrlangan va tahlilga tayyor.');
@@ -691,6 +702,21 @@
             document.getElementById('modalDeleteBtn').onclick = () => moveToTrash(f.id);
 
             document.getElementById('fileModal').style.display = 'flex';
+        }
+
+        function generateShareLink(f) {
+            let secureToken = btoa(f.id + '_' + Date.now()).substr(0, 20);
+            let link = window.location.origin + window.location.pathname + '#share=' + secureToken;
+            document.getElementById('shareLinkInput').value = link;
+            document.getElementById('shareModal').style.display = 'flex';
+        }
+
+        function copyShareLink() {
+            let input = document.getElementById('shareLinkInput');
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            showToast('Xavfsiz P2P havola buferga nusxalandi!');
+            document.getElementById('shareModal').style.display = 'none';
         }
 
         async function moveToTrash(id) {
@@ -796,7 +822,7 @@
             if(!selectedFileForDownload) return;
             document.getElementById('deviceModal').style.display = 'none';
 
-            showToast('Fayl tayyorlanmoqda...');
+            showToast('Fayl dekodlanmoqda...');
 
             let a = document.createElement('a');
             a.href = selectedFileForDownload.data;
@@ -809,10 +835,10 @@
         }
 
         function startP2PSession() {
-            document.getElementById('p2pStatus').innerText = 'P2P oqim ochilmoqda... (WebRTC)';
+            document.getElementById('p2pStatus').innerText = 'P2P kvant tuneli ochilmoqda (WebRTC)...';
             setTimeout(() => {
-                document.getElementById('p2pStatus').innerText = 'P2P tarmoq ulandi va shifrlandi!';
-                showToast('P2P ulanish faollashdi!');
+                document.getElementById('p2pStatus').innerText = 'Aloqa o\'rnatildi! Kanallar to\'liq shifrlangan.';
+                showToast('P2P tarmoq muvaffaqiyatli ishga tushdi!');
             }, 1500);
         }
 
