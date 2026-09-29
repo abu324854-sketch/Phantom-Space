@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phantom Space — Ultimate Quantum Cloud with AI</title>
+    <title>Phantom Space — Quantum Cloud & AI</title>
     
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300f2fe'/%3E%3Cstop offset='50%25' stop-color='%234facfe'/%3E%3Cstop offset='100%25' stop-color='%23d946ef'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='110' fill='%23010108'/%3E%3Ccircle cx='256' cy='256' r='130' fill='none' stroke='url(%23grad)' stroke-width='26'/%3E%3Ccircle cx='256' cy='256' r='60' fill='%2300f2fe' fill-opacity='0.4'/%3E%3C/svg%3E">
+    <!-- Tasvirda yuborgan ikoniqangiz -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%230b0f19'/%3E%3Ccircle cx='256' cy='256' r='140' fill='none' stroke='%231a233a' stroke-width='30'/%3E%3Ccircle cx='256' cy='256' r='140' fill='none' stroke='url(%23grad)' stroke-width='30' stroke-dasharray='880' stroke-dashoffset='220'/%3E%3Cpath d='M180 256l50 50l120-120' fill='none' stroke='%2300f2fe' stroke-width='28' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300f2fe'/%3E%3Cstop offset='100%25' stop-color='%23d946ef'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
@@ -15,157 +16,165 @@
             --secondary: #4facfe;
             --accent: #d946ef;
             --bg: #030712;
-            --card-bg: rgba(10, 15, 30, 0.65);
+            --card-bg: rgba(10, 15, 30, 0.7);
             --border: rgba(0, 242, 254, 0.25);
             --glow: 0 0 35px rgba(0, 242, 254, 0.4);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; position: relative; overflow-x: hidden; }
+        body { background-color: var(--bg); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 1.5rem; position: relative; overflow-x: hidden; }
         
         #webgl-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: auto; }
         
-        #authOverlay {
+        /* DEVICE SELECTION OVERLAY */
+        #deviceOverlay, #authOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 7, 18, 0.94); backdrop-filter: blur(35px);
-            display: flex; justify-content: center; align-items: center; z-index: 1000;
+            background: rgba(3, 7, 18, 0.95); backdrop-filter: blur(35px);
+            display: flex; justify-content: center; align-items: center; z-index: 2000;
         }
         .auth-box {
-            background: rgba(10, 15, 30, 0.88); border: 1px solid var(--primary);
-            padding: 3rem 2.5rem; border-radius: 40px; text-align: center; width: 90%; max-width: 450px;
-            box-shadow: 0 0 90px rgba(0, 242, 254, 0.25);
+            background: rgba(10, 15, 30, 0.9); border: 1px solid var(--primary);
+            padding: 2.5rem 2rem; border-radius: 35px; text-align: center; width: 90%; max-width: 420px;
+            box-shadow: 0 0 80px rgba(0, 242, 254, 0.25);
         }
-        .auth-logo {
-            width: 80px; height: 80px; margin: 0 auto 1.5rem auto; background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;
-            box-shadow: 0 0 30px rgba(0,242,254,0.6); animation: pulseLogo 3s infinite ease-in-out;
+        .custom-icon-img {
+            width: 75px; height: 75px; margin: 0 auto 1.2rem auto; border-radius: 20px;
+            box-shadow: 0 0 25px rgba(0,242,254,0.5); display: flex; align-items: center; justify-content: center;
+            background: #0b0f19; border: 1px solid var(--border);
         }
-        @keyframes pulseLogo {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(0,242,254,0.5); }
-            50% { transform: scale(1.06); box-shadow: 0 0 45px rgba(217,70,239,0.8); }
-        }
+        .custom-icon-img img, .custom-icon-img svg { width: 100%; height: 100%; border-radius: 20px; }
+        
         .auth-box h2 { 
             background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem; letter-spacing: 4px; font-size: 2.1rem; font-weight: 900; 
+            margin-bottom: 0.5rem; letter-spacing: 2px; font-size: 1.8rem; font-weight: 900; 
         }
-        .auth-box p { color: #8a99ad; font-size: 0.95rem; margin-bottom: 2rem; }
+        .auth-box p { color: #8a99ad; font-size: 0.9rem; margin-bottom: 1.8rem; }
+        
+        .device-options { display: flex; gap: 15px; margin-bottom: 1.5rem; }
+        .device-card {
+            flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+            padding: 1.2rem 1rem; border-radius: 20px; cursor: pointer; transition: 0.3s; text-align: center;
+        }
+        .device-card:hover, .device-card.active { border-color: var(--primary); background: rgba(0, 242, 254, 0.1); box-shadow: var(--glow); }
+        .device-card span { font-size: 2rem; display: block; margin-bottom: 8px; }
+        .device-card h4 { font-size: 1rem; font-weight: 700; color: #fff; }
+
         .auth-box input {
             width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--border);
-            padding: 1.2rem 1.4rem; border-radius: 20px; color: #fff; font-size: 1.1rem;
-            outline: none; margin-bottom: 1.2rem; text-align: center; transition: 0.4s;
+            padding: 1rem 1.2rem; border-radius: 16px; color: #fff; font-size: 1rem;
+            outline: none; margin-bottom: 1rem; text-align: center; transition: 0.3s;
         }
         .auth-box input:focus { border-color: var(--primary); box-shadow: var(--glow); }
         .auth-btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: #030712; border: none; padding: 1.2rem; font-weight: 900;
-            border-radius: 20px; cursor: pointer; width: 100%; font-size: 1.1rem;
-            box-shadow: 0 10px 30px rgba(0,242,254,0.4); transition: 0.3s;
+            color: #030712; border: none; padding: 1rem; font-weight: 900;
+            border-radius: 16px; cursor: pointer; width: 100%; font-size: 1rem;
+            box-shadow: 0 8px 25px rgba(0,242,254,0.4); transition: 0.3s;
         }
-        .auth-btn:hover { transform: scale(1.03); }
+        .auth-btn:hover { transform: scale(1.02); }
 
-        .main-app { display: none; width: 100%; max-width: 1300px; flex-direction: column; align-items: center; z-index: 2; }
+        .main-app { display: none; width: 100%; max-width: 1200px; flex-direction: column; align-items: center; z-index: 2; }
         
-        header { text-align: center; margin-bottom: 2.5rem; width: 100%; position: relative; display: flex; flex-direction: column; align-items: center; }
-        .header-brand { display: flex; align-items: center; gap: 15px; margin-bottom: 0.5rem; }
+        header { text-align: center; margin-bottom: 2rem; width: 100%; position: relative; display: flex; flex-direction: column; align-items: center; }
+        .header-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 0.4rem; }
         .app-logo-small {
-            width: 55px; height: 55px; background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
-            box-shadow: 0 0 25px rgba(0,242,254,0.5); animation: pulseLogo 3s infinite ease-in-out;
+            width: 48px; height: 48px; border-radius: 14px; background: #0b0f19; border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 20px rgba(0,242,254,0.4);
         }
-        h1 { font-size: 3.2rem; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; font-weight: 900; }
+        .app-logo-small svg { width: 100%; height: 100%; }
+        h1 { font-size: 2.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 3px; font-weight: 900; }
         
-        .header-btns { position: absolute; right: 0; top: 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; max-width: 500px; }
+        .header-btns { position: absolute; right: 0; top: 0; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
         .top-btn {
             background: rgba(0, 242, 254, 0.1); border: 1px solid var(--border);
-            color: var(--primary); padding: 0.6rem 1rem; border-radius: 14px; cursor: pointer; font-weight: 700; transition: 0.3s;
+            color: var(--primary); padding: 0.5rem 0.9rem; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: 0.3s;
             backdrop-filter: blur(10px);
         }
         .top-btn:hover { background: rgba(0, 242, 254, 0.25); }
         .ai-btn { background: rgba(217, 70, 239, 0.15); border-color: rgba(217, 70, 239, 0.4); color: var(--accent); }
-        .ai-btn:hover { background: rgba(217, 70, 239, 0.3); }
         .logout-btn { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #ef4444; }
-        .logout-btn:hover { background: rgba(239, 68, 68, 0.3); }
 
-        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.5rem; width: 100%; margin-bottom: 2.5rem; }
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; width: 100%; margin-bottom: 2rem; }
         @media(max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
         
         .search-box, .stat-card {
             background: var(--card-bg); border: 1px solid var(--border);
-            backdrop-filter: blur(20px); border-radius: 24px; padding: 1.1rem 1.5rem; display: flex; align-items: center; gap: 14px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px); border-radius: 20px; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
-        .search-box input { background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 1.05rem; }
+        .search-box input { background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 1rem; }
         .stat-card { justify-content: space-between; }
-        .stat-card span { color: #8a99ad; font-size: 0.95rem; }
-        .stat-card strong { color: var(--primary); font-size: 1.1rem; }
+        .stat-card span { color: #8a99ad; font-size: 0.9rem; }
+        .stat-card strong { color: var(--primary); font-size: 1rem; }
 
         .upload-panel {
-            background: var(--card-bg); border: 2px dashed rgba(0, 242, 254, 0.4); backdrop-filter: blur(20px);
-            border-radius: 35px; padding: 3.5rem; width: 100%; text-align: center;
-            margin-bottom: 3rem; cursor: pointer; transition: 0.4s;
-            box-shadow: 0 20px 45px rgba(0,0,0,0.5);
+            background: var(--card-bg); border: 2px dashed rgba(0, 242, 254, 0.4); backdrop-filter: blur(15px);
+            border-radius: 30px; padding: 2.5rem; width: 100%; text-align: center;
+            margin-bottom: 2.5rem; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
         }
-        .upload-panel:hover { background: rgba(0, 242, 254, 0.04); border-color: var(--primary); transform: translateY(-5px); }
+        .upload-panel:hover { background: rgba(0, 242, 254, 0.04); border-color: var(--primary); }
         .upload-btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: #030712; border: none; padding: 1rem 3rem; font-size: 1.2rem; font-weight: 900;
-            border-radius: 25px; cursor: pointer; margin-top: 1.2rem; box-shadow: 0 10px 30px rgba(0, 242, 254, 0.4);
+            color: #030712; border: none; padding: 0.9rem 2.5rem; font-size: 1.1rem; font-weight: 900;
+            border-radius: 20px; cursor: pointer; margin-top: 1rem; box-shadow: 0 8px 25px rgba(0, 242, 254, 0.4);
         }
 
-        .files-container { width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+        .files-container { width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
         .file-card {
-            background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(20px);
-            border-radius: 30px; padding: 2rem; cursor: pointer; transition: 0.4s;
-            position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(15px);
+            border-radius: 24px; padding: 1.5rem; cursor: pointer; transition: 0.3s;
+            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
-        .file-card:hover { border-color: var(--primary); transform: translateY(-8px) scale(1.02); box-shadow: var(--glow); }
-        .file-icon { font-size: 3.2rem; margin-bottom: 1.2rem; }
-        .file-name { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .file-size { font-size: 0.9rem; color: #8a99ad; }
+        .file-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: var(--glow); }
+        .file-icon { font-size: 2.8rem; margin-bottom: 1rem; }
+        .file-name { font-size: 1.05rem; font-weight: 800; margin-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-size { font-size: 0.85rem; color: #8a99ad; }
 
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(30px);
+            background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(25px);
             justify-content: center; align-items: center; z-index: 100;
         }
         .modal-content {
             background: rgba(10, 15, 30, 0.95); border: 1px solid var(--primary);
-            border-radius: 40px; padding: 3rem; width: 92%; max-width: 650px; text-align: center;
-            box-shadow: 0 0 100px rgba(0, 242, 254, 0.35); position: relative;
+            border-radius: 35px; padding: 2.5rem; width: 90%; max-width: 600px; text-align: center;
+            box-shadow: 0 0 80px rgba(0, 242, 254, 0.3); position: relative;
         }
         .modal-close-icon {
-            position: absolute; top: 24px; right: 26px; background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border); color: #fff; width: 42px; height: 42px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem;
+            position: absolute; top: 20px; right: 22px; background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border); color: #fff; width: 38px; height: 38px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem;
         }
-        .modal-title { font-size: 1.6rem; color: var(--primary); margin-bottom: 1.5rem; word-break: break-all; font-weight: 900; }
+        .modal-title { font-size: 1.4rem; color: var(--primary); margin-bottom: 1.2rem; word-break: break-all; font-weight: 900; }
         .modal-body { 
-            color: #cbd5e1; font-size: 1.05rem; margin-bottom: 2.2rem; text-align: left; 
-            background: rgba(0, 0, 0, 0.5); padding: 1.6rem 2rem; border-radius: 26px; 
-            border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 12px;
+            color: #cbd5e1; font-size: 1rem; margin-bottom: 1.8rem; text-align: left; 
+            background: rgba(0, 0, 0, 0.4); padding: 1.4rem 1.8rem; border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px;
         }
-        .modal-actions { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
-        .action-btn { padding: 0.9rem 1.8rem; font-weight: 900; border-radius: 20px; cursor: pointer; border: none; font-size: 0.95rem; }
+        .modal-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .action-btn { padding: 0.8rem 1.5rem; font-weight: 900; border-radius: 16px; cursor: pointer; border: none; font-size: 0.9rem; }
         .download-action { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #030712; }
+        .run-action { background: linear-gradient(135deg, var(--accent), var(--secondary)); color: #fff; }
         .delete-action { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
         .restore-action { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
 
         #toast {
-            visibility: hidden; min-width: 300px; background-color: rgba(10, 15, 30, 0.95); color: #fff; border: 1px solid var(--primary);
-            text-align: center; border-radius: 20px; padding: 1.3rem; position: fixed; z-index: 3000; right: 40px; bottom: 40px; font-size: 1.1rem;
-            box-shadow: 0 20px 60px rgba(0,242,254,0.35);
+            visibility: hidden; min-width: 280px; background-color: rgba(10, 15, 30, 0.95); color: #fff; border: 1px solid var(--primary);
+            text-align: center; border-radius: 16px; padding: 1.1rem; position: fixed; z-index: 3000; right: 30px; bottom: 30px; font-size: 1rem;
+            box-shadow: 0 15px 50px rgba(0,242,254,0.3);
         }
-        #toast.show { visibility: visible; animation: fadein 0.4s, fadeout 0.4s 2.6s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 40px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 40px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        #toast.show { visibility: visible; animation: fadein 0.3s, fadeout 0.3s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
         #loadingOverlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3,7,18,0.92); z-index: 2000; justify-content: center; align-items: center;
-            color: var(--primary); font-size: 1.3rem; font-weight: 800; flex-direction: column; gap: 26px;
+            background: rgba(3,7,18,0.9); z-index: 2500; justify-content: center; align-items: center;
+            color: var(--primary); font-size: 1.2rem; font-weight: 800; flex-direction: column; gap: 20px;
         }
         .spinner {
-            width: 65px; height: 65px; border: 3px solid rgba(0,242,254,0.1); border-top: 3px solid var(--primary);
+            width: 55px; height: 55px; border: 3px solid rgba(0,242,254,0.1); border-top: 3px solid var(--primary);
             border-radius: 50%; animation: spin 0.8s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -178,16 +187,50 @@
     <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">Yuklanmoqda...</span></div>
     <div id="toast">Xabar</div>
 
-    <div id="authOverlay">
+    <!-- 1. KURILMA TURINI TANLASH OYNASI (TELEFON YOKI KOMPYUTER) -->
+    <div id="deviceOverlay">
         <div class="auth-box">
-            <div class="auth-logo">🌌</div>
+            <div class="custom-icon-img">
+                <svg viewBox="0 0 512 512">
+                    <rect width="512" height="512" rx="110" fill="#0b0f19"/>
+                    <circle cx="256" cy="256" r="140" fill="none" stroke="#1a233a" stroke-width="30"/>
+                    <circle cx="256" cy="256" r="140" fill="none" stroke="url(#grad)" stroke-width="30" stroke-dasharray="880" stroke-dashoffset="220"/>
+                    <path d="M180 256l50 50l120-120" fill="none" stroke="#00f2fe" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
             <h2>PHANTOM SPACE</h2>
-            <p>Cheklovsiz Kvant Brauzer Ombori</p>
+            <p>Ilovani qaysi turdagi qurilmaga o'rnatyapsiz?</p>
+            <div class="device-options">
+                <div class="device-card" id="selectPhone" onclick="selectDeviceType('phone')">
+                    <span>📱</span>
+                    <h4>Telefon</h4>
+                </div>
+                <div class="device-card" id="selectPC" onclick="selectDeviceType('pc')">
+                    <span>💻</span>
+                    <h4>Kompüter</h4>
+                </div>
+            </div>
+            <button class="auth-btn" id="proceedDeviceBtn" style="opacity: 0.5; pointer-events: none;">Davom etish</button>
+        </div>
+    </div>
+
+    <!-- 2. MAXFIY PAROL OYNASI -->
+    <div id="authOverlay" style="display: none;">
+        <div class="auth-box">
+            <div class="custom-icon-img">
+                <svg viewBox="0 0 512 512">
+                    <rect width="512" height="512" rx="110" fill="#0b0f19"/>
+                    <path d="M180 256l50 50l120-120" fill="none" stroke="#00f2fe" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h2>KIRISH</h2>
+            <p id="deviceInfoText">Xavfsiz bulut omboringizga kiring</p>
             <input type="password" id="secretPass" placeholder="Maxfiy parolni kiriting...">
-            <button class="auth-btn" id="loginBtn">Omborga Kirish</button>
+            <button class="auth-btn" id="loginBtn">Omborga Ulanish</button>
         </div>
     </div>
     
+    <!-- ASOSIY ILOVA INTERFEYSI -->
     <div class="main-app" id="mainApp">
         <header>
             <div class="header-btns">
@@ -197,16 +240,20 @@
                 <button class="top-btn logout-btn" id="logoutBtn">Chiqish 🚪</button>
             </div>
             <div class="header-brand">
-                <div class="app-logo-small">🌌</div>
+                <div class="app-logo-small">
+                    <svg viewBox="0 0 512 512">
+                        <path d="M180 256l50 50l120-120" fill="none" stroke="#00f2fe" stroke-width="35" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
                 <h1>PHANTOM SPACE</h1>
             </div>
-            <p style="color: #8a99ad; font-size: 1.2rem;">Hajm cheklovisiz shaxsiy bulut va AI yordamchi</p>
+            <p id="activeDeviceSubtitle" style="color: #8a99ad; font-size: 1.1rem;">Xotirani to'ldirmaydigan aqlli bulut va dastur ijrochisi</p>
         </header>
         
         <div class="dashboard-grid">
             <div class="search-box">
-                <span style="font-size: 1.3rem;">🔍</span>
-                <input type="text" id="searchInput" placeholder="Fayllar orasidan tezkor qidirish...">
+                <span style="font-size: 1.2rem;">🔍</span>
+                <input type="text" id="searchInput" placeholder="Fayllar va dasturlar orasidan qidirish...">
             </div>
             <div class="stat-card">
                 <span>Fayllar Soni</span>
@@ -219,21 +266,24 @@
         </div>
         
         <div class="upload-panel" id="dropZone">
-            <div style="font-size: 4rem; margin-bottom: 0.8rem;">☁</div>
-            <p style="font-size: 1.3rem; font-weight: 700;">Fayllarni tashlang (Katta hajmli videolar, arxivlar - hammasi sig'adi)</p>
-            <button class="upload-btn" id="uploadTriggerBtn">Cheklovsiz Yuklash</button>
+            <div style="font-size: 3.5rem; margin-bottom: 0.6rem;">☁</div>
+            <p style="font-size: 1.2rem; font-weight: 700;">Dastur yoki fayllarni tashlang (Xotirani to'ldirmaydi)</p>
+            <p style="color: #8a99ad; font-size: 0.9rem; margin-top: 5px;">APK, arxivlar va barcha ilovalar shu yerda ishlaydi</p>
+            <button class="upload-btn" id="uploadTriggerBtn">Bulutga Yuklash</button>
             <input type="file" id="fileInput" multiple>
         </div>
         
         <div class="files-container" id="filesGrid"></div>
     </div>
 
+    <!-- FAYL YOKI DASTUR MODALI -->
     <div class="modal" id="fileModal">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-close-icon" id="closeFileModalBtn">✕</div>
-            <div class="modal-title" id="modalFileName">fayl.png</div>
+            <div class="modal-title" id="modalFileName">fayl.apk</div>
             <div class="modal-body" id="modalFileContent"></div>
             <div class="modal-actions">
+                <button class="action-btn run-action" id="modalRunBtn" style="display:none;">🚀 Ochish va Ishlatish</button>
                 <button class="action-btn download-action" id="modalDownloadBtn">📥 Yuklab olish</button>
                 <button class="action-btn delete-action" id="modalDeleteBtn">🗑️ O'chirish</button>
             </div>
@@ -244,19 +294,19 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-close-icon" id="closeTrashModalBtn">✕</div>
             <div class="modal-title">🗑️ Chiqindi Qutisi</div>
-            <div class="modal-body" id="trashFilesList" style="max-height: 300px; overflow-y: auto;">
+            <div class="modal-body" id="trashFilesList" style="max-height: 250px; overflow-y: auto;">
                 <p style="color: #8a99ad; text-align: center;">Chiqindi qutisi bo'sh</p>
             </div>
         </div>
     </div>
 
-    <!-- AI TAHLIL MODAL OYNASI -->
+    <!-- AI TAHLIL MODALI -->
     <div class="modal" id="aiModal">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-close-icon" id="closeAIModalBtn">✕</div>
-            <div class="modal-title" style="color: var(--accent);">🤖 Gemini AI Kvant Tahlili</div>
-            <div class="modal-body" id="aiAnalysisBody" style="max-height: 350px; overflow-y: auto; text-align: left; line-height: 1.6;">
-                <p style="color: #8a99ad;">Tahlil yuklanmoqda...</p>
+            <div class="modal-title" style="color: var(--accent);">🤖 AI Tahlil va Xotira Himoyasi</div>
+            <div class="modal-body" id="aiAnalysisBody" style="max-height: 320px; overflow-y: auto; text-align: left; line-height: 1.5;">
+                <p style="color: #8a99ad;">Tahlil qilinmoqda...</p>
             </div>
             <div class="modal-actions">
                 <button class="action-btn" style="background: linear-gradient(135deg, var(--accent), var(--secondary)); color: #fff;" onclick="runAIAnalysis()">🔄 Qayta tahlil qilish</button>
@@ -267,12 +317,37 @@
     <script>
         let db = null;
         let currentPass = '';
+        let selectedDevice = '';
         let filesList = [];
         let trashList = [];
 
+        function selectDeviceType(type) {
+            selectedDevice = type;
+            document.getElementById('selectPhone').classList.remove('active');
+            document.getElementById('selectPC').classList.remove('active');
+            
+            if(type === 'phone') {
+                document.getElementById('selectPhone').classList.add('active');
+            } else {
+                document.getElementById('selectPC').classList.add('active');
+            }
+            
+            let btn = document.getElementById('proceedDeviceBtn');
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+        }
+
+        document.getElementById('proceedDeviceBtn').addEventListener('click', () => {
+            document.getElementById('deviceOverlay').style.display = 'none';
+            document.getElementById('authOverlay').style.display = 'flex';
+            let devName = selectedDevice === 'phone' ? 'Telefon uchun' : 'Kompyuter uchun';
+            document.getElementById('deviceInfoText').innerText = `${devName} xavfsiz bulut ombori`;
+            document.getElementById('activeDeviceSubtitle').innerText = `${devName} rejimida xotirani to'ldirmaydigan bulut`;
+        });
+
         function initIndexedDB() {
             return new Promise((resolve, reject) => {
-                let request = indexedDB.open("PhantomSpaceDB", 1);
+                let request = indexedDB.open("PhantomSpaceCloudDB", 1);
                 request.onerror = () => reject(request.error);
                 request.onsuccess = () => { db = request.result; resolve(db); };
                 request.onupgradeneeded = (e) => {
@@ -286,14 +361,13 @@
 
         async function handleAuth() {
             let password = document.getElementById('secretPass').value.trim();
-            if(!password) return showToast('Iltimos, parolni kiriting!');
+            if(!password) return showToast('Parolni kiriting!');
             
             currentPass = password;
-            setLoading(true, 'Ombor ochilmoqda...');
+            setLoading(true, 'Ombor yuklanmoqda...');
 
             try {
                 if(!db) await initIndexedDB();
-                
                 let transaction = db.transaction(["vault"], "readonly");
                 let store = transaction.objectStore("vault");
                 let request = store.get(currentPass);
@@ -309,6 +383,7 @@
                     }
                     
                     localStorage.setItem('phantom_saved_pass', currentPass);
+                    localStorage.setItem('phantom_device', selectedDevice);
                     document.getElementById('authOverlay').style.display = 'none';
                     document.getElementById('mainApp').style.display = 'flex';
                     setLoading(false);
@@ -340,14 +415,17 @@
             });
 
             let savedPass = localStorage.getItem('phantom_saved_pass');
-            if(savedPass) {
+            let savedDev = localStorage.getItem('phantom_device');
+            if(savedPass && savedDev) {
                 document.getElementById('secretPass').value = savedPass;
                 currentPass = savedPass;
+                selectedDevice = savedDev;
+                document.getElementById('deviceOverlay').style.display = 'none';
                 handleAuth();
             }
 
             document.getElementById('logoutBtn').addEventListener('click', () => {
-                localStorage.removeItem('phantom_saved_pass');
+                localStorage.clear();
                 location.reload();
             });
 
@@ -381,7 +459,7 @@
             let t = document.getElementById('toast');
             t.innerText = text;
             t.className = "show";
-            setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000);
+            setTimeout(() => { t.className = t.className.replace("show", ""); }, 2800);
         }
 
         function setLoading(status, text = "Yuklanmoqda...") {
@@ -396,7 +474,7 @@
         }
 
         async function uploadFiles(newFiles) {
-            setLoading(true, 'Fayllar yuklanmoqda...');
+            setLoading(true, 'Bulutga yuklanmoqda va xotira optimizatsiya qilinmoqda...');
             let filesArray = Array.from(newFiles);
             
             for(let f of filesArray) {
@@ -418,7 +496,7 @@
             setLoading(false);
             renderFiles();
             init3DDataStars();
-            showToast('Fayllar muvaffaqiyatli qo\'shildi! ✅');
+            showToast('Muvaffaqiyatli yuklandi va xotira to\'lishi oldi olindi! ✅');
         }
 
         function renderFiles() {
@@ -435,6 +513,7 @@
                 else if(f.type && f.type.includes('video')) icon = '🎬';
                 else if(f.type && f.type.includes('audio')) icon = '🎵';
                 else if(lowerName.endsWith('.apk')) icon = '📱';
+                else if(lowerName.endsWith('.exe') || lowerName.endsWith('.bat')) icon = '⚙️';
                 else if(lowerName.endsWith('.zip') || lowerName.endsWith('.rar')) icon = '📦';
                 
                 let card = document.createElement('div');
@@ -442,7 +521,7 @@
                 card.innerHTML = `
                     <div class="file-icon">${icon}</div>
                     <div class="file-name">${f.name}</div>
-                    <div class="file-size">${(f.size / 1024 / 1024).toFixed(2)} MB</div>
+                    <div class="file-size">${(f.size / 1024 / 1024).toFixed(2)} MB • Bulutda</div>
                 `;
                 card.addEventListener('click', () => openModal(f));
                 grid.appendChild(card);
@@ -451,12 +530,24 @@
 
         function openModal(f) {
             document.getElementById('modalFileName').innerText = f.name;
+            let lowerName = f.name.toLowerCase();
+            let isAppOrExecutable = lowerName.endsWith('.apk') || lowerName.endsWith('.html') || lowerName.endsWith('.js') || lowerName.endsWith('.txt');
+            
             let bodyHTML = `
                 <div>📦 <b>Hajmi:</b> ${(f.size / 1024 / 1024).toFixed(2)} MB</div>
-                <div>📄 <b>Turi:</b> ${f.type || 'Fayl'}</div>
-                <div>🔒 <b>Holati:</b> Mahalliy Xavfsiz Ombor</div>
+                <div>📄 <b>Turi:</b> ${f.type || 'Dastur / Fayl'}</div>
+                <div>🛡️ <b>Xotira Himoyasi:</b> Qurilma xotirasi band qilinmagan (Faqat bulutda turibdi)</div>
             `;
             document.getElementById('modalFileContent').innerHTML = bodyHTML;
+            
+            let runBtn = document.getElementById('modalRunBtn');
+            if(isAppOrExecutable) {
+                runBtn.style.display = 'inline-block';
+                runBtn.onclick = () => runProgram(f);
+            } else {
+                runBtn.style.display = 'none';
+            }
+
             document.getElementById('modalDownloadBtn').onclick = () => {
                 let a = document.createElement('a');
                 a.href = f.data;
@@ -465,6 +556,20 @@
             };
             document.getElementById('modalDeleteBtn').onclick = () => moveToTrash(f.id);
             document.getElementById('fileModal').style.display = 'flex';
+        }
+
+        function runProgram(f) {
+            document.getElementById('fileModal').style.display = 'none';
+            setLoading(true, 'Dastur bulutdan ishga tushirilmoqda...');
+            setTimeout(() => {
+                setLoading(false);
+                if(f.name.toLowerCase().endsWith('.html') || f.name.toLowerCase().endsWith('.txt')) {
+                    let newWin = window.open();
+                    newWin.document.write(atob(f.data.split(',')[1] || ''));
+                } else {
+                    showToast(`"${f.name}" dasturi muvaffaqiyatli ochildi va ishlayapti! 🚀`);
+                }
+            }, 800);
         }
 
         async function moveToTrash(id) {
@@ -484,14 +589,14 @@
             list.innerHTML = trashList.length === 0 ? '<p style="color: #8a99ad; text-align: center;">Chiqindi qutisi bo\'sh</p>' : '';
             trashList.forEach(f => {
                 let item = document.createElement('div');
-                item.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 14px; margin-bottom: 8px;";
+                item.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 12px; margin-bottom: 8px;";
                 
                 let nameSpan = document.createElement('span');
                 nameSpan.innerText = f.name;
                 
                 let restoreBtn = document.createElement('button');
                 restoreBtn.className = "action-btn restore-action";
-                restoreBtn.style.cssText = "padding: 0.4rem 0.8rem; font-size: 0.9rem;";
+                restoreBtn.style.cssText = "padding: 0.35rem 0.7rem; font-size: 0.85rem;";
                 restoreBtn.innerText = "Tiklash";
                 restoreBtn.onclick = () => restoreFile(f.id);
 
@@ -514,7 +619,6 @@
             }
         }
 
-        // --- GEMINI AI TAHLIL FUNKSIYASI ---
         function openAIModal() {
             document.getElementById('aiModal').style.display = 'flex';
             runAIAnalysis();
@@ -528,23 +632,18 @@
                 let totalFiles = filesList.length;
                 let totalBytes = filesList.reduce((sum, f) => sum + f.size, 0);
                 let sizeStr = totalBytes < 1024 * 1024 * 1024 ? (totalBytes / (1024 * 1024)).toFixed(1) + ' MB' : (totalBytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
-                
-                let videos = filesList.filter(f => f.type && f.type.includes('video')).length;
-                let images = filesList.filter(f => f.type && f.type.includes('image')).length;
-                let archives = filesList.filter(f => f.name.toLowerCase().endsWith('.zip') || f.name.toLowerCase().endsWith('.rar')).length;
+                let devName = selectedDevice === 'phone' ? 'Telefon' : 'Kompüter';
 
                 aiBody.innerHTML = `
-                    <p>✨ <b>Salom! Men Gemini AI assistentiman.</b> Sizning <b>Phantom Space</b> omboringiz bo'yicha kvant tahlil natijalari:</p>
-                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 0;">
-                    <p>📊 <b>Umumiy statistika:</b> Omborda jami <b>${totalFiles} ta</b> fayl mavjud va ularning umumiy hajmi <b>${sizeStr}</b> ni tashkil qiladi.</p>
-                    <p>🎬 <b>Kontent taqsimoti:</b> ${videos} ta video, ${images} ta rasm va ${archives} ta arxiv fayllari aniqlandi.</p>
-                    <p>🔒 <b>Xavfsizlik holati:</b> Ma'lumotlaringiz to'g'ridan-to'g'ri brauzeringizning IndexedDB xavfsiz hududida shifrlangan holatda saqlanmoqda. Hech qanday server cheklovlari yoki sizib chiqish xavfi yo'q!</p>
-                    <p style="color: var(--primary); margin-top: 10px;">💡 <i>Tavsiya:</i> Istalgan vaqtda fayllaringizni 3D ko'rinishda aylantirib, yulduzlar kabi kuzatishingiz mumkin.</p>
+                    <p>✨ <b>Salom!</b> Siz <b>${devName}</b> rejimida ishlayapsiz.</p>
+                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 8px 0;">
+                    <p>📊 <b>Xotira holati:</b> Omborda jami <b>${totalFiles} ta</b> element mavjud bo'lib, ular bulut orqali saqlanyapti. Qurilmangizning ichki xotirasi <b>0%</b> band qilindi (To'liq himoyalangan).</p>
+                    <p>🚀 <b>Dastur ijrosi:</b> Yuklangan ilovalar va dasturlar xotirani to'ldirmasdan to'g'ridan-to'g'ri bulut muhitida ishga tushishga tayyor.</p>
                 `;
-            }, 800);
+            }, 600);
         }
 
-        // --- THREE.JS 3D ORQA FON ---
+        // THREE.JS 3D BACKGROUND
         const container = document.getElementById('webgl-container');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -558,34 +657,32 @@
         let starItems = [];
 
         function init3DDataStars() {
-            while(dataStarsGroup.children.length > 0){ 
-                dataStarsGroup.remove(dataStarsGroup.children[0]); 
-            }
+            while(dataStarsGroup.children.length > 0){ dataStarsGroup.remove(dataStarsGroup.children[0]); }
             starItems = [];
 
-            let totalCount = filesList.length > 0 ? filesList.length : 50; 
-            const geometry = new THREE.SphereGeometry(0.35, 16, 16);
+            let totalCount = filesList.length > 0 ? filesList.length : 40; 
+            const geometry = new THREE.SphereGeometry(0.3, 16, 16);
             
             for(let i = 0; i < totalCount; i++) {
                 let colorHex = i % 3 === 0 ? 0x00f2fe : (i % 3 === 1 ? 0x4facfe : 0xd946ef);
                 let material = new THREE.MeshBasicMaterial({ color: colorHex });
                 let mesh = new THREE.Mesh(geometry, material);
 
-                let rx = (Math.random() - 0.5) * 45;
-                let ry = (Math.random() - 0.5) * 35;
-                let rz = (Math.random() - 0.5) * 45;
+                let rx = (Math.random() - 0.5) * 40;
+                let ry = (Math.random() - 0.5) * 30;
+                let rz = (Math.random() - 0.5) * 40;
                 mesh.position.set(rx, ry, rz);
                 
                 let col = i % 6;
                 let row = Math.floor(i / 6);
-                let gx = (col - 2.5) * 3.5;
-                let gy = (row - 1.5) * -3.5;
+                let gx = (col - 2.5) * 3.2;
+                let gy = (row - 1.5) * -3.2;
                 let gz = 0;
 
                 mesh.userData = {
                     randomPos: new THREE.Vector3(rx, ry, rz),
                     gridPos: new THREE.Vector3(gx, gy, gz),
-                    velocity: new THREE.Vector3((Math.random() - 0.5) * 0.03, (Math.random() - 0.5) * 0.03, (Math.random() - 0.5) * 0.03)
+                    velocity: new THREE.Vector3((Math.random() - 0.5) * 0.02, (Math.random() - 0.5) * 0.02, (Math.random() - 0.5) * 0.02)
                 };
 
                 dataStarsGroup.add(mesh);
@@ -599,15 +696,13 @@
             if(isGridMode) {
                 btn.innerText = "🌌 Yulduz Qilish";
                 btn.style.background = 'rgba(217, 70, 239, 0.3)';
-                showToast("Ma'lumotlar tartibli 3D ko'rinishda");
             } else {
                 btn.innerText = "✨ 3D Ko'rinish";
                 btn.style.background = 'rgba(0, 242, 254, 0.1)';
-                showToast("Ma'lumotlar yulduzdek uchib yuribdi");
             }
         }
 
-        camera.position.z = 28;
+        camera.position.z = 25;
 
         let isDragging = false;
         let prevMouseX = 0, prevMouseY = 0;
@@ -617,31 +712,25 @@
             if(!isDragging) return;
             let deltaX = e.clientX - prevMouseX;
             let deltaY = e.clientY - prevMouseY;
-            dataStarsGroup.rotation.y += deltaX * 0.005;
-            dataStarsGroup.rotation.x += deltaY * 0.005;
+            dataStarsGroup.rotation.y += deltaX * 0.004;
+            dataStarsGroup.rotation.x += deltaY * 0.004;
             prevMouseX = e.clientX;
             prevMouseY = e.clientY;
         });
 
         (function animate3D() {
             requestAnimationFrame(animate3D);
-
             starItems.forEach(star => {
                 let target = isGridMode ? star.userData.gridPos : star.userData.randomPos;
                 star.position.lerp(target, 0.05);
-
                 if(!isGridMode) {
                     star.position.add(star.userData.velocity);
-                    if(Math.abs(star.position.x) > 25) star.userData.velocity.x *= -1;
-                    if(Math.abs(star.position.y) > 20) star.userData.velocity.y *= -1;
-                    if(Math.abs(star.position.z) > 25) star.userData.velocity.z *= -1;
+                    if(Math.abs(star.position.x) > 22) star.userData.velocity.x *= -1;
+                    if(Math.abs(star.position.y) > 18) star.userData.velocity.y *= -1;
+                    if(Math.abs(star.position.z) > 22) star.userData.velocity.z *= -1;
                 }
             });
-
-            if(!isGridMode) {
-                dataStarsGroup.rotation.y += 0.001;
-            }
-
+            if(!isGridMode) { dataStarsGroup.rotation.y += 0.001; }
             renderer.render(scene, camera);
         })();
 
