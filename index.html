@@ -8,7 +8,6 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300f2fe'/%3E%3Cstop offset='50%25' stop-color='%234facfe'/%3E%3Cstop offset='100%25' stop-color='%23d946ef'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='110' fill='%23010108'/%3E%3Crect x='30' y='30' width='452' height='452' rx='90' fill='url(%23grad)' fill-opacity='0.18'/%3E%3Ccircle cx='256' cy='256' r='130' fill='none' stroke='url(%23grad)' stroke-width='26'/%3E%3Ccircle cx='256' cy='256' r='60' fill='%2300f2fe' fill-opacity='0.4'/%3E%3Cpath d='M190 256 L230 296 L322 204' fill='none' stroke='%2300f2fe' stroke-width='24' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Firebase SDK (Firestore Cloud Sync uchun) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
@@ -237,15 +236,16 @@
         </div>
     </div>
 
+    <!-- XOTIRA HAJMINI TANLASH (MAXSUS 100 TB GACHA) -->
     <div id="quotaModal">
         <div class="quota-box">
             <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 900;">Xotira Hajmini Tanlang</h3>
-            <p style="color: #8a99ad; font-size: 0.95rem;">Bulutli sinxronizatsiya uchun joy</p>
+            <p style="color: #8a99ad; font-size: 0.95rem;">Bulutli sinxronizatsiya uchun joy (Maksimal 100 TB)</p>
             <div class="quota-options">
-                <button class="quota-btn" data-gb="100">100 GB</button>
-                <button class="quota-btn" data-gb="500">500 GB</button>
-                <button class="quota-btn" data-gb="1000">1 TB</button>
-                <button class="quota-btn" data-gb="5000">5 TB</button>
+                <button class="quota-btn" data-tb="1">1 TB</button>
+                <button class="quota-btn" data-tb="10">10 TB</button>
+                <button class="quota-btn" data-tb="50">50 TB</button>
+                <button class="quota-btn" data-tb="100">100 TB</button>
             </div>
         </div>
     </div>
@@ -261,7 +261,7 @@
                 <div class="app-logo-small">🌌</div>
                 <h1>PHANTOM SPACE</h1>
             </div>
-            <p style="color: #8a99ad; font-size: 1.2rem;">Barcha qurilmalar uchun yagona bulut</p>
+            <p style="color: #8a99ad; font-size: 1.2rem;">Barcha qurilmalar uchun yagona bulut (100 TB)</p>
         </header>
         
         <div class="dashboard-grid">
@@ -275,7 +275,7 @@
             </div>
             <div class="stat-card">
                 <span>Xotira Joyi</span>
-                <strong id="storageStats">0 MB / 0 GB</strong>
+                <strong id="storageStats">0 MB / 100 TB</strong>
             </div>
         </div>
         
@@ -354,8 +354,6 @@
     </div>
 
     <script>
-        // --- FIREBASE CONFIGURATION (BULUT SINKRONIZATSIYA UCHUN) ---
-        // O'zingizning bepul Firebase loyihangiz ma'lumotlarini shu yerga kiritasiz:
         const firebaseConfig = {
             apiKey: "YOUR_FIREBASE_API_KEY",
             authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -370,13 +368,13 @@
             firebase.initializeApp(firebaseConfig);
             dbCloud = firebase.firestore();
         } catch(e) {
-            console.log("Firebase konfiguratsiyasi kiritilmagan yoki ulanishda xato. Lokal rejimda ishlaydi.");
+            console.log("Firebase konfiguratsiyasi kiritilmagan. Lokal rejimda ishlaydi.");
         }
 
         let currentPass = '';
         let filesList = [];
         let trashList = [];
-        let userQuotaGB = 0;
+        let userQuotaTB = 100;
         let selectedFileForDownload = null;
         let selectedDevice = '';
         let isRegisterMode = false;
@@ -403,7 +401,6 @@
 
         async function handleAuth() {
             let password = document.getElementById('secretPass').value.trim();
-            let username = document.getElementById('usernameInput').value.trim();
             if(!password) return showToast('Iltimos, parolni kiriting!');
             
             setLoading(true, 'Bulutdan ma\'lumotlar tekshirilmoqda...');
@@ -430,10 +427,10 @@
                         let cloudData = docSnap.data();
                         filesList = cloudData.files ? JSON.parse(await decryptData(cloudData.files, currentPass)) : [];
                         trashList = cloudData.trash ? JSON.parse(await decryptData(cloudData.trash, currentPass)) : [];
-                        userQuotaGB = cloudData.quota || 100;
+                        userQuotaTB = cloudData.quotaTB || 100;
 
                         localStorage.setItem('phantom_saved_pass', currentPass);
-                        localStorage.setItem('phantom_saved_quota', userQuotaGB);
+                        localStorage.setItem('phantom_saved_quota', userQuotaTB);
 
                         document.getElementById('authOverlay').style.display = 'none';
                         document.getElementById('mainApp').style.display = 'flex';
@@ -444,7 +441,6 @@
                         showToast('Bulutdan ma\'lumotlar sinxronlandi!');
                     }
                 } else {
-                    // Agar Firebase ulanmagan bo'lsa, lokal xotiradan foydalanish
                     currentPass = password;
                     let savedData = localStorage.getItem('local_vault_' + passHash);
                     filesList = savedData ? JSON.parse(await decryptData(JSON.parse(savedData), currentPass)) : [];
@@ -459,12 +455,11 @@
             }
         }
 
-        async function setQuotaLimit(gb) {
-            userQuotaGB = gb;
-            localStorage.setItem('phantom_saved_quota', gb);
+        async function setQuotaLimit(tb) {
+            userQuotaTB = tb;
+            localStorage.setItem('phantom_saved_quota', tb);
             localStorage.setItem('phantom_saved_pass', currentPass);
 
-            // Bulutga yangi foydalanuvchini yozish
             if(dbCloud) {
                 setLoading(true, 'Bulut ombori yaratilmoqda...');
                 let encFiles = await encryptData(JSON.stringify([]), currentPass);
@@ -472,7 +467,7 @@
                 await dbCloud.collection("phantom_vaults").doc(passHash).set({
                     files: encFiles,
                     trash: encTrash,
-                    quota: userQuotaGB,
+                    quotaTB: userQuotaTB,
                     createdAt: Date.now()
                 });
                 setLoading(false);
@@ -483,7 +478,7 @@
             document.getElementById('mainApp').style.display = 'flex';
             updateStorageStats();
             renderFiles();
-            showToast('Cheksiz bulut xotirasi faollashdi!');
+            showToast(`${userQuotaTB} TB bulut xotirasi faollashdi!`);
         }
 
         async function saveFilesToCloud() {
@@ -539,9 +534,9 @@
         window.addEventListener('DOMContentLoaded', async () => {
             let savedPass = localStorage.getItem('phantom_saved_pass');
             let savedQuota = localStorage.getItem('phantom_saved_quota');
-            if(savedPass && savedQuota) {
+            if(savedPass) {
                 document.getElementById('secretPass').value = savedPass;
-                userQuotaGB = parseInt(savedQuota);
+                userQuotaTB = savedQuota ? parseInt(savedQuota) : 100;
                 passHash = btoa(savedPass).substr(0, 20);
                 currentPass = savedPass;
                 
@@ -553,6 +548,7 @@
                             let data = doc.data();
                             filesList = data.files ? JSON.parse(await decryptData(data.files, currentPass)) : [];
                             trashList = data.trash ? JSON.parse(await decryptData(data.trash, currentPass)) : [];
+                            userQuotaTB = data.quotaTB || 100;
                             document.getElementById('authOverlay').style.display = 'none';
                             document.getElementById('mainApp').style.display = 'flex';
                             updateStorageStats();
@@ -572,9 +568,11 @@
             document.getElementById('uploadTriggerBtn').addEventListener('click', () => document.getElementById('fileInput').click());
             document.getElementById('fileInput').addEventListener('change', (e) => { if(e.target.files.length > 0) uploadFiles(e.target.files); });
             document.getElementById('searchInput').addEventListener('input', renderFiles);
+            
             document.querySelectorAll('.quota-btn').forEach(btn => {
-                btn.addEventListener('click', () => setQuotaLimit(parseInt(btn.getAttribute('data-gb'))));
+                btn.addEventListener('click', () => setQuotaLimit(parseInt(btn.getAttribute('data-tb'))));
             });
+            
             document.getElementById('closeFileModalBtn').addEventListener('click', () => document.getElementById('fileModal').style.display = 'none');
             document.getElementById('closeTrashModalBtn').addEventListener('click', () => document.getElementById('trashModal').style.display = 'none');
             document.getElementById('btnPC').addEventListener('click', () => selectDeviceType('PC'));
@@ -596,8 +594,13 @@
 
         function updateStorageStats() {
             let totalBytes = filesList.reduce((sum, f) => sum + f.size, 0);
-            let totalMB = (totalBytes / (1024 * 1024)).toFixed(1);
-            document.getElementById('storageStats').innerText = `${totalMB} MB / ${userQuotaGB} GB`;
+            let displaySize = '';
+            if(totalBytes < 1024 * 1024 * 1024) {
+                displaySize = (totalBytes / (1024 * 1024)).toFixed(1) + ' MB';
+            } else {
+                displaySize = (totalBytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+            }
+            document.getElementById('storageStats').innerText = `${displaySize} / ${userQuotaTB} TB`;
         }
 
         async function uploadFiles(newFiles) {
@@ -731,7 +734,6 @@
             showToast('P2P ishga tushdi!');
         }
 
-        // 3D Fon animatsiyasi
         const container = document.getElementById('webgl-container');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
