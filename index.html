@@ -24,7 +24,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background-color: var(--bg); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; position: relative; overflow-x: hidden; }
         
-        #webgl-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+        #webgl-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: auto; }
         #authOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(1, 1, 8, 0.92); backdrop-filter: blur(35px);
@@ -251,6 +251,7 @@
     <div class="main-app" id="mainApp">
         <header>
             <div class="header-btns">
+                <button class="top-btn" id="toggle3DModeBtn">✨ 3D Ko'rinish</button>
                 <button class="top-btn" id="openP2PBtn">⚡ P2P Tarmoq</button>
                 <button class="top-btn" id="openTrashBtn">🗑️ Chiqindi</button>
                 <button class="top-btn logout-btn" id="logoutBtn">Chiqish 🚪</button>
@@ -278,7 +279,7 @@
         </div>
         
         <div class="upload-panel" id="dropZone">
-            <div style="font-size: 4rem; margin-bottom: 0.8rem;">☁️</div>
+            <div style="font-size: 4rem; margin-bottom: 0.8rem;">☁️️</div>
             <p style="font-size: 1.3rem; font-weight: 700;">Fayllarni tashlang (barcha qurilmalarda sinxronlanadi)</p>
             <button class="upload-btn" id="uploadTriggerBtn">Chaqmoq Tezligida Yuklash</button>
             <input type="file" id="fileInput" multiple>
@@ -351,7 +352,6 @@
     </div>
 
     <script>
-        // --- PHANTOM SPACE FIREBASE CONFIG (ULandi) ---
         const firebaseConfig = {
             apiKey: "AIzaSyDmi0gvkcmLqYjyIj02ÜR3DDrztgWx09b0",
             authDomain: "phantom-space.firebaseapp.com",
@@ -437,6 +437,7 @@
                         setLoading(false);
                         updateStorageStats();
                         renderFiles();
+                        init3DDataStars();
                         showToast('Bulutdan sinxronlandi! ✅');
                     }
                 } else {
@@ -472,6 +473,7 @@
             document.getElementById('mainApp').style.display = 'flex';
             updateStorageStats();
             renderFiles();
+            init3DDataStars();
             showToast(`${userQuotaTB} TB bulut ombori faollashdi!`);
         }
 
@@ -487,6 +489,7 @@
                     trash: encTrash
                 });
                 updateStorageStats();
+                init3DDataStars();
                 showToast('Barcha qurilmalar bilan sinxronlandi! ✅');
             } catch(e) {
                 showToast('Bulutga saqlashda xatolik!');
@@ -543,6 +546,7 @@
                             document.getElementById('mainApp').style.display = 'flex';
                             updateStorageStats();
                             renderFiles();
+                            init3DDataStars();
                         }
                     }
                 } catch(e) { console.log("Avto-kirish xatosi"); }
@@ -558,6 +562,7 @@
             document.getElementById('uploadTriggerBtn').addEventListener('click', () => document.getElementById('fileInput').click());
             document.getElementById('fileInput').addEventListener('change', (e) => { if(e.target.files.length > 0) uploadFiles(e.target.files); });
             document.getElementById('searchInput').addEventListener('input', renderFiles);
+            document.getElementById('toggle3DModeBtn').addEventListener('click', toggle3DGridMode);
             
             document.querySelectorAll('.quota-btn').forEach(btn => {
                 btn.addEventListener('click', () => setQuotaLimit(parseInt(btn.getAttribute('data-tb'))));
@@ -719,23 +724,121 @@
             showToast('P2P ishga tushdi!');
         }
 
+        // --- THREE.JS 3D YULDUZ VA MA'LUMOTLAR FAZosi ---
         const container = document.getElementById('webgl-container');
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); 
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
-        
-        const torus = new THREE.Mesh(new THREE.TorusGeometry(14, 0.4, 16, 100), new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.2 }));
-        scene.add(torus);
-        camera.position.z = 35;
-        
-        (function animate3D() { 
-            requestAnimationFrame(animate3D); 
-            torus.rotation.x += 0.002;
-            torus.rotation.y += 0.004;
-            renderer.render(scene, camera); 
+
+        let dataStarsGroup = new THREE.Group();
+        scene.add(dataStarsGroup);
+        let isGridMode = false;
+        let starItems = [];
+
+        function init3DDataStars() {
+            // Eski yulduzlarni tozalash
+            while(dataStarsGroup.children.length > 0){ 
+                dataStarsGroup.remove(dataStarsGroup.children[0]); 
+            }
+            starItems = [];
+
+            let totalCount = filesList.length > 0 ? filesList.length : 40; // Fayllar bo'lmasa 40 ta umumiy ma'lumot yulduzi
+            
+            const geometry = new THREE.SphereGeometry(0.35, 16, 16);
+            
+            for(let i = 0; i < totalCount; i++) {
+                let colorHex = i % 3 === 0 ? 0x00f2fe : (i % 3 === 1 ? 0x4facfe : 0xd946ef);
+                let material = new THREE.MeshBasicMaterial({ color: colorHex });
+                let mesh = new THREE.Mesh(geometry, material);
+
+                // Tasodifiy uchib yuruvchi yulduz koordinatalari (Xaos holati)
+                let rx = (Math.random() - 0.5) * 40;
+                let ry = (Math.random() - 0.5) * 30;
+                let rz = (Math.random() - 0.5) * 40;
+                
+                mesh.position.set(rx, ry, rz);
+                
+                // Tartibli 3D qator (Grid) koordinatalari
+                let col = i % 6;
+                let row = Math.floor(i / 6);
+                let gx = (col - 2.5) * 3.5;
+                let gy = (row - 1.5) * -3.5;
+                let gz = 0;
+
+                mesh.userData = {
+                    randomPos: new THREE.Vector3(rx, ry, rz),
+                    gridPos: new THREE.Vector3(gx, gy, gz),
+                    velocity: new THREE.Vector3((Math.random() - 0.5) * 0.04, (Math.random() - 0.5) * 0.04, (Math.random() - 0.5) * 0.04)
+                };
+
+                dataStarsGroup.add(mesh);
+                starItems.push(mesh);
+            }
+        }
+
+        function toggle3DGridMode() {
+            isGridMode = !isGridMode;
+            let btn = document.getElementById('toggle3DModeBtn');
+            if(isGridMode) {
+                btn.innerText = "🌌 Yulduz Qilish";
+                btn.style.background = 'rgba(217, 70, 239, 0.3)';
+                showToast("Ma'lumotlar tartibli 3D ko'rinishga keldi");
+            } else {
+                btn.innerText = "✨ 3D Ko'rinish";
+                btn.style.background = 'rgba(0, 242, 254, 0.1)';
+                showToast("Ma'lumotlar yana yulduzdek uchib yuribdi");
+            }
+        }
+
+        camera.position.z = 25;
+
+        // Sichqoncha orqali 3D fazoni aylantirish
+        let isDragging = false;
+        let prevMouseX = 0, prevMouseY = 0;
+        window.addEventListener('mousedown', (e) => { isDragging = true; prevMouseX = e.clientX; prevMouseY = e.clientY; });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+        window.addEventListener('mousemove', (e) => {
+            if(!isDragging) return;
+            let deltaX = e.clientX - prevMouseX;
+            let deltaY = e.clientY - prevMouseY;
+            dataStarsGroup.rotation.y += deltaX * 0.005;
+            dataStarsGroup.rotation.x += deltaY * 0.005;
+            prevMouseX = e.clientX;
+            prevMouseY = e.clientY;
+        });
+
+        (function animate3D() {
+            requestAnimationFrame(animate3D);
+
+            starItems.forEach(star => {
+                let target = isGridMode ? star.userData.gridPos : star.userData.randomPos;
+                
+                // Silliq o'tish (Lerp)
+                star.position.lerp(target, 0.05);
+
+                if(!isGridMode) {
+                    // Yulduz holatida o'z orbitasida sekin suzib yurish
+                    star.position.add(star.userData.velocity);
+                    if(Math.abs(star.position.x) > 25) star.userData.velocity.x *= -1;
+                    if(Math.abs(star.position.y) > 20) star.userData.velocity.y *= -1;
+                    if(Math.abs(star.position.z) > 25) star.userData.velocity.z *= -1;
+                }
+            });
+
+            if(!isGridMode) {
+                dataStarsGroup.rotation.y += 0.001;
+            }
+
+            renderer.render(scene, camera);
         })();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
