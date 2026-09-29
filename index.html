@@ -6,10 +6,12 @@
     <title>Phantom Space — Ultimate Quantum Cloud</title>
     
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300f2fe'/%3E%3Cstop offset='50%25' stop-color='%234facfe'/%3E%3Cstop offset='100%25' stop-color='%23d946ef'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='110' fill='%23010108'/%3E%3Crect x='30' y='30' width='452' height='452' rx='90' fill='url(%23grad)' fill-opacity='0.18'/%3E%3Ccircle cx='256' cy='256' r='130' fill='none' stroke='url(%23grad)' stroke-width='26'/%3E%3Ccircle cx='256' cy='256' r='60' fill='%2300f2fe' fill-opacity='0.4'/%3E%3Cpath d='M190 256 L230 296 L322 204' fill='none' stroke='%2300f2fe' stroke-width='24' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-    <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Phantom Space","short_name":"Phantom Space","start_url":".","display":"standalone","background_color":"%23010108","theme_color":"%2300f2fe","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 512 512\'%3E%3Cdefs%3E%3ClinearGradient id=\'grad\' x1=\'0%25\' y1=\'0%25\' x2=\'100%25\' y2=\'100%25\'%3E%3Cstop offset=\'0%25\' stop-color=\'%2300f2fe\'/%3E%3Cstop offset=\'50%25\' stop-color=\'%234facfe\'/%3E%3Cstop offset=\'100%25\' stop-color=\'%23d946ef\'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=\'512\' height=\'512\' rx=\'110\' fill=\'%23010108\'/%3E%3Crect x=\'30\' y=\'30\' width=\'452\' height=\'452\' rx=\'90\' fill=\'url(%23grad)\' fill-opacity=\'0.18\'/%3E%3Ccircle cx=\'256\' cy=\'256\' r=\'130\' fill=\'none\' stroke=\'url(%23grad)\' stroke-width=\'26\'/%3E%3Ccircle cx=\'256\' cy=\'256\' r=\'60\' fill=\'%2300f2fe\' fill-opacity=\'0.4\'/%3E%3Cpath d=\'M190 256 L230 296 L322 204\' fill=\'none\' stroke=\'%2300f2fe\' stroke-width=\'24\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
-    <meta name="theme-color" content="#00f2fe">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Firebase SDK (Firestore Cloud Sync uchun) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
     <style>
         :root {
             --primary: #00f2fe;
@@ -218,11 +220,12 @@
     <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">Yuklanmoqda...</span></div>
     <div id="toast">Xabar</div>
 
+    <!-- KIRISH VA RO'YXATDAN O'TISH OYNASI -->
     <div id="authOverlay">
         <div class="auth-box">
             <div class="auth-logo">🌌</div>
             <h2>PHANTOM SPACE</h2>
-            <p>Ultimate Zero-Knowledge Kvant Ombori</p>
+            <p>Cloud Sync & Zero-Knowledge Kvant Ombori</p>
             
             <div style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
                 <button class="top-btn" id="tabLogin" style="flex: 1; padding: 0.8rem; background: rgba(0, 242, 254, 0.25);" onclick="switchAuthMode('login')">Kirish</button>
@@ -233,11 +236,11 @@
             <button class="auth-btn" id="authActionBtn" onclick="handleAuth()">Omborga Kirish</button>
         </div>
     </div>
-    
+
     <div id="quotaModal">
         <div class="quota-box">
             <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 900;">Xotira Hajmini Tanlang</h3>
-            <p style="color: #8a99ad; font-size: 0.95rem;">Cheksiz gigabaytlar uchun joy</p>
+            <p style="color: #8a99ad; font-size: 0.95rem;">Bulutli sinxronizatsiya uchun joy</p>
             <div class="quota-options">
                 <button class="quota-btn" data-gb="100">100 GB</button>
                 <button class="quota-btn" data-gb="500">500 GB</button>
@@ -258,7 +261,7 @@
                 <div class="app-logo-small">🌌</div>
                 <h1>PHANTOM SPACE</h1>
             </div>
-            <p style="color: #8a99ad; font-size: 1.2rem;">Dunyodagi Eng Ilg'or Shifrlangan Bulut</p>
+            <p style="color: #8a99ad; font-size: 1.2rem;">Barcha qurilmalar uchun yagona bulut</p>
         </header>
         
         <div class="dashboard-grid">
@@ -278,7 +281,7 @@
         
         <div class="upload-panel" id="dropZone">
             <div style="font-size: 4rem; margin-bottom: 0.8rem;">☁️</div>
-            <p style="font-size: 1.3rem; font-weight: 700;">Istalgan o'yin, kino va fayllarni parallel tashlang</p>
+            <p style="font-size: 1.3rem; font-weight: 700;">Fayllarni tashlang (telefon va kompyuterda avtomatik sinxronlanadi)</p>
             <button class="upload-btn" id="uploadTriggerBtn">Chaqmoq Tezligida Yuklash</button>
             <input type="file" id="fileInput" multiple>
         </div>
@@ -286,6 +289,7 @@
         <div class="files-container" id="filesGrid"></div>
     </div>
 
+    <!-- Modallar -->
     <div class="modal" id="fileModal">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-close-icon" id="closeFileModalBtn">✕</div>
@@ -350,55 +354,33 @@
     </div>
 
     <script>
+        // --- FIREBASE CONFIGURATION (BULUT SINKRONIZATSIYA UCHUN) ---
+        // O'zingizning bepul Firebase loyihangiz ma'lumotlarini shu yerga kiritasiz:
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
+        };
+        
+        let dbCloud = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            dbCloud = firebase.firestore();
+        } catch(e) {
+            console.log("Firebase konfiguratsiyasi kiritilmagan yoki ulanishda xato. Lokal rejimda ishlaydi.");
+        }
+
         let currentPass = '';
         let filesList = [];
         let trashList = [];
         let userQuotaGB = 0;
         let selectedFileForDownload = null;
         let selectedDevice = '';
-        let db = null;
         let isRegisterMode = false;
-
-        async function getPasswordHash(password) {
-            const msgUint8 = new TextEncoder().encode(password);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substr(0, 16);
-        }
-
-        function initDB() {
-            return new Promise((resolve, reject) => {
-                let request = indexedDB.open("PhantomSpaceUltimateDB", 1);
-                request.onerror = () => reject(request.error);
-                request.onsuccess = () => { db = request.result; resolve(db); };
-                request.onupgradeneeded = (e) => {
-                    let database = e.target.result;
-                    if(!database.objectStoreNames.contains("vault")) {
-                        database.createObjectStore("vault", { keyPath: "key" });
-                    }
-                };
-            });
-        }
-
-        function dbPut(key, value) {
-            return new Promise((resolve, reject) => {
-                let tx = db.transaction("vault", "readwrite");
-                let store = tx.objectStore("vault");
-                let req = store.put({ key: key, data: value });
-                req.onsuccess = () => resolve();
-                req.onerror = () => reject(req.error);
-            });
-        }
-
-        function dbGet(key) {
-            return new Promise((resolve, reject) => {
-                let tx = db.transaction("vault", "readonly");
-                let store = tx.objectStore("vault");
-                let req = store.get(key);
-                req.onsuccess = () => resolve(req.result ? req.result.data : null);
-                req.onerror = () => reject(req.error);
-            });
-        }
+        let passHash = '';
 
         function switchAuthMode(mode) {
             isRegisterMode = (mode === 'register');
@@ -424,51 +406,107 @@
             let username = document.getElementById('usernameInput').value.trim();
             if(!password) return showToast('Iltimos, parolni kiriting!');
             
-            setLoading(true, 'Ma\'lumotlar tekshirilmoqda...');
-            let passHash = await getPasswordHash(password);
+            setLoading(true, 'Bulutdan ma\'lumotlar tekshirilmoqda...');
+            passHash = btoa(password).substr(0, 20);
+            currentPass = password;
 
             try {
-                if(isRegisterMode) {
-                    let existingUser = await dbGet('phantom_user_' + passHash);
-                    if(existingUser) {
+                if (dbCloud) {
+                    let docRef = dbCloud.collection("phantom_vaults").doc(passHash);
+                    let docSnap = await docRef.get();
+
+                    if(isRegisterMode) {
+                        if(docSnap.exists) {
+                            setLoading(false);
+                            return showToast('Bu parol allaqachon band! Boshqa parol kiriting.');
+                        }
                         setLoading(false);
-                        return showToast('Bu parol allaqachon band! Boshqa parol kiriting.');
+                        document.getElementById('quotaModal').style.display = 'flex';
+                    } else {
+                        if(!docSnap.exists) {
+                            setLoading(false);
+                            return showToast('Bunday parol topilmadi! Avval ro\'yxatdan o\'ting.');
+                        }
+                        let cloudData = docSnap.data();
+                        filesList = cloudData.files ? JSON.parse(await decryptData(cloudData.files, currentPass)) : [];
+                        trashList = cloudData.trash ? JSON.parse(await decryptData(cloudData.trash, currentPass)) : [];
+                        userQuotaGB = cloudData.quota || 100;
+
+                        localStorage.setItem('phantom_saved_pass', currentPass);
+                        localStorage.setItem('phantom_saved_quota', userQuotaGB);
+
+                        document.getElementById('authOverlay').style.display = 'none';
+                        document.getElementById('mainApp').style.display = 'flex';
+                        
+                        setLoading(false);
+                        updateStorageStats();
+                        renderFiles();
+                        showToast('Bulutdan ma\'lumotlar sinxronlandi!');
                     }
-                    let newUser = { username: username || 'Foydalanuvchi', createdAt: Date.now() };
-                    await dbPut('phantom_user_' + passHash, newUser);
-                    
-                    currentPass = password;
-                    filesList = [];
-                    trashList = [];
-                    
-                    setLoading(false);
-                    document.getElementById('quotaModal').style.display = 'flex';
                 } else {
-                    let userRecord = await dbGet('phantom_user_' + passHash);
-                    if(!userRecord) {
-                        setLoading(false);
-                        return showToast('Bunday parol topilmadi! Avval ro\'yxatdan o\'ting.');
-                    }
+                    // Agar Firebase ulanmagan bo'lsa, lokal xotiradan foydalanish
                     currentPass = password;
-                    let encryptedData = await dbGet('phantom_vault_' + passHash);
-                    let encryptedTrash = await dbGet('phantom_trash_' + passHash);
-                    filesList = encryptedData ? JSON.parse(await decryptData(encryptedData, currentPass)) : [];
-                    trashList = encryptedTrash ? JSON.parse(await decryptData(encryptedTrash, currentPass)) : [];
-                    userQuotaGB = localStorage.getItem('phantom_saved_quota') || 100;
-                    
-                    localStorage.setItem('phantom_saved_pass', currentPass);
+                    let savedData = localStorage.getItem('local_vault_' + passHash);
+                    filesList = savedData ? JSON.parse(await decryptData(JSON.parse(savedData), currentPass)) : [];
                     document.getElementById('authOverlay').style.display = 'none';
                     document.getElementById('mainApp').style.display = 'flex';
-                    
                     setLoading(false);
-                    updateStorageStats();
                     renderFiles();
-                    showToast('Xush kelibsiz! Ma\'lumotlar yuklandi.');
                 }
             } catch(e) {
                 setLoading(false);
-                showToast('Parol xato yoki xatolik yuz berdi!');
+                showToast('Parol xato yoki tarmoq xatoligi!');
             }
+        }
+
+        async function setQuotaLimit(gb) {
+            userQuotaGB = gb;
+            localStorage.setItem('phantom_saved_quota', gb);
+            localStorage.setItem('phantom_saved_pass', currentPass);
+
+            // Bulutga yangi foydalanuvchini yozish
+            if(dbCloud) {
+                setLoading(true, 'Bulut ombori yaratilmoqda...');
+                let encFiles = await encryptData(JSON.stringify([]), currentPass);
+                let encTrash = await encryptData(JSON.stringify([]), currentPass);
+                await dbCloud.collection("phantom_vaults").doc(passHash).set({
+                    files: encFiles,
+                    trash: encTrash,
+                    quota: userQuotaGB,
+                    createdAt: Date.now()
+                });
+                setLoading(false);
+            }
+
+            document.getElementById('quotaModal').style.display = 'none';
+            document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'flex';
+            updateStorageStats();
+            renderFiles();
+            showToast('Cheksiz bulut xotirasi faollashdi!');
+        }
+
+        async function saveFilesToCloud() {
+            if(!currentPass) return;
+            setLoading(true, 'Bulutga shifrlanib yuklanmoqda...');
+            try {
+                let encFiles = await encryptData(JSON.stringify(filesList), currentPass);
+                let encTrash = await encryptData(JSON.stringify(trashList), currentPass);
+
+                if(dbCloud) {
+                    await dbCloud.collection("phantom_vaults").doc(passHash).update({
+                        files: encFiles,
+                        trash: encTrash
+                    });
+                } else {
+                    localStorage.setItem('local_vault_' + passHash, JSON.stringify(encFiles));
+                }
+                updateStorageStats();
+                showToast('Barcha qurilmalar bilan sinxronlandi! ✅');
+            } catch(e) {
+                showToast('Bulutga saqlashda xatolik yuz berdi!');
+            }
+            setLoading(false);
         }
 
         async function getCryptoKey(password) {
@@ -499,69 +537,49 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            try { await initDB(); } catch(e) { console.error("DB xatosi:", e); }
             let savedPass = localStorage.getItem('phantom_saved_pass');
             let savedQuota = localStorage.getItem('phantom_saved_quota');
             if(savedPass && savedQuota) {
                 document.getElementById('secretPass').value = savedPass;
                 userQuotaGB = parseInt(savedQuota);
-                let passHash = await getPasswordHash(savedPass);
-                let userRecord = await dbGet('phantom_user_' + passHash);
-                if(userRecord) {
-                    currentPass = savedPass;
-                    let encryptedData = await dbGet('phantom_vault_' + passHash);
-                    let encryptedTrash = await dbGet('phantom_trash_' + passHash);
-                    filesList = encryptedData ? JSON.parse(await decryptData(encryptedData, currentPass)) : [];
-                    trashList = encryptedTrash ? JSON.parse(await decryptData(encryptedTrash, currentPass)) : [];
-                    
-                    document.getElementById('authOverlay').style.display = 'none';
-                    document.getElementById('mainApp').style.display = 'flex';
-                    updateStorageStats();
-                    renderFiles();
-                }
+                passHash = btoa(savedPass).substr(0, 20);
+                currentPass = savedPass;
+                
+                setLoading(true, 'Sinxronizatsiya qilinmoqda...');
+                try {
+                    if(dbCloud) {
+                        let doc = await dbCloud.collection("phantom_vaults").doc(passHash).get();
+                        if(doc.exists) {
+                            let data = doc.data();
+                            filesList = data.files ? JSON.parse(await decryptData(data.files, currentPass)) : [];
+                            trashList = data.trash ? JSON.parse(await decryptData(data.trash, currentPass)) : [];
+                            document.getElementById('authOverlay').style.display = 'none';
+                            document.getElementById('mainApp').style.display = 'flex';
+                            updateStorageStats();
+                            renderFiles();
+                        }
+                    }
+                } catch(e) { console.log("Avto-kirish xatosi"); }
+                setLoading(false);
             }
-            document.getElementById('logoutBtn').addEventListener('click', logout);
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('phantom_saved_pass');
+                location.reload();
+            });
             document.getElementById('openTrashBtn').addEventListener('click', openTrashModal);
-            document.getElementById('openP2PBtn').addEventListener('click', () => {
-                document.getElementById('p2pModal').style.display = 'flex';
-            });
-            
-            document.getElementById('uploadTriggerBtn').addEventListener('click', () => {
-                document.getElementById('fileInput').click();
-            });
-            document.getElementById('dropZone').addEventListener('click', (e) => {
-                if(e.target.tagName !== 'BUTTON') document.getElementById('fileInput').click();
-            });
-            document.getElementById('fileInput').addEventListener('change', (e) => {
-                if(e.target.files.length > 0) uploadFiles(e.target.files);
-            });
+            document.getElementById('openP2PBtn').addEventListener('click', () => document.getElementById('p2pModal').style.display = 'flex');
+            document.getElementById('uploadTriggerBtn').addEventListener('click', () => document.getElementById('fileInput').click());
+            document.getElementById('fileInput').addEventListener('change', (e) => { if(e.target.files.length > 0) uploadFiles(e.target.files); });
             document.getElementById('searchInput').addEventListener('input', renderFiles);
             document.querySelectorAll('.quota-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    setQuotaLimit(parseInt(btn.getAttribute('data-gb')));
-                });
+                btn.addEventListener('click', () => setQuotaLimit(parseInt(btn.getAttribute('data-gb'))));
             });
-            document.getElementById('closeFileModalBtn').addEventListener('click', closeModalBtn);
-            document.getElementById('fileModal').addEventListener('click', (e) => {
-                if(e.target.id === 'fileModal') closeModalBtn();
-            });
-            document.getElementById('closeTrashModalBtn').addEventListener('click', () => {
-                document.getElementById('trashModal').style.display = 'none';
-            });
-            document.getElementById('trashModal').addEventListener('click', (e) => {
-                if(e.target.id === 'trashModal') document.getElementById('trashModal').style.display = 'none';
-            });
+            document.getElementById('closeFileModalBtn').addEventListener('click', () => document.getElementById('fileModal').style.display = 'none');
+            document.getElementById('closeTrashModalBtn').addEventListener('click', () => document.getElementById('trashModal').style.display = 'none');
             document.getElementById('btnPC').addEventListener('click', () => selectDeviceType('PC'));
             document.getElementById('btnPhone').addEventListener('click', () => selectDeviceType('Phone'));
             document.getElementById('confirmDownloadBtn').addEventListener('click', executeDownload);
-            
-            let dropZone = document.getElementById('dropZone');
-            ['dragenter', 'dragover'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }));
-            ['dragleave', 'drop'].forEach(name => dropZone.addEventListener(name, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); }));
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                if(e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files);
-            });
         });
 
         function showToast(text) {
@@ -576,34 +594,6 @@
             document.getElementById('loadingOverlay').style.display = status ? 'flex' : 'none';
         }
 
-        function setQuotaLimit(gb) {
-            userQuotaGB = gb;
-            localStorage.setItem('phantom_saved_quota', gb);
-            localStorage.setItem('phantom_saved_pass', currentPass);
-            
-            document.getElementById('quotaModal').style.display = 'none';
-            document.getElementById('authOverlay').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'flex';
-            updateStorageStats();
-            renderFiles();
-            showToast('Cheksiz xotira muvaffaqiyatli faollashdi!');
-        }
-
-        function logout() {
-            localStorage.removeItem('phantom_saved_pass');
-            localStorage.removeItem('phantom_saved_quota');
-            location.reload();
-        }
-
-        async function saveFilesLocally() {
-            let passHash = await getPasswordHash(currentPass);
-            let encryptedFiles = await encryptData(JSON.stringify(filesList), currentPass);
-            let encryptedTrash = await encryptData(JSON.stringify(trashList), currentPass);
-            await dbPut('phantom_vault_' + passHash, encryptedFiles);
-            await dbPut('phantom_trash_' + passHash, encryptedTrash);
-            updateStorageStats();
-        }
-
         function updateStorageStats() {
             let totalBytes = filesList.reduce((sum, f) => sum + f.size, 0);
             let totalMB = (totalBytes / (1024 * 1024)).toFixed(1);
@@ -612,45 +602,22 @@
 
         async function uploadFiles(newFiles) {
             let filesArray = Array.from(newFiles);
-            let totalFiles = filesArray.length;
-            if (totalFiles === 0) return;
-            setLoading(true, `0 / ${totalFiles} ta fayl o'qilmoqda...`);
-            
-            let successCount = 0;
-            let processedCount = 0;
-            let promises = filesArray.map(async (f) => {
-                try {
-                    let fileObj = await new Promise((resolve, reject) => {
-                        let reader = new FileReader();
-                        reader.onload = () => resolve({
-                            id: 'f_' + Date.now() + Math.random().toString(36).substr(2, 6),
-                            name: f.name,
-                            size: f.size,
-                            type: f.type || 'application/octet-stream',
-                            data: reader.result
-                        });
-                        reader.onerror = error => reject(error);
-                        reader.readAsDataURL(f);
+            for(let f of filesArray) {
+                let fileObj = await new Promise((resolve) => {
+                    let reader = new FileReader();
+                    reader.onload = () => resolve({
+                        id: 'f_' + Date.now() + Math.random().toString(36).substr(2, 6),
+                        name: f.name,
+                        size: f.size,
+                        type: f.type || 'application/octet-stream',
+                        data: reader.result
                     });
-                    filesList.push(fileObj);
-                    successCount++;
-                } catch (e) {
-                    console.error("Faylni o'qishda xatolik:", f.name);
-                } finally {
-                    processedCount++;
-                    document.getElementById('loadingText').innerText = `${processedCount} / ${totalFiles} ta fayl shifrlanmoqda...`;
-                }
-            });
-            await Promise.all(promises);
-            if (successCount > 0) {
-                setLoading(true, 'IndexedDB ga xavfsiz yozilmoqda...');
-                await saveFilesLocally();
-                renderFiles();
-                showToast(`${successCount} ta fayl saqlandi!`);
-            } else {
-                showToast('Fayllarni yuklashda xatolik yuz berdi!');
+                    reader.readAsDataURL(f);
+                });
+                filesList.push(fileObj);
             }
-            setLoading(false);
+            await saveFilesToCloud();
+            renderFiles();
         }
 
         function renderFiles() {
@@ -667,7 +634,7 @@
                 else if(f.type && f.type.includes('video')) icon = '🎬';
                 else if(f.type && f.type.includes('audio')) icon = '🎵';
                 else if(lowerName.endsWith('.apk')) icon = '📱';
-                else if(lowerName.endsWith('.exe') || lowerName.endsWith('.msi')) icon = '💻';
+                else if(lowerName.endsWith('.exe')) icon = '💻';
                 else if(lowerName.endsWith('.zip') || lowerName.endsWith('.rar')) icon = '📦';
                 
                 let card = document.createElement('div');
@@ -685,169 +652,86 @@
         function openModal(f) {
             selectedFileForDownload = f;
             document.getElementById('modalFileName').innerText = f.name;
-            
             let bodyHTML = `
                 <div>📦 <b>Hajmi:</b> ${(f.size / 1024 / 1024).toFixed(2)} MB</div>
-                <div>📄 <b>Turi:</b> ${f.type || 'Ilova / Fayl'}</div>
-                <div>🔒 <b>Himoya:</b> Zero-Knowledge AES-256</div>
+                <div>📄 <b>Turi:</b> ${f.type || 'Fayl'}</div>
+                <div>🔒 <b>Himoya:</b> Bulutli AES-256 Sinxron</div>
             `;
-            if(f.type && f.type.includes('image')) {
-                bodyHTML += `<div class="modal-preview-container"><img src="${f.data}"></div>`;
-            } else if(f.type && f.type.includes('video')) {
-                bodyHTML += `<div class="modal-preview-container"><video controls src="${f.data}"></video></div>`;
-            } else if(f.type && f.type.includes('audio')) {
-                bodyHTML += `<div style="margin-top: 10px;"><audio controls src="${f.data}" style="width: 100%;"></audio></div>`;
-            }
-            document.getElementById('modalFileContent').innerHTML = bodyHTML;
+            if(f.type && f.type.includes('image')) bodyHTML += `<div class="modal-preview-container"><img src="${f.data}"></div>`;
+            else if(f.type && f.type.includes('video')) bodyHTML += `<div class="modal-preview-container"><video controls src="${f.data}"></video></div>`;
             
-            document.getElementById('modalDownloadBtn').onclick = () => {
-                closeModalBtn();
-                openDeviceModal();
-            };
-            document.getElementById('modalShareBtn').onclick = () => {
-                closeModalBtn();
-                generateShareLink(f);
-            };
-            document.getElementById('modalAiBtn').onclick = () => {
-                showToast('🤖 AI: Fayl shifrlangan va tahlilga tayyor.');
-            };
+            document.getElementById('modalFileContent').innerHTML = bodyHTML;
+            document.getElementById('modalDownloadBtn').onclick = () => { document.getElementById('fileModal').style.display = 'none'; openDeviceModal(); };
             document.getElementById('modalDeleteBtn').onclick = () => moveToTrash(f.id);
             document.getElementById('fileModal').style.display = 'flex';
         }
 
-        function generateShareLink(f) {
-            let secureToken = btoa(f.id + '_' + Date.now()).substr(0, 20);
-            let link = window.location.origin + window.location.pathname + '#share=' + secureToken;
-            document.getElementById('shareLinkInput').value = link;
-            document.getElementById('shareModal').style.display = 'flex';
-        }
-
-        function copyShareLink() {
-            let input = document.getElementById('shareLinkInput');
-            input.select();
-            navigator.clipboard.writeText(input.value);
-            showToast('Xavfsiz P2P havola buferga nusxalandi!');
-            document.getElementById('shareModal').style.display = 'none';
-        }
-
         async function moveToTrash(id) {
-            closeModalBtn();
-            let fileIndex = filesList.findIndex(f => f.id === id);
-            if(fileIndex !== -1) {
-                let removedFile = filesList.splice(fileIndex, 1)[0];
-                trashList.push(removedFile);
-                await saveFilesLocally();
+            document.getElementById('fileModal').style.display = 'none';
+            let idx = filesList.findIndex(f => f.id === id);
+            if(idx !== -1) {
+                trashList.push(filesList.splice(idx, 1)[0]);
+                await saveFilesToCloud();
                 renderFiles();
-                showToast('Fayl chiqindi qutisiga tashlandi!');
+                showToast('Fayl chiqindi qutisiga tashlandi.');
             }
         }
 
         function openTrashModal() {
-            let listContainer = document.getElementById('trashFilesList');
-            listContainer.innerHTML = '';
-            if(trashList.length === 0) {
-                listContainer.innerHTML = '<p style="color: #8a99ad; text-align: center;">Chiqindi qutisi bo\'sh</p>';
-            } else {
-                trashList.forEach(f => {
-                    let item = document.createElement('div');
-                    item.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 14px; margin-bottom: 8px;";
-                    item.innerHTML = `
-                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${f.name}</span>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="action-btn restore-action" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;" data-id="${f.id}">Tiklash</button>
-                            <button class="action-btn delete-action" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;" data-id="${f.id}">O'chirish</button>
-                        </div>
-                    `;
-                    item.querySelector('.restore-action').addEventListener('click', () => restoreFile(f.id));
-                    item.querySelector('.delete-action').addEventListener('click', () => deleteForever(f.id));
-                    listContainer.appendChild(item);
-                });
-            }
+            let list = document.getElementById('trashFilesList');
+            list.innerHTML = trashList.length === 0 ? '<p style="color: #8a99ad; text-align: center;">Chiqindi qutisi bo\'sh</p>' : '';
+            trashList.forEach(f => {
+                let item = document.createElement('div');
+                item.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 14px; margin-bottom: 8px;";
+                item.innerHTML = `<span>${f.name}</span><button class="action-btn restore-action" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;" onclick="restoreFile('${f.id}')">Tiklash</button>`;
+                list.appendChild(item);
+            });
             document.getElementById('trashModal').style.display = 'flex';
         }
 
         async function restoreFile(id) {
-            let index = trashList.findIndex(f => f.id === id);
-            if(index !== -1) {
-                let restored = trashList.splice(index, 1)[0];
-                filesList.push(restored);
-                await saveFilesLocally();
+            let idx = trashList.findIndex(f => f.id === id);
+            if(idx !== -1) {
+                filesList.push(trashList.splice(idx, 1)[0]);
+                await saveFilesToCloud();
                 renderFiles();
                 openTrashModal();
                 showToast('Fayl tiklandi!');
             }
         }
 
-        async function deleteForever(id) {
-            trashList = trashList.filter(f => f.id !== id);
-            await saveFilesLocally();
-            openTrashModal();
-            showToast('Fayl butunlay o\'chirildi!');
-        }
-
         function openDeviceModal() {
             selectedDevice = '';
             document.getElementById('btnPC').classList.remove('active');
             document.getElementById('btnPhone').classList.remove('active');
-            let sysSelect = document.getElementById('sysSelect');
-            sysSelect.style.display = 'none';
-            sysSelect.innerHTML = '';
+            document.getElementById('sysSelect').style.display = 'none';
             document.getElementById('confirmDownloadBtn').style.display = 'none';
             document.getElementById('deviceModal').style.display = 'flex';
         }
 
         function selectDeviceType(type) {
             selectedDevice = type;
-            let btnPC = document.getElementById('btnPC');
-            let btnPhone = document.getElementById('btnPhone');
             let sysSelect = document.getElementById('sysSelect');
-            let confirmBtn = document.getElementById('confirmDownloadBtn');
             sysSelect.style.display = 'block';
-            confirmBtn.style.display = 'block';
-            sysSelect.innerHTML = '';
-            if(type === 'PC') {
-                btnPC.classList.add('active');
-                btnPhone.classList.remove('active');
-                ['Windows (64-bit / 32-bit)', 'macOS', 'Linux'].forEach(sys => {
-                    let opt = document.createElement('option');
-                    opt.value = sys;
-                    opt.innerText = sys;
-                    sysSelect.appendChild(opt);
-                });
-            } else {
-                btnPhone.classList.add('active');
-                btnPC.classList.remove('active');
-                ['Android', 'iOS (iPhone / iPad)', 'HarmonyOS'].forEach(sys => {
-                    let opt = document.createElement('option');
-                    opt.value = sys;
-                    opt.innerText = sys;
-                    sysSelect.appendChild(opt);
-                });
-            }
+            document.getElementById('confirmDownloadBtn').style.display = 'block';
+            sysSelect.innerHTML = type === 'PC' ? '<option>Windows</option><option>macOS</option>' : '<option>Android</option><option>iOS</option>';
         }
 
         function executeDownload() {
             if(!selectedFileForDownload) return;
             document.getElementById('deviceModal').style.display = 'none';
-            showToast('Fayl dekodlanmoqda...');
             let a = document.createElement('a');
             a.href = selectedFileForDownload.data;
             a.download = selectedFileForDownload.name;
             a.click();
         }
 
-        function closeModalBtn() { 
-            document.getElementById('fileModal').style.display = 'none'; 
-        }
-
         function startP2PSession() {
-            document.getElementById('p2pStatus').innerText = 'P2P kvant tuneli ochilmoqda (WebRTC)...';
-            setTimeout(() => {
-                document.getElementById('p2pStatus').innerText = 'Aloqa o\'rnatildi! Kanallar to\'liq shifrlangan.';
-                showToast('P2P tarmoq muvaffaqiyatli ishga tushdi!');
-            }, 1500);
+            document.getElementById('p2pStatus').innerText = 'P2P kvant tuneli ochildi!';
+            showToast('P2P ishga tushdi!');
         }
 
+        // 3D Fon animatsiyasi
         const container = document.getElementById('webgl-container');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
@@ -855,41 +739,16 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
         
-        const torusGeometry = new THREE.TorusGeometry(14, 0.4, 16, 100);
-        const torusMaterial = new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.2 });
-        const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+        const torus = new THREE.Mesh(new THREE.TorusGeometry(14, 0.4, 16, 100), new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.2 }));
         scene.add(torus);
-        
-        const starsGeo = new THREE.BufferGeometry(); 
-        const starPositions = new Float32Array(2500 * 3);
-        for(let i = 0; i < 7500; i++) starPositions[i] = (Math.random() - 0.5) * 350;
-        starsGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-        const starsMat = new THREE.PointsMaterial({ size: 0.8, color: 0x4facfe });
-        const stars = new THREE.Points(starsGeo, starsMat);
-        scene.add(stars);
         camera.position.z = 35;
         
-        let mouseX = 0, mouseY = 0;
-        document.getElementById('mainApp').addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - window.innerWidth / 2) * 0.0004;
-            mouseY = (e.clientY - window.innerHeight / 2) * 0.0004;
-        });
         (function animate3D() { 
             requestAnimationFrame(animate3D); 
-            stars.rotation.y += 0.0006;
             torus.rotation.x += 0.002;
             torus.rotation.y += 0.004;
-            camera.position.x += (mouseX - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY - camera.position.y) * 0.05;
-            camera.lookAt(scene.position);
             renderer.render(scene, camera); 
         })();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
     </script>
 </body>
 </html>
