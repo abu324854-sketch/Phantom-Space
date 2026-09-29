@@ -219,7 +219,6 @@
     <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">Yuklanmoqda...</span></div>
     <div id="toast">Xabar</div>
 
-    <!-- KIRISH VA RO'YXATDAN O'TISH OYNASI -->
     <div id="authOverlay">
         <div class="auth-box">
             <div class="auth-logo">🌌</div>
@@ -236,7 +235,6 @@
         </div>
     </div>
 
-    <!-- XOTIRA HAJMINI TANLASH (MAXSUS 100 TB GACHA) -->
     <div id="quotaModal">
         <div class="quota-box">
             <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 900;">Xotira Hajmini Tanlang</h3>
@@ -281,7 +279,7 @@
         
         <div class="upload-panel" id="dropZone">
             <div style="font-size: 4rem; margin-bottom: 0.8rem;">☁️</div>
-            <p style="font-size: 1.3rem; font-weight: 700;">Fayllarni tashlang (telefon va kompyuterda avtomatik sinxronlanadi)</p>
+            <p style="font-size: 1.3rem; font-weight: 700;">Fayllarni tashlang (barcha qurilmalarda sinxronlanadi)</p>
             <button class="upload-btn" id="uploadTriggerBtn">Chaqmoq Tezligida Yuklash</button>
             <input type="file" id="fileInput" multiple>
         </div>
@@ -289,7 +287,6 @@
         <div class="files-container" id="filesGrid"></div>
     </div>
 
-    <!-- Modallar -->
     <div class="modal" id="fileModal">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-close-icon" id="closeFileModalBtn">✕</div>
@@ -354,13 +351,15 @@
     </div>
 
     <script>
+        // --- PHANTOM SPACE FIREBASE CONFIG (ULandi) ---
         const firebaseConfig = {
-            apiKey: "YOUR_FIREBASE_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "SENDER_ID",
-            appId: "APP_ID"
+            apiKey: "AIzaSyDmi0gvkcmLqYjyIj02ÜR3DDrztgWx09b0",
+            authDomain: "phantom-space.firebaseapp.com",
+            projectId: "phantom-space",
+            storageBucket: "phantom-space.firebasestorage.app",
+            messagingSenderId: "594170580198",
+            appId: "1:594170580198:web:edc9eaadf906be76053f27",
+            measurementId: "G-7RHZW95HXY"
         };
         
         let dbCloud = null;
@@ -368,7 +367,7 @@
             firebase.initializeApp(firebaseConfig);
             dbCloud = firebase.firestore();
         } catch(e) {
-            console.log("Firebase konfiguratsiyasi kiritilmagan. Lokal rejimda ishlaydi.");
+            console.log("Firebase ulanishida xatolik.");
         }
 
         let currentPass = '';
@@ -438,16 +437,11 @@
                         setLoading(false);
                         updateStorageStats();
                         renderFiles();
-                        showToast('Bulutdan ma\'lumotlar sinxronlandi!');
+                        showToast('Bulutdan sinxronlandi! ✅');
                     }
                 } else {
-                    currentPass = password;
-                    let savedData = localStorage.getItem('local_vault_' + passHash);
-                    filesList = savedData ? JSON.parse(await decryptData(JSON.parse(savedData), currentPass)) : [];
-                    document.getElementById('authOverlay').style.display = 'none';
-                    document.getElementById('mainApp').style.display = 'flex';
+                    showToast('Firebase bazasi ulanmagan!');
                     setLoading(false);
-                    renderFiles();
                 }
             } catch(e) {
                 setLoading(false);
@@ -478,28 +472,24 @@
             document.getElementById('mainApp').style.display = 'flex';
             updateStorageStats();
             renderFiles();
-            showToast(`${userQuotaTB} TB bulut xotirasi faollashdi!`);
+            showToast(`${userQuotaTB} TB bulut ombori faollashdi!`);
         }
 
         async function saveFilesToCloud() {
-            if(!currentPass) return;
+            if(!currentPass || !dbCloud) return;
             setLoading(true, 'Bulutga shifrlanib yuklanmoqda...');
             try {
                 let encFiles = await encryptData(JSON.stringify(filesList), currentPass);
                 let encTrash = await encryptData(JSON.stringify(trashList), currentPass);
 
-                if(dbCloud) {
-                    await dbCloud.collection("phantom_vaults").doc(passHash).update({
-                        files: encFiles,
-                        trash: encTrash
-                    });
-                } else {
-                    localStorage.setItem('local_vault_' + passHash, JSON.stringify(encFiles));
-                }
+                await dbCloud.collection("phantom_vaults").doc(passHash).update({
+                    files: encFiles,
+                    trash: encTrash
+                });
                 updateStorageStats();
                 showToast('Barcha qurilmalar bilan sinxronlandi! ✅');
             } catch(e) {
-                showToast('Bulutga saqlashda xatolik yuz berdi!');
+                showToast('Bulutga saqlashda xatolik!');
             }
             setLoading(false);
         }
@@ -540,7 +530,7 @@
                 passHash = btoa(savedPass).substr(0, 20);
                 currentPass = savedPass;
                 
-                setLoading(true, 'Sinxronizatsiya qilinmoqda...');
+                setLoading(true, 'Bulutdan ma\'lumotlar olinmoqda...');
                 try {
                     if(dbCloud) {
                         let doc = await dbCloud.collection("phantom_vaults").doc(passHash).get();
@@ -594,12 +584,7 @@
 
         function updateStorageStats() {
             let totalBytes = filesList.reduce((sum, f) => sum + f.size, 0);
-            let displaySize = '';
-            if(totalBytes < 1024 * 1024 * 1024) {
-                displaySize = (totalBytes / (1024 * 1024)).toFixed(1) + ' MB';
-            } else {
-                displaySize = (totalBytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
-            }
+            let displaySize = totalBytes < 1024 * 1024 * 1024 ? (totalBytes / (1024 * 1024)).toFixed(1) + ' MB' : (totalBytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
             document.getElementById('storageStats').innerText = `${displaySize} / ${userQuotaTB} TB`;
         }
 
@@ -658,7 +643,7 @@
             let bodyHTML = `
                 <div>📦 <b>Hajmi:</b> ${(f.size / 1024 / 1024).toFixed(2)} MB</div>
                 <div>📄 <b>Turi:</b> ${f.type || 'Fayl'}</div>
-                <div>🔒 <b>Himoya:</b> Bulutli AES-256 Sinxron</div>
+                <div>🔒 <b>Himoya:</b> Bulutli AES-256 Shifrlangan</div>
             `;
             if(f.type && f.type.includes('image')) bodyHTML += `<div class="modal-preview-container"><img src="${f.data}"></div>`;
             else if(f.type && f.type.includes('video')) bodyHTML += `<div class="modal-preview-container"><video controls src="${f.data}"></video></div>`;
