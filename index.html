@@ -218,7 +218,6 @@
     <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">Yuklanmoqda...</span></div>
     <div id="toast">Xabar</div>
 
-    <!-- KIRISH VA RO'YXATDAN O'TISH OYNASI -->
     <div id="authOverlay">
         <div class="auth-box">
             <div class="auth-logo">🌌</div>
@@ -229,13 +228,12 @@
                 <button class="top-btn" id="tabLogin" style="flex: 1; padding: 0.8rem; background: rgba(0, 242, 254, 0.25);" onclick="switchAuthMode('login')">Kirish</button>
                 <button class="top-btn" id="tabRegister" style="flex: 1; padding: 0.8rem; background: transparent;" onclick="switchAuthMode('register')">Ro'yxatdan o'tish</button>
             </div>
-
             <input type="text" id="usernameInput" placeholder="Foydalanuvchi nomi..." style="display: none;">
             <input type="password" id="secretPass" placeholder="Maxfiy parolni kiriting...">
             <button class="auth-btn" id="authActionBtn" onclick="handleAuth()">Omborga Kirish</button>
         </div>
     </div>
-
+    
     <div id="quotaModal">
         <div class="quota-box">
             <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 900;">Xotira Hajmini Tanlang</h3>
@@ -361,6 +359,13 @@
         let db = null;
         let isRegisterMode = false;
 
+        async function getPasswordHash(password) {
+            const msgUint8 = new TextEncoder().encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substr(0, 16);
+        }
+
         function initDB() {
             return new Promise((resolve, reject) => {
                 let request = indexedDB.open("PhantomSpaceUltimateDB", 1);
@@ -401,7 +406,6 @@
             let btn = document.getElementById('authActionBtn');
             let tabLogin = document.getElementById('tabLogin');
             let tabRegister = document.getElementById('tabRegister');
-
             if(isRegisterMode) {
                 userInp.style.display = 'block';
                 btn.innerText = "Ro'yxatdan o'tish";
@@ -418,11 +422,10 @@
         async function handleAuth() {
             let password = document.getElementById('secretPass').value.trim();
             let username = document.getElementById('usernameInput').value.trim();
-
             if(!password) return showToast('Iltimos, parolni kiriting!');
-
+            
             setLoading(true, 'Ma\'lumotlar tekshirilmoqda...');
-            let passHash = btoa(password).substr(0, 15);
+            let passHash = await getPasswordHash(password);
 
             try {
                 if(isRegisterMode) {
@@ -431,7 +434,6 @@
                         setLoading(false);
                         return showToast('Bu parol allaqachon band! Boshqa parol kiriting.');
                     }
-
                     let newUser = { username: username || 'Foydalanuvchi', createdAt: Date.now() };
                     await dbPut('phantom_user_' + passHash, newUser);
                     
@@ -447,14 +449,11 @@
                         setLoading(false);
                         return showToast('Bunday parol topilmadi! Avval ro\'yxatdan o\'ting.');
                     }
-
                     currentPass = password;
                     let encryptedData = await dbGet('phantom_vault_' + passHash);
                     let encryptedTrash = await dbGet('phantom_trash_' + passHash);
-
                     filesList = encryptedData ? JSON.parse(await decryptData(encryptedData, currentPass)) : [];
                     trashList = encryptedTrash ? JSON.parse(await decryptData(encryptedTrash, currentPass)) : [];
-
                     userQuotaGB = localStorage.getItem('phantom_saved_quota') || 100;
                     
                     localStorage.setItem('phantom_saved_pass', currentPass);
@@ -506,8 +505,7 @@
             if(savedPass && savedQuota) {
                 document.getElementById('secretPass').value = savedPass;
                 userQuotaGB = parseInt(savedQuota);
-                // Avtomatik kirish tekshiruvi
-                let passHash = btoa(savedPass).substr(0, 15);
+                let passHash = await getPasswordHash(savedPass);
                 let userRecord = await dbGet('phantom_user_' + passHash);
                 if(userRecord) {
                     currentPass = savedPass;
@@ -522,7 +520,6 @@
                     renderFiles();
                 }
             }
-
             document.getElementById('logoutBtn').addEventListener('click', logout);
             document.getElementById('openTrashBtn').addEventListener('click', openTrashModal);
             document.getElementById('openP2PBtn').addEventListener('click', () => {
@@ -599,7 +596,7 @@
         }
 
         async function saveFilesLocally() {
-            let passHash = btoa(currentPass).substr(0, 15);
+            let passHash = await getPasswordHash(currentPass);
             let encryptedFiles = await encryptData(JSON.stringify(filesList), currentPass);
             let encryptedTrash = await encryptData(JSON.stringify(trashList), currentPass);
             await dbPut('phantom_vault_' + passHash, encryptedFiles);
@@ -873,11 +870,10 @@
         camera.position.z = 35;
         
         let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', (e) => {
+        document.getElementById('mainApp').addEventListener('mousemove', (e) => {
             mouseX = (e.clientX - window.innerWidth / 2) * 0.0004;
             mouseY = (e.clientY - window.innerHeight / 2) * 0.0004;
         });
-
         (function animate3D() { 
             requestAnimationFrame(animate3D); 
             stars.rotation.y += 0.0006;
