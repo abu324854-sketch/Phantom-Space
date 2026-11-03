@@ -1,0 +1,12 @@
+{
+  "name": "pcloud-server",
+  "version": "1.0.0",
+  "description": "Shaxsiy bulut: WebDAV server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "webdav-server": "^2.6.2"
+  }
+}
