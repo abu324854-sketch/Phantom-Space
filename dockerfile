@@ -1,11 +1,9 @@
-services:
-  pcloud:
-    build: .
-    restart: always
-    ports:
-      - "8080:8080"
-    environment:
-      CLOUD_USER: admin
-      CLOUD_PASSWORD: "${CLOUD_PASSWORD}"
-    volumes:
-      - /mnt/bigdisk/pcloud:/data   # katta diskni shu yerga ulang
+FROM node:20-alpine
+WORKDIR /app
+COPY package.json ./
+RUN npm install --omit=dev
+COPY server.js ./
+ENV DATA_DIR=/data PORT=8080
+VOLUME /data
+EXPOSE 8080
+CMD ["node", "server.js"]
